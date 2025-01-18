@@ -1,16 +1,18 @@
 import logo from '../assets/logo.png';
 import { IoIosArrowForward, IoIosArrowBack, IoIosHome, IoIosCall } from 'react-icons/io';
 import { RxPencil2 } from "react-icons/rx";
+import { SiFueler } from "react-icons/si";
 import { MdLeaderboard, MdLogout } from 'react-icons/md';
 import { FaUser } from 'react-icons/fa';
 import { useSidebar } from '../context/SidebarContext';
 import { useNavigate } from 'react-router-dom';
 
-export default function Sidebar() {
+export default function Sidebar({onRaiseIncident}) {
   const { expanded, setExpanded, setPage, page } = useSidebar(); // Use the hook
   const navigate = useNavigate();
 
   const handleClick = (value) => {
+
     if(value!="logout")setPage(value);
 
     if (value === "home") {
@@ -21,7 +23,9 @@ export default function Sidebar() {
       navigate('/branchwise');
     } else if (value === "admin") {
       navigate('/admin');
-    } else if (value==="logout") {
+    } else if (value === "fuels") {
+      navigate('/fuels');
+    }else if (value==="logout") {
       setPage("home")
       navigate('/login')
     }
@@ -34,9 +38,7 @@ export default function Sidebar() {
         <div className="p-4 pb-2 flex justify-center items-center">
           <img
             src={logo}
-            className={`overflow-hidden transition-all ${
-              expanded ? 'w-10' : 'w-10'
-            }`}
+            className={`overflow-hidden transition-all w-10`}
             alt="Logo"
           />
           <div
@@ -93,12 +95,21 @@ export default function Sidebar() {
               <FaUser className="text-lg" />
               {expanded && <span className="ml-3">Admin Settings</span>}
             </li>
+            <li
+              onClick={() => handleClick("fuels")}
+              className={`flex items-center py-2 px-3 my-1 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${page === "fuels" ? "text-[#29C472]" : ""} ${
+                expanded ? "justify-start" : "justify-center"
+              }`}
+            >
+              <SiFueler className="text-lg" />
+              {expanded && <span className="ml-3">Fuels</span>}
+            </li>
           </ul>
 
           {/* Footer Menu Items */}
           <ul className="px-3 text-slate-600">
             <li
-              onClick={() => handleClick("issue")}
+              onClick={onRaiseIncident}
               className={`flex items-center py-2 px-3 my-3 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${page=="issue"?"text-[#29C472]":""} ${
                 expanded ? "justify-start" : "justify-center"
               }`}

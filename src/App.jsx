@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import Support from './pages/Support'
 import BranchWise from './pages/BranchWise'
 import Admin from './pages/Admin'
+import Fuels from './pages/Fuels'
 import Layout from './Layout' // Import Layout Component
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           <Route path='/support' element={<Support />} />
           <Route path='/branchwise' element={<BranchWise />} />
           <Route path='/admin' element={<Admin />} />
+          <Route path='/fuels' element={<Fuels/>}/>
         </Route>
       </Routes>
     </>

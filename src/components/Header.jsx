@@ -7,7 +7,8 @@ const Header = () => {
         "admin":"Admin Settings",
         "home":"Dashboard",
         "support":"Support",
-        "analytics":"Branch Wise Progress"
+        "analytics":"Branch Wise Progress",
+        "fuels":"Fuels"
     }
   return (
     <div className='w-full h-16 bg-white text-[#343C6A] flex items-center justify-between px-5'>

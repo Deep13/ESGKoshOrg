@@ -1,4 +1,8 @@
+import { useSidebar } from "../context/SidebarContext";
+
 const BranchWise = () => {
+
+    const {expanded} =useSidebar();
 
     const tickets = [
         {
@@ -51,25 +55,25 @@ const BranchWise = () => {
             <div className="flex gap-3">
             <div className="flex flex-col">
                 <div>Branch Name</div>
-                <select placeholder="All" className="text-blue-400 p-3 rounded-xl mt-2 w-52">
+                <select placeholder="All" className={`text-[#718EBF] p-3 rounded-xl mt-2 ${expanded?"w-40":"w-48"}`}>
                     <option>All</option>
                 </select>
             </div>
             <div className="flex flex-col">
                 <div>Module name</div>
-                <select placeholder="All" className="text-[#718EBF] p-3 rounded-xl mt-2 w-52">
+                <select placeholder="All" className={`text-[#718EBF] p-3 rounded-xl mt-2 ${expanded?"w-40":"w-48"}`}>
                     <option>All</option>
                 </select>
             </div>
             <div className="flex flex-col">
                 <div>Sub-Module</div>
-                <select placeholder="All" className="text-[#718EBF] p-3 rounded-xl mt-2 w-52">
+                <select placeholder="All"className={`text-[#718EBF] p-3 rounded-xl mt-2 ${expanded?"w-40":"w-48"}`}>
                     <option>All</option>
                 </select>
             </div>
             <div className="flex flex-col">
                 <div>Status</div>
-                <select placeholder="All" className="text-[#718EBF] p-3 rounded-xl mt-2 w-52">
+                <select placeholder="All" className={`text-[#718EBF] p-3 rounded-xl mt-2 ${expanded?"w-40":"w-48"}`}>
                     <option>All</option>
                 </select>
             </div>

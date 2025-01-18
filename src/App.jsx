@@ -5,17 +5,22 @@ import Dashboard from './pages/Dashboard'
 import Support from './pages/Support'
 import BranchWise from './pages/BranchWise'
 import Admin from './pages/Admin'
+import Layout from './Layout' // Import Layout Component
 
 function App() {
-
   return (
     <>
       <Routes>
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/' element={<Dashboard/>}/>
-        <Route path='/support' element={<Support/>}/>
-        <Route path='/branchwise' element={<BranchWise/>}/>
-        <Route path='/admin' element={<Admin/>}/>
+        {/* Login Route without Layout */}
+        <Route path='/login' element={<Login />} />
+
+        {/* All other routes wrapped with Layout */}
+        <Route element={<Layout />}>
+          <Route path='/' element={<Dashboard />} />
+          <Route path='/support' element={<Support />} />
+          <Route path='/branchwise' element={<BranchWise />} />
+          <Route path='/admin' element={<Admin />} />
+        </Route>
       </Routes>
     </>
   )

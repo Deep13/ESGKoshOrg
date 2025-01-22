@@ -1,13 +1,13 @@
 import { useSidebar } from "../context/SidebarContext"
 
 const Header = () => {
-    const {page} = useSidebar()
-
+    const {page,userData,master} = useSidebar()
+    
     const values={
         "admin":"Admin Settings",
         "home":"Dashboard",
-        "support":"Support",
-        "analytics":"Branch Wise Progress",
+        "support":"Incidents",
+        "branchwise":"Branch Wise Progress",
         "fuels":"Fuels"
     }
   return (
@@ -21,15 +21,15 @@ const Header = () => {
             </div>
             
             <div className="font-semibold">
-                01-2025
+                {master?.currentReportingCycle?`${master.currentReportingCycle.month}-${master.currentReportingCycle.year}`:"-"}
             </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1">
             <div className="font-semibold">
                 Welcome,
             </div>
             <div>
-                user@gmail.com
+                {userData?.email}
             </div>
         </div>
     </div>

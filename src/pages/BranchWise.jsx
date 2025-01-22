@@ -50,7 +50,7 @@ const BranchWise = () => {
       };
 
   return (
-    <div className='bg-slate-100 flex flex-col w-full h-screen p-10'>
+    <div className='bg-slate-100 flex flex-col w-full h-screen p-2'>
         <div className="flex gap-3 justify-between">
             <div className="flex gap-3">
             <div className="flex flex-col">

@@ -1,5 +1,5 @@
 import './App.css'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Support from './pages/Support'
@@ -7,17 +7,43 @@ import BranchWise from './pages/BranchWise'
 import Admin from './pages/Admin'
 import Fuels from './pages/Fuels'
 import Layout from './Layout' // Import Layout Component
+import { useEffect } from 'react'
+import { auth,firestore } from './firebase'
+import Loading from './pages/Loading'
+
 
 function App() {
+  const navigate =useNavigate();
+
+  useEffect(()=>{
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        console.log("Document data:", user);
+        localStorage.setItem("userDetails",JSON.stringify(user));
+        navigate('/');
+        
+        }
+      else{
+        navigate('/login');
+        localStorage.removeItem("userDetails")
+      }
+      });
+    
+    
+    
+        // ...
+  },[])
+    
   return (
     <>
       <Routes>
         {/* Login Route without Layout */}
         <Route path='/login' element={<Login />} />
+        <Route path='/' element={<Loading/>}/>
 
         {/* All other routes wrapped with Layout */}
         <Route element={<Layout />}>
-          <Route path='/' element={<Dashboard />} />
+          <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/support' element={<Support />} />
           <Route path='/branchwise' element={<BranchWise />} />
           <Route path='/admin' element={<Admin />} />

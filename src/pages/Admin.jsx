@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useSidebar } from "../context/SidebarContext";
 
 const Admin = () => {
     const [action,setAction]=useState("Initiate")
+    const {master} = useSidebar()
     const tickets = [
         {
           monthYear: "01-2024",
@@ -37,12 +39,14 @@ const Admin = () => {
     
 
   return (
-    <div className='bg-slate-100 flex flex-col w-full h-screen p-10'>
+    <div className='bg-slate-100 flex flex-col w-full h-screen p-2'>
         
         <div className="mb-3 flex justify-between items-center">
             <div className="flex">
                 Current Reporting Cycle:
-                <div className="font-semibold ml-3">01-2025</div>
+                <div className="font-semibold ml-3">
+                {master.currentReportingCycle?`${master.currentReportingCycle.month}-${master.currentReportingCycle.year}`:"-"}
+                </div>
             </div>
             <div className="flex gap-3">
                 <button onClick={()=>{setAction("Initiate")}} className={`px-7 py-2 bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl ${action=='Initiate'?"opacity-50":""} text-white`} >Inititate</button>

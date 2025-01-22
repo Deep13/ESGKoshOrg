@@ -1,7 +1,38 @@
 import { FaUserAlt, FaLock } from 'react-icons/fa';
 import logo from '../assets/logo.png'
+import {  signInWithEmailAndPassword   } from 'firebase/auth';
+import {auth} from "../firebase"
+import {useState} from 'react'
+import {useNavigate} from 'react-router-dom'
 
 const Login = () => {
+  
+  const navigate=useNavigate()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  
+
+  const onLogin = (e) => {
+    e.preventDefault();
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        // localStorage.setItem("userDetails",user.email);
+        
+        // navigate("/")
+        console.log(user);
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage)
+    });
+
+}
+
+
   return (
     <div className="bg-loginBg bg-cover bg-center w-full h-screen flex">
       {/* Login Form Container */}
@@ -35,6 +66,7 @@ const Login = () => {
                 type="text"
                 placeholder="Enter username"
                 className="w-full border-none outline-none text-gray-700"
+                onChange={(e)=>setEmail(e.target.value)}
               />
             </div>
 
@@ -45,6 +77,7 @@ const Login = () => {
                 type="password"
                 placeholder="Enter password"
                 className="w-full border-none outline-none text-gray-700"
+                onChange={(e)=>setPassword(e.target.value)}
               />
             </div>
 
@@ -52,6 +85,7 @@ const Login = () => {
             <button
               type="submit"
               className="w-full bg-green-500 text-white py-2 rounded-md font-semibold hover:bg-green-600 transition"
+              onClick={onLogin}
             >
               Login
             </button>

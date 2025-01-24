@@ -22,7 +22,13 @@ const Layout = () => {
         <Header />
 
         {/* Page Content */}
-        <main className="flex-1 p-4 overflow-auto relative">
+        <main className="flex-1 p-4 overflow-auto relative 
+          [&::-webkit-scrollbar]:w-1
+            [&::-webkit-scrollbar-track]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-[#f5fcf9]
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-[#29C472]
+        ">
           <Outlet />
 
           {/* Popup Form */}

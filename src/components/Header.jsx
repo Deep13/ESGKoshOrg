@@ -1,14 +1,14 @@
 import { useSidebar } from "../context/SidebarContext"
 
 const Header = () => {
-    const {page,userData,master} = useSidebar()
+    const {page,userData,master,module} = useSidebar()
     
     const values={
         "admin":"Admin Settings",
         "home":"Dashboard",
         "support":"Incidents",
         "branchwise":"Branch Wise Progress",
-        "fuels":"Fuels"
+        "fuels":module
     }
   return (
     <div className='w-full h-16 bg-white text-[#343C6A] flex items-center justify-between px-5'>
@@ -17,7 +17,7 @@ const Header = () => {
         </div>
         <div className="flex gap-2">
             <div>
-                Current reporting Cycle:
+                {master?.currentReportingCycle.status?"Current":"Last"} Reporting Cycle:
             </div>
             
             <div className="font-semibold">

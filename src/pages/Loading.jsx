@@ -48,11 +48,36 @@ const Loading = () => {
                         navigate('/login');
                       })
                     await getDoc(doc(firestore,domain[1], "Master Data","Reporting Master Data","ReportingSheets"))
-                      .then((sheetSnapshot)=>{
-                        if(sheetSnapshot.data()){
-                          console.log("Reporting Sheets",sheetSnapshot.data());
-                          setSheets(sheetSnapshot.data());
-                        }                               
+                      .then((doc)=>{
+                        if (doc.exists) {
+                          var data = doc.data();
+                          var Environment = [];
+                          var Social = [];
+                          var Governance = [];
+           
+                          // Iterate through the data array
+                          data.complianceData.forEach(function (item) {
+                            // Check if enabled is true, and push the sheetName to the respective array based on complianceType
+                            if (item.enabled) {
+                            if (item.complianceType === "Environment") {
+                              Environment.push(item.sheetName);
+                            } else if (item.complianceType === "Social") {
+                              Social.push(item.sheetName);
+                            } else if (item.complianceType === "Governance") {
+                              Governance.push(item.sheetName);
+                            }
+                            }
+                          });
+                          const reportingSheets = { Environment, Social, Governance }
+                          setSheets(reportingSheets)
+                          // return resolve(that.reportingSheets)
+                        } else {
+                          setSheets(undefined)
+                          // return resolve(that.reportingSheets)
+                        }
+                        
+                          // setSheets(doc);
+                                                   
                                  
                       
                     })
@@ -83,7 +108,9 @@ const Loading = () => {
         }
       },[])
 
-      const {setMaster,setUserData,setSheets} = useSidebar()
+      const {setMaster,setUserData,setSheets, sheets} = useSidebar()
+
+      console.log(sheets)
 
   return (
     <div className='bg-loginBg bg-cover bg-center w-full h-screen flex'>

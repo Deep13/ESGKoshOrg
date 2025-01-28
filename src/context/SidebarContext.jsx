@@ -11,9 +11,10 @@ export const SidebarProvider = ({ children }) => {
   const [master, setMaster] = useState();
   const [userData, setUserData] = useState();
   const [sheets,setSheets] = useState();
+  const [activeSubmenu,setActiveSubmenu] = useState("");
   
   return (
-    <SidebarContext.Provider value={{ expanded, setExpanded,page,setPage,module,setModule,master, sheets,setSheets, setMaster,userData, setUserData}}>
+    <SidebarContext.Provider value={{ expanded, setExpanded,page,setPage,module,setModule,master, sheets,setSheets, setMaster,userData, setUserData, activeSubmenu,setActiveSubmenu}}>
       {children}
     </SidebarContext.Provider>
   );

@@ -3,22 +3,23 @@ import { IoIosArrowForward, IoIosArrowBack, IoIosHome, IoIosCall } from 'react-i
 import { RxPencil2 } from "react-icons/rx";
 // import { SiFueler } from "react-icons/si";
 import { MdLeaderboard, MdLogout } from 'react-icons/md';
-import { FaUser } from 'react-icons/fa';
 import { useSidebar } from '../context/SidebarContext';
 import {  signOut } from "firebase/auth";
 import {auth} from '../firebase';
 import { useNavigate } from 'react-router-dom';
 import { useState } from "react"; // Import useState
+import { AiOutlineIssuesClose } from "react-icons/ai";
+import { GoIssueReopened } from "react-icons/go";
 
 export default function Sidebar({ onRaiseIncident }) {
-  const { expanded, setExpanded, setPage, page, setModule, module,sheets,userData } = useSidebar(); // Use the hook
+  const { expanded, setExpanded, setPage, page, setModule, module,sheets,userData, setActiveSubmenu, activeSubmenu } = useSidebar(); // Use the hook
   const navigate = useNavigate();
 
   const [analyticsDropdown, setAnalyticsDropdown] = useState(false); // State for analytics dropdown
 
   const [adminDropdown,setAdminDropdown] = useState(false);
 
-  const [activeSubmenu,setActiveSubmenu] = useState("");
+  
 
   console.log("Sheet data",sheets)
 
@@ -90,7 +91,7 @@ export default function Sidebar({ onRaiseIncident }) {
         setExpanded(true);
         break;
       case "branchwise":
-        navigate("/branchwise");
+        navigate("/analytics");
         setExpanded(true);
         break;
       case "admin":
@@ -185,10 +186,9 @@ export default function Sidebar({ onRaiseIncident }) {
                   page === "analytics" ? "text-[#29C472] bg-[#f5fcf9]" : ""
                 } ${expanded?"":"ml-3"}`}
               >
-                
+                <IoIosCall className="text-lg" size={20} />
                 {expanded && (
                   <>
-                    <IoIosCall className="text-lg" size={20} />
                     <span className="ml-3">Reporting</span>
                     <IoIosArrowForward
                       className={`ml-auto transition-transform ${
@@ -284,19 +284,21 @@ export default function Sidebar({ onRaiseIncident }) {
 
                 <li
                   onClick={() => handleClick("support")}
-                  className={`py-2 px-3 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
-                  page === "support" ? "text-[#29C472] bg-[#f5fcf9]" : "text-slate-600"
-                  }`}
+                  className={`flex gap-3 items-center py-2 px-3 my-3 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
+                    page === "support" ? "text-[#29C472] bg-[#f5fcf9]" : ""
+                  } ${expanded ? "justify-start" : "justify-center"}`}
                   >
+                    <AiOutlineIssuesClose className='text-md' size={22}/>
                       {expanded && <span>Incidents</span>}
                     </li>
                     {userData?.role=='Admin'&&
                       <li
                       onClick={() => handleClick("admin")}
-                      className={`py-2 px-3 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
-                        page === "admin" ? "text-[#29C472] bg-[#f5fcf9]" : "text-slate-600"
-                      }`}
+                      className={`flex gap-3 items-center py-2 px-3 my-3 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
+                        page === "admin" ? "text-[#29C472] bg-[#f5fcf9]" : ""
+                      } ${expanded ? "justify-start" : "justify-center"}`}
                     >
+                      <GoIssueReopened size={22}/>
                       {expanded && <span className='text-base'>Initiate/Terminate Cycle</span>}
                     </li>
                     }

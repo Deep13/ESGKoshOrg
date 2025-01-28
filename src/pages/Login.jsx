@@ -21,7 +21,7 @@ const Login = () => {
         const user = userCredential.user;
         // localStorage.setItem("userDetails",user.email);
         
-        // navigate("/")
+        navigate("/")
         console.log(user);
     })
     .catch((error) => {
@@ -53,9 +53,9 @@ const Login = () => {
           <h3 className="text-xl font-semibold text-gray-700 mb-2 text-center">
             Sustrack Dashboard
           </h3>
-          <p className="text-sm text-gray-500 text-center mb-6">
+          {/* <p className="text-sm text-gray-500 text-center mb-6">
             Lorem Ipsum has been the industry's standard dummy text ever since.
-          </p>
+          </p> */}
 
           {/* Login Form */}
           <form>

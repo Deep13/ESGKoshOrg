@@ -10,6 +10,7 @@ import Layout from './Layout' // Import Layout Component
 import { useEffect } from 'react'
 import { auth,firestore } from './firebase'
 import Loading from './pages/Loading'
+import Analytics from './pages/Analytics'
 
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
           <Route path='/branchwise' element={<BranchWise />} />
           <Route path='/admin' element={<Admin />} />
           <Route path='/fuels' element={<Fuels/>}/>
+          <Route path='/analytics' element={<Analytics/>} />
         </Route>
       </Routes>
     </>

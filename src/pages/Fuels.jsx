@@ -2,6 +2,7 @@ import { useEffect, useState,useRef } from "react";
 import { useSidebar } from "../context/SidebarContext";
 import { firestore } from "../firebase";
 import { getDoc,doc,arrayUnion,setDoc,updateDoc,deleteField} from "firebase/firestore";
+import modalIcon from '../assets/modalIcon.png'
 
 const Fuels = () => {
   const [tab, setTab] = useState("recorded");
@@ -9,7 +10,12 @@ const Fuels = () => {
   const [fetchedVariant,setFetchedVariant]=useState();
   const [variantOffice,setVariantOffice] =useState();
   const [selectedVariant,setSelectedVariant]=useState();
+  const [dataStatus, setDataStatus] = useState();
+  // const [confirmSave, setConfirmSave] = useState(false);
+  // const [flag, setFlag] = useState(false);
   const [branch,setBranch] = useState();
+  const [showModal, setShowModal] = useState(false);
+  const [modalText, setModalText] = useState("");
   const fetchVariantRef=useRef([]);
   const selectedIndexes=useRef([])
   const selectedIndexes2=useRef([]);
@@ -35,42 +41,124 @@ const Fuels = () => {
   };
 
   // Table data based on fuel type
-  const tableData = {
-    Fuel: [
-      {
-        fuels: "Fuel",
-        type: "Gaseous Fuel",
-        fuels2: "CNG",
-        unit: "liters",
-        amount: 1000,
-        factor: 1.2,
-      },
-      {
-        fuels: "Fuel",
-        type: "Gaseous Fuel",
-        fuels2: "CNG",
-        unit: "liters",
-        amount: 1200,
-        factor: 1.3,
-      },
-    ],
-    Bioenergy: [
-      {
-        A: "Bioenergy A",
-        B: "Bioenergy B",
-        fuels2: "Biofuel",
-        unit: "tons",
-        factor: 1.5,
-      },
-      {
-        A: "Bioenergy C",
-        B: "Bioenergy D",
-        fuels2: "Biofuel",
-        unit: "tons",
-        factor: 1.8,
-      },
-    ],
-  };
+  // const tableData = {
+  //   Fuel: [
+  //     {
+  //       fuels: "Fuel",
+  //       type: "Gaseous Fuel",
+  //       fuels2: "CNG",
+  //       unit: "liters",
+  //       amount: 1000,
+  //       factor: 1.2,
+  //     },
+  //     {
+  //       fuels: "Fuel",
+  //       type: "Gaseous Fuel",
+  //       fuels2: "CNG",
+  //       unit: "liters",
+  //       amount: 1200,
+  //       factor: 1.3,
+  //     },
+  //   ],
+  //   Bioenergy: [
+  //     {
+  //       A: "Bioenergy A",
+  //       B: "Bioenergy B",
+  //       fuels2: "Biofuel",
+  //       unit: "tons",
+  //       factor: 1.5,
+  //     },
+  //     {
+  //       A: "Bioenergy C",
+  //       B: "Bioenergy D",
+  //       fuels2: "Biofuel",
+  //       unit: "tons",
+  //       factor: 1.8,
+  //     },
+  //   ],
+  // };
+
+  const calculateEmissions = () => {
+    let totalEmissions = 0;
+
+    switch (module) {
+        case "Fuel":
+        case "Bioenergy":
+        case "Refrigerant and other":
+        case "WTT- fuels":
+        case "Food":
+        case "Water":
+            // For these modules, use Amount x Factor
+            selectedVariant.forEach(item => {
+                totalEmissions += parseFloat(item.Amount ? item.Amount : 0) * parseFloat(item.Factor ? item.Factor : 0);
+            });
+            break;
+        case "Accommodation":
+            // For these modules, use Amount x Factor
+            selectedVariant.forEach(item => {
+                totalEmissions += parseFloat(item["Number of occupied rooms"] ? item["Number of occupied rooms"] : 0) * parseFloat(item["Number of nights per room"] ? item["Number of nights per room"] : 0) * parseFloat(item.Factor ? item.Factor : 0);
+            });
+            break;
+
+        case "Materials":
+            // For these modules, use Total distance x Factor
+            selectedVariant.forEach(item => {
+                totalEmissions += parseFloat(item["Amount (tonnes)"] ? item["Amount (tonnes)"] : 0) * parseFloat(item.Factor ? item.Factor : 0);
+            });
+            break;
+        case "Elec heat cooling":
+            // For Elec Heat Cooling, use Amount x GEF Factors + Amount x T&D Factors
+           selectedVariant.forEach(item => {
+                totalEmissions += (parseFloat(item.Amount ? item.Amount : 0) * (parseFloat(item["GEF Factors"] ? item["GEF Factors"] : 0)) + (parseFloat(item.Amount ? item.Amount : 0) * parseFloat(item["T&D Factors"] ? item["T&D Factors"] : 0)));
+            });
+            break;
+
+        case "Owned Vehicles":
+           selectedVariant.forEach(item => {
+                totalEmissions += parseFloat(item["Distance (km)"] ? item["Distance (km)"] : 0) * parseFloat(item.Factor ? item.Factor : 0);
+            });
+            break;
+
+        case "Freighting goods":
+            // For these modules, use Amount x Factor
+           selectedVariant.forEach(item => {
+                totalEmissions += parseFloat(item["Weight (tonnes)"] ? item["Weight (tonnes)"] : 0) * parseFloat(item["Distance (km)"] ? item["Distance (km)"] : 0) * parseFloat(item.Factor ? item.Factor : 0);
+            });
+            break;
+        case "Employees commuting":
+        case "Business travel - land and sea":
+            // For these modules, use Total distance x Factor
+           selectedVariant.forEach(item => {
+                totalEmissions += parseFloat(item["Total distance"] ? item["Total distance"] : 0) * parseFloat(item.Factor ? item.Factor : 0);
+            });
+            break;
+
+        case "Waste Disposal":
+            // For Waste Disposal, use Weight x Factor
+           selectedVariant.forEach(item => {
+                totalEmissions += parseFloat(item.Weight ? item.Weight : 0) * parseFloat(item.Factor ? item.Factor : 0);
+            });
+            break;
+
+        case "Flight":
+            // For Flight, use kg CO2e
+           selectedVariant.forEach(item => {
+                totalEmissions += parseFloat(item.co2e ? item.co2e : 0);
+            });
+            break;
+        case "Home Office":
+            // For Flight, use kg CO2e
+           selectedVariant.forEach(item => {
+                totalEmissions += (parseFloat(item["Working regime (For full-time)"] ? item["Working regime (For full-time)"] : 0) * parseFloat(item["Number of months"] ? item["Number of months"] : 0) * parseFloat(item["Factor"] ? item["Factor"] : 0)) + ((parseFloat(item["Working from home"] ? item["Working from home"] : 0) / 2) * parseFloat(item["Number of months"] ? item["Number of months"] : 0) * parseFloat(item["Factor"] ? item["Factor"] : 0));
+            });
+            break;
+
+        default:
+            break;
+    }
+
+    return totalEmissions;
+}
 
   const getVariantData=(module)=> {
     var variantMap = {
@@ -13942,7 +14030,9 @@ const getColumns=(module)=> {
     console.log(selectedIndexes.current)
     var branch = office;
     if (!branch) {
-        alert('Kindly Select Office');
+        setShowModal(true);
+        setModalText('Kindly Select Office');
+        // alert('Kindly Select Office');
         return;
     }
     var selectData=[];
@@ -13969,27 +14059,34 @@ const getColumns=(module)=> {
         setDoc(doc(firestore,domain[1],"Master Data","Reporting Variant",module),{
           [office]:arrayUnion(...selectData)
         },{merge:true}).then(()=>{
-          alert("Variant Saved Successfully")
+          setShowModal(true);
+          setModalText("Variant Saved Successfully")
+          // alert("Variant Saved Successfully")
         })
-        .catch((error)=>{
-          alert("Error writing document")
+        .catch(()=>{
+          setShowModal(true);
+          setModalText("Error writing document")
+          // alert("Error writing document")
         })
       }
       else{
         setDoc(doc(firestore,domain[1],"Master Data","Reporting Variant",module),{
           [office]:selectData
         },{merge:true}).then(()=>{
-          alert("Variant Saved Successfully")
+          setShowModal(true)
+          setModalText("Variant Saved Successfully")
         })
         .catch((error)=>{
           console.log(error)
-          alert("Error writing document")
+          setShowModal(true)
+          setModalText("Error writing document")
         })
       }
     })
     .catch((error)=>{
       console.log(error)
-      alert("Error in getting data")
+      setShowModal(true)
+      setModalText("Error in getting data")
     })
     
 }
@@ -14015,7 +14112,8 @@ const deleteVariant = async() => {
   console.log(selectedIndexes2.current)
   var branch = variantOffice;
     if (!branch) {
-        alert('Kindly Select Office');
+        setShowModal(true)
+        setModalText('Kindly Select Office');
         return;
     }
     var selectData=[];
@@ -14037,18 +14135,47 @@ const deleteVariant = async() => {
     });
     if(selectData && selectData.length>0){
       //do u want to delete these records from this variant
+      console.log("Seledct Data",selectData);
+      // let anotherArray = fetchedVariant[variantOffice];
+      // const filteredArray = anotherArray.filter(
+      //   (item) =>
+      //     !selectData.some(
+      //       (selected) =>
+      //         item.Reference === selected.Reference &&
+      //         item.Fuels === selected.Fuels &&
+      //         item.Type === selected.Type &&
+      //         item.Fuel === selected.Fuel &&
+      //         item.Unit === selected.Unit &&
+      //         item.Amount === selected.Amount &&
+      //         item.Factor === selected.Factor
+      //     )
+      // );
       var domain = userData?.username.split("@");
       updateDoc(doc(firestore,domain[1],"Master Data","Reporting Variant",module),{
-        [variantOffice]:selectData
+        [variantData]:selectData
       })
         .then(() => {
+          setShowModal(true)
+          setModalText("Variant successfully deleted!");
+          // console.log("test",fetchedVariant[variantOffice])
+          console.log(selectedVariant)
+          setSelectedVariant()
+          setFetchedVariant((prevData) => ({
+            ...prevData,
+            [variantOffice]: prevData[variantOffice].filter((item) => !selectData.includes(item)),
+          }));
+          // setFetchedVariant(
+          //   fetchedVariant[variantOffice].filter((data)=>{
+          //   data!=selectData;
+          // }))
+          
 
-           alert("Variant successfully deleted!");
-          fetchVariantData()
+          //fetchVariantData()
           
         })
         .catch((error) => {
-           alert("Error writing document: " + error);
+          setShowModal(true)
+          setModalText("Error writing document: " + error);
         });
 
     }
@@ -14059,20 +14186,22 @@ const deleteVariant = async() => {
         [variantOffice]:deleteField()
       })
         .then(() => {
-
-           alert("Variant successfully deleted!");
-           fetchVariantData()
+          setShowModal(true)
+          setModalText("Variant successfully deleted!");
+          fetchVariantData()
 
         })
         .catch((error) => {
-           alert("Error writing document: " + error);
+          setShowModal(true)
+          setModalText("Error writing document: " + error);
         });
     }
+    // console.log("test2",fetchedVariant[variantOffice])
     console.log(selectData)
 
 }
   // Getting the fuel type from the Sidebar context
-  const { expanded, module, master,userData } = useSidebar();
+  const {module, master,userData, activeSubmenu } = useSidebar();
   // console.log(fuel)
   const [office, setOffice] = useState(null);
   // Get the columns for the current fuel type
@@ -14099,6 +14228,214 @@ const deleteVariant = async() => {
       fetchVariantRef.current=fetchedVariant
     }
   },[fetchedVariant])
+
+ const branchChange = async (value) => {
+    const parsedValue = JSON.parse(value);
+    const branch = parsedValue?.branch;
+    console.log("parsed Value",parsedValue.branch)
+    const officeType = parsedValue?.officeType;
+    var domain = userData?.username.split("@");
+    var monthYear = master?.currentReportingCycle;
+  
+    setBranch(parsedValue.branch); // Update the branch state
+    console.log("check", officeType);
+  
+    // Update the selected variant based on the office type
+    setSelectedVariant(fetchedVariant[officeType]);
+  
+    try {
+      // Fetch data from Firestore
+      const docRef = doc(
+        firestore,
+        domain[1],
+        "TransactionData",
+        `${monthYear.month}-${monthYear.year}`,
+          module
+        );
+        const docSnapshot = await getDoc(docRef);
+  
+          if (docSnapshot.exists() && docSnapshot.data()) {
+              // Data exists, show it in the table
+              const tableData = docSnapshot.data();
+              if(tableData[branch] && tableData[branch].data){
+                console.log("Data exists for the branch:", tableData[branch].data);
+                setSelectedVariant(tableData[branch].data)
+                setDataStatus(tableData[branch].status);
+              }
+              else{
+                if (fetchedVariant[officeType]) {
+                  console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
+                  setSelectedVariant(fetchedVariant[officeType])
+                  console.log("selected Variant",selectedVariant)
+                  
+                  // Handle logic if branch exists in reporting variant
+                  // setTableData([]); // Show an empty table
+              } else {
+                  console.log("Branch does not exist in reporting variant, creating table...");
+                  console.log("selected Variant",selectedVariant)
+                  // console.log("data from func",getVariantData(module))
+                  setSelectedVariant(getVariantData(module))
+                  // Create the whole table (example logic)
+                  // const newTableData = {
+                  //     branch: branch,
+                  //     officeType: officeType,
+                  //     data: [] // Initialize with an empty array or default data
+                  // };
+  
+                  // // Save the new data to Firestore
+                  // await setDoc(docRef, newTableData);
+                  // console.log("New table created for the branch.");
+                  // setTableData(newTableData); // Update the table with the created data
+              }
+              }
+              // console.log("selected Variant",selectedVariant)
+              // setTableData(tableData); // Update the table with the fetched data
+          } else {
+              // Data does not exist, check the reporting variant
+              if (fetchedVariant[officeType]) {
+                  console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
+                  setSelectedVariant(fetchedVariant[officeType])
+                  console.log("selected Variant",selectedVariant)
+                  
+                  // Handle logic if branch exists in reporting variant
+                  // setTableData([]); // Show an empty table
+              } else {
+                  console.log("Branch does not exist in reporting variant, creating table...");
+                  console.log("selected Variant",selectedVariant)
+                  // console.log("data from func",getVariantData(module))
+                  setSelectedVariant(getVariantData(module))
+                  // Create the whole table (example logic)
+                  // const newTableData = {
+                  //     branch: branch,
+                  //     officeType: officeType,
+                  //     data: [] // Initialize with an empty array or default data
+                  // };
+  
+                  // // Save the new data to Firestore
+                  // await setDoc(docRef, newTableData);
+                  // console.log("New table created for the branch.");
+                  // setTableData(newTableData); // Update the table with the created data
+              }
+          }
+      } catch (error) {
+          console.error("Error fetching data:", error);
+      }
+  };
+
+  const saveRecord = async () =>{
+    if(!branch){
+      setShowModal(true);
+      setModalText("Kindly Select Branch")
+      return;
+    }
+
+    if(dataStatus=='Submitted'){
+      setShowModal(true);
+      setModalText("You cannot submit data for this branch as it is already submitted")
+      return ;
+    }
+    //do u want to save this data conformation msg after branch check
+    var domain = userData?.username.split("@");
+    var monthYear = master?.currentReportingCycle;
+    // var selectedData = selectedVariant;
+    var totalEmission = calculateEmissions();
+    // selectedData.map((val)=>{
+    //   var a = val.Amount || 0;
+    //   var b = val.Factor || 0;
+    //   totalEmission+=a*b;
+    // })
+    // var flag = fetchedVariant[officeType]
+    setDoc(doc(firestore,domain[1],"TransactionData",monthYear.month+"-"+monthYear.year,module),{
+      [branch]: {
+          data: selectedVariant,
+          status: "Submitted",
+          updatedAt: new Date(),
+          updatedBy: userData?.userId,
+          // dataType: that.custom ? "Custom" : "Variant"
+      }
+
+  }, { merge: true })
+      .then(() => {
+        setDoc(doc(firestore,domain[1],"TransactionData",monthYear.month+"-"+monthYear.year,"Statistics"),{
+          [branch]: {
+             [activeSubmenu]:arrayUnion(module)
+              // dataType: that.custom ? "Custom" : "Variant"
+          }
+    
+      }, { merge: true })
+          .then(() => {
+            setShowModal(true);
+            setModalText("Data saved Successfully")
+              
+          })
+          .catch((error) => {
+              setShowModal(true);
+              setModalText("Error writing document: " + error)
+    
+          });
+
+          setDoc(doc(firestore,domain[1],"AnalyticsData","Reporting Data",module+"-"+monthYear.year),{
+            [monthYear.month]: {
+               [branch]:totalEmission,
+              
+                // dataType: that.custom ? "Custom" : "Variant"
+            },
+            type:module,
+            year:monthYear.year,
+      
+        }, { merge: true })
+            .then(() => {
+              console.log("Data saved successfully for analytics")
+                
+            })
+            .catch((error) => {
+               console.log("Data saved unsuccessfully for analytics",error)
+      
+            });
+
+      })
+      .catch((error) => {
+          setShowModal(true);
+          setModalText("Error writing document: " + error)
+
+      });
+
+
+  }
+  const saveDraft = async () =>{
+    if(!branch){
+      setShowModal(true);
+      setModalText("Kindly Select Branch")
+      return;
+    }
+    if(dataStatus=='Submitted'){
+      setShowModal(true);
+      setModalText("You cannot submit data for this branch as it is already submitted")
+      return ;
+    }
+    var domain = userData?.username.split("@");
+    var monthYear = master?.currentReportingCycle;
+    // var flag = fetchedVariant[officeType]
+    setDoc(doc(firestore,domain[1],"TransactionData",monthYear.month+"-"+monthYear.year,module),{
+      [branch]: {
+          data: selectedVariant,
+          status: "Draft",
+          updatedAt: new Date(),
+          updatedBy: userData?.userId,
+          // dataType: that.custom ? "Custom" : "Variant"
+      }
+
+  }, { merge: true })
+      .then(() => {
+          setShowModal(true);
+          setModalText("Data successfully saved as draft!")
+      })
+      .catch((error) => {
+          setShowModal(true);
+          setModalText("Error writing document: " + error)
+
+      });
+  }
 
   
 
@@ -14135,20 +14472,20 @@ const deleteVariant = async() => {
         </div>
         {tab=='recorded'?
         <div className="flex gap-10">
-          <div className="border-2 rounded-xl px-3 py-2">
+          <div onClick={()=>saveDraft()} className="border-2 rounded-xl px-3 py-2 cursor-pointer">
             Save as Draft
           </div>
-          <div onClick={()=>console.log(selectedIndexes.current)} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2">
+          <div onClick={()=>saveRecord()} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
             Save
           </div>
         </div>
       :
     <>
       {tab=='variant'?
-        <div onClick={()=>deleteVariant()} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2">
+        <div onClick={()=>deleteVariant()} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
           Delete
         </div>:
-        <div onClick={()=>onSaveVariant()} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2">
+        <div onClick={()=>onSaveVariant()} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
         Save
       </div>
       }
@@ -14189,13 +14526,15 @@ const deleteVariant = async() => {
       <select
       placeholder="All"
       className={`text-[#718EBF] p-3 min-w-[200px] rounded-xl mt-2`}
-      value={variantOffice}
+      // value={branch}
       onChange={(e)=>{
-        setBranch(JSON.parse(e.target.value)?.branch)
-        console.log("check",JSON.parse(e.target.value)?.officeType)
-        setSelectedVariant(fetchedVariant[JSON.parse(e.target.value)?.officeType])
+        // setBranch(JSON.parse(e.target.value)?.branch)
+        // console.log("check",JSON.parse(e.target.value)?.officeType)
+        // setSelectedVariant(fetchedVariant[JSON.parse(e.target.value)?.officeType])
+        branchChange(e.target.value);
       }}
     >
+      <option value={""} selected disabled>Select a Value</option>
       {userData?.branches?.map((branch,index)=>(
         <option           
           key={index} value={JSON.stringify(branch)}>
@@ -14219,6 +14558,7 @@ const deleteVariant = async() => {
         // e.target.style.width='auto'
       }}
     >
+       <option value={""} selected disabled>Select a Value</option>
       {formattedOfficeTypes?.map((offices,index)=>(
         <option key={index} value={offices.officeType}>
           {offices.officeType}
@@ -14248,9 +14588,13 @@ const deleteVariant = async() => {
           {selectedVariant?.map((ticket, index) => (
             <tr key={index} className="text-gray-700 text-sm border-b">
               <td >
+                {tab!='recorded'&&
                 <input type='checkbox' onChange={(e)=>{
+                  console.log(selectedVariant);
+                  console.log(fetchedVariant);
                   e.target.checked?selectedIndexes2.current.push(index):selectedIndexes2.current.splice(selectedIndexes2.current.indexOf(index),1)
                 }}></input>
+                }
               </td>
               {getColumns(module)?.map((column, columnIndex) => (
                 <td 
@@ -14265,6 +14609,17 @@ const deleteVariant = async() => {
                       type={column.type === "Number" ? "number" : "text"}
                       disabled={tab==='variant'}
                       value={ticket[column.title]}
+                      onChange={(e) => {
+                        const updatedValue = e.target.value;
+          
+                        // Update the corresponding field in selectedVariant
+                        const updatedVariant = [...selectedVariant];
+                        updatedVariant[index] = {
+                          ...updatedVariant[index],
+                          [column.title]: updatedValue, // Update the specific column's value
+                        };
+                        setSelectedVariant(updatedVariant); // Trigger re-render with updated state
+                      }}
                     />
                   ) : (
                     ticket[column.title] || "--"
@@ -14290,6 +14645,7 @@ const deleteVariant = async() => {
               // e.target.style.width='auto'
             }}
           >
+            <option value={""} selected disabled>Select a Value</option>
             {formattedOfficeTypes?.map((offices,index)=>(
               <option key={index} value={offices.officeType}>
                 {offices.officeType}
@@ -14349,6 +14705,24 @@ const deleteVariant = async() => {
 
     </div>
       }
+
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-96 flex flex-col items-center justify-center">
+            
+            <div className="mb-5 flex gap-5 jusify-center items-center">
+              <img src={modalIcon} alt="modal Icon" className="h-10"/>
+              {modalText}
+            </div>
+
+            
+              <button onClick={()=>{setShowModal(false)}} className="px-3 py-2 rounded-lg mx-auto bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
+                Ok
+              </button>
+            
+          </div>
+        </div>
+      )}
 
     </div>
   );

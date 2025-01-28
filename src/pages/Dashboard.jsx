@@ -21,6 +21,7 @@ const Dashboard = () => {
   
 
   const calculateCompletion = (statistics, reports, branches)=> {
+    console.log("stats here", statistics, "and branch", branches)
     let result = {};
     let totalPercentage = 0;
     let totalCategories = 0;
@@ -32,7 +33,7 @@ const Dashboard = () => {
     let branchesWithData = 0;
 
     // Loop through only the branches present in the provided branch array
-    branches.forEach(branchObj => {
+    branches?.forEach(branchObj => {
       let location = branchObj.branch; // Access the branch key
       // If branch does not exist in statistics, it will have 0% for all categories
       if (statistics[location]) {
@@ -112,7 +113,7 @@ const Dashboard = () => {
   const getCalculatedPercentage=async(domain,monthYear)=>{ 
     await getDoc(doc(firestore,domain[1], "TransactionData",monthYear.month+"-"+monthYear.year,"Statistics"))
   .then((doc)=>{
-    if (doc.exists) {
+    if (doc.exists && doc.data()) {
       var calculations = calculateCompletion(doc.data(), sheets, userData.branches);
       
             // Update state with calculated values
@@ -124,7 +125,11 @@ const Dashboard = () => {
 
       //console.log("Statistics",result, fullTotalPercentage, avgEmissionsPercentage, avgSocialPercentage, avgGovernancePercentage);
     } else {
-      console.log("error")
+      // console.log("error")
+      setFullTotalPercentage("0.00%");
+      setAvgEmissionsPercentage("0.00%");
+      setAvgSocialPercentage("0.00%");
+      setAvgGovernancePercentage("0.00%");
       
     }
     
@@ -148,7 +153,7 @@ const Dashboard = () => {
     }
   },[userData,master,sheets])
 
-  console.log("avg",avgEmissionsPercentage)
+  console.log("avg ",avgEmissionsPercentage)
 
   return (
     <div className="p-5 w-full h-screen bg-slate-100">
@@ -167,7 +172,7 @@ const Dashboard = () => {
                 <img src={seeding} alt="seeding icon" />
               </div>
             </div>
-            <div className="mt-2 text-[2.5rem]">{avgEmissionsPercentage}</div>
+            <div className="mt-2 text-[2.5rem]">{avgEmissionsPercentage.split('.')[0]}%</div>
             {/* <div
               className={`${
               expanded ? 'w-full sm:w-[18rem]' : 'w-full sm:w-[20rem]'
@@ -190,7 +195,7 @@ const Dashboard = () => {
                 <img src={social} alt="social icon" />
               </div>
             </div>
-            <div className="mt-2 text-[2.5rem]">{avgSocialPercentage}</div>
+            <div className="mt-2 text-[2.5rem]">{avgSocialPercentage.split('.')[0]}%</div>
             {/* <div
               className={` flex justify-between items-center rounded-b-[1rem] border-t text-[#718EBF] p-3 ml-[-1.25rem]`}
             >
@@ -211,7 +216,7 @@ const Dashboard = () => {
                 <img src={governance} alt="governance icon" />
               </div>
             </div>
-            <div className="mt-2 text-[2.5rem]">{avgGovernancePercentage}</div>
+            <div className="mt-2 text-[2.5rem]">{avgGovernancePercentage.split('.')[0]}%</div>
             {/* <div
               className={`flex justify-between items-center rounded-b-[1rem] border-t text-[#718EBF] p-3 ml-[-1.25rem]`}
             >

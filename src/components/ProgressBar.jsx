@@ -42,7 +42,7 @@ const ProgressBar = ({ total }) => {
             fill="none"
           />
           {/* Progress Half-Circle */}
-          <circle
+          {percentage!=0 &&<circle
             cx="60"
             cy="60"
             r={radius}
@@ -53,10 +53,10 @@ const ProgressBar = ({ total }) => {
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
             transform="rotate(180 60 60)" // Rotate the progress bar to start from the left
-          />
+          />}
         </svg>
         {/* Percentage Text */}
-        <p className="text-2xl font-bold mt-[-3rem]">{total}</p>
+        <p className="text-2xl font-bold mt-[-3rem]">{percentage}%</p>
         <p className="text-sm text-blue-400">
           {total=="100.00%"?"Completed":"Incomplete"}
         </p>

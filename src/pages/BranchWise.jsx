@@ -37,13 +37,23 @@ const BranchWise = () => {
                 branches?.forEach(branch => {
                     Object.keys(sheets).forEach(moduleName => {
                         sheets[moduleName].forEach(subModule => {
-                            const isCompleted = docData[branch?.branch] && docData[branch?.branch][moduleName] && docData[branch?.branch][moduleName].includes(subModule);
-                            tableData.push({
-                                branchName: branch.branch,
-                                moduleName: moduleName,
-                                subModule: subModule,
-                                status: isCompleted ? "Completed" : "Incomplete"
-                            });
+                            try{
+                                const isCompleted = docData[branch?.branch] && docData[branch?.branch][moduleName] && docData[branch?.branch][moduleName].includes(subModule);
+                                tableData.push({
+                                    branchName: branch.branch,
+                                    moduleName: moduleName,
+                                    subModule: subModule,
+                                    status: isCompleted ? "Completed" : "Incomplete"
+                                });
+                            }
+                            catch{
+                                tableData.push({
+                                    branchName: branch.branch,
+                                    moduleName: moduleName,
+                                    subModule: subModule,
+                                    status:"Incomplete"
+                                })
+                            }
                         });
                     });
                 });
@@ -71,28 +81,6 @@ const BranchWise = () => {
 
     // console.log(statusList)
 
-    const updateFilteredLists = (data, branch, module, subModule) => {
-        const filteredModules = ["All", ...new Set(data
-          .filter((item) => branch === "All" || item.branchName === branch)
-          .map((item) => item.moduleName))];
-    
-        setModuleList(filteredModules);
-    
-        const filteredSubModules = ["All", ...new Set(data
-          .filter((item) => (branch === "All" || item.branchName === branch) &&
-                            (module === "All" || item.moduleName === module))
-          .map((item) => item.subModule))];
-    
-        setSubModuleList(filteredSubModules);
-    
-        const filteredStatuses = ["All", ...new Set(data
-          .filter((item) => (branch === "All" || item.branchName === branch) &&
-                            (module === "All" || item.moduleName === module) &&
-                            (subModule === "All" || item.subModule === subModule))
-          .map((item) => item.status))];
-    
-        setStatusList(filteredStatuses);
-      };
 
       const getPriorityClass = (priority) => {
         if (priority === "Completed") return "text-white bg-[#29C472] px-5";
@@ -109,21 +97,42 @@ const BranchWise = () => {
         return isBranchMatch && isModuleMatch && isSubModuleMatch && isStatusMatch;
       });
 
+      const updateModuleList=(filterSelected,value)=>{
+        console.log("Update called",filterSelected, value, moduleList)
+      }
+
       const handleBranchChange=(value)=>{
-        updateFilteredLists(tableInfo, value, "All", "All");
         setSelectedBranch(value)
         setSelectedModule("All");
         setSelectedSubModule("All");
         setSelectedStatus("All");
+        updateModuleList("branch",value);
       }
-      const handleModuleChange=(value)=>{
-        updateFilteredLists(tableInfo, selectedBranch, value, "All");
-        setSelectedModule(value)
+      const handleModuleChange = (value) => {
+        setSelectedModule(value);
+    
+        // Reset lower-level filters
         setSelectedSubModule("All");
         setSelectedStatus("All");
-      }
+    
+        // Filter subModuleList based on the selected module
+        if (value === "All") {
+            // Show all sub-modules if "All" is selected
+            const uniqueSubModules = ["All", ...new Set(tableInfo.map(item => item.subModule))].map(subModule => ({ subModule }));
+            setSubModuleList(uniqueSubModules);
+        } else {
+            // Filter sub-modules relevant to the selected module
+            const moduleSubModules = tableInfo
+                .filter(item => item.moduleName === value)
+                .map(item => item.subModule);
+    
+            const uniqueModuleSubModules = ["All", ...new Set(moduleSubModules)].map(subModule => ({ subModule }));
+            console.log(uniqueModuleSubModules)
+            setSubModuleList(uniqueModuleSubModules);
+        }
+    };
+    
       const handleSubModuleChange=(value)=>{
-        updateFilteredLists(tableInfo, selectedBranch, selectedModule, value);
         setSelectedSubModule(value)
         setSelectedStatus("All");
       }
@@ -167,7 +176,7 @@ const BranchWise = () => {
                         <option key={index} value={module.moduleName}>
                             {module.moduleName}
                         </option>
-                    ))}
+                    ),[moduleList])}
                 </select>
             </div>
             <div className="flex flex-col">
@@ -186,7 +195,7 @@ const BranchWise = () => {
                     <option key={index} value={subModule.subModule}>
                         {subModule.subModule}
                     </option>
-                ))}
+                ),[subModuleList])}
                 </select>
             </div>
             <div className="flex flex-col">

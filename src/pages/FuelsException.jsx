@@ -1,12 +1,10 @@
 import { useEffect, useState,useRef } from "react";
 import { useSidebar } from "../context/SidebarContext";
 import { firestore } from "../firebase";
-import { getDoc,doc,arrayUnion,setDoc,updateDoc,deleteField,collection,getDocs} from "firebase/firestore";
-import { FaExclamationCircle,FaPlus,FaMinus } from "react-icons/fa";
+import { getDoc,doc,arrayUnion,setDoc,updateDoc,deleteField} from "firebase/firestore";
 import modalIcon from '../assets/modalIcon.png'
-import * as XLSX from "xlsx"
 
-const Fuels = () => {
+const FuelsException = () => {
   const [tab, setTab] = useState("recorded");
   const [variantData, setVariantData]=useState([]);
   const [fetchedVariant,setFetchedVariant]=useState();
@@ -23,37 +21,6 @@ const Fuels = () => {
   const selectedIndexes2=useRef([]);
 
   // Data configurations based on the fuel type (fuel, bioenergy)
-  const {module, master,userData, activeSubmenu } = useSidebar();
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     // Get Firestore instance
-  //     // const db = getFirestore();
-  //     console.log("userData",userData)
-  //     var domain = userData?.domain;
-  //     // Define the path to the collection
-  //     var closedData=master?.currentReportingCycle;
-  //     const docRef = collection(
-  //       firestore,
-  //       domain,
-  //       "TransactionData",
-  //       `${closedData.month}-${closedData.year}`
-  //     );
-
-  //     try {
-  //       const snapShot = await getDocs(docRef); // Fetch documents from Firestore
-  //       const fetchedData = snapShot.docs.map(doc => ({
-  //         [doc.id]: doc.data() // Map documents to an array of objects with document ID as key
-  //       }));
-
-  //       console.log("test1",fetchedData); // Update state with fetched data
-  //     } catch (error) {
-  //       console.error("Error fetching data: ", error); // Handle any errors during the fetch
-  //     }
-  //   };
-
-  //   fetchData(); // Call the function to fetch data
-
-  // }, [userData, master]); // Dependencies to trigger re-fetch
   
   const fuelData = {
     Fuel: [
@@ -72,39 +39,6 @@ const Fuels = () => {
       { title: "Factor", editable: true, key: "factor", type: "Number" },
     ],
   };
-
-
-const tooltipData={
-  "Direct economic value generated": "Revenues",
-  "Direct economic value Distributed": "Operating costs, employee wages and benefits, payments to providers of capital, payments to government by country, and community investments",
-  "Local Minimum Wage as Male": "Minimum compensation for employment per hour, or other unit of time, allowed under law, in circumstances in which different minimums can be used as a reference, report which minimum wage is being used",
-  "Local Minimum Wage as Female": "Minimum compensation for employment per hour, or other unit of time, allowed under law, in circumstances in which different minimums can be used as a reference, report which minimum wage is being used",
-  "Entry level wage for Male": "Entry level - wage full-time wage in the lowest employment category Note: Intern or apprentice wages are not considered entry level wages.",
-  "Entry level wage for Female": "Entry level - wage full-time wage in the lowest employment category Note: Intern or apprentice wages are not considered entry level wages."
-}
-
-const addRow=()=>{
-  console.log("data got",getColumns(module))
-  console.log("selected",selectedVariant);
-  console.log("fetched",fetchedVariant);
-  const newRow = {};
-  getColumns(module)?.forEach((col) => (newRow[col.title] = ""));
-  setSelectedVariant([...selectedVariant, newRow]);
-  setFetchedVariant({...fetchedVariant,
-    [variantOffice]:[...selectedVariant, newRow],})
-}
-
-const deleteRow=()=>{
-  if (selectedIndexes2.length === 0) return;
-  const updatedRows = selectedVariant.filter((_, index) => !selectedIndexes2.current.includes(index));
-  // Clear selected indexes after deletion
-  selectedIndexes2.current = [];
-
-  console.log("updayed rows",updatedRows)
-  setSelectedVariant([updatedRows]);
-  setFetchedVariant({...fetchedVariant,
-    [variantOffice]:[updatedRows],})
-}
 
 
 const calculateEmissions = () => {
@@ -13880,10 +13814,6 @@ const calculateEmissions = () => {
 
   const findGHGConversion=(data1, data2)=> {
     return data1.map(entry1 => {
-        // Concatenate the necessary fields from Data 1
-        // let concatenatedValue = Object.values(entry1).join("");
-
-        // Find matching entry in Data 2 by comparing concatenatedValue to Lookup
         if (entry1.Reference) {
             if (module == "Food") {
                 return entry1;
@@ -14216,8 +14146,6 @@ const fetchVariantData  = async() => {
 
   const docSnapshot = await getDoc(docRef);
 
-  console.log("test",docSnapshot.data())
-
   if(docSnapshot.exists && docSnapshot.data()){
     console.log("variant data",docSnapshot.data())
     setFetchedVariant(docSnapshot.data());
@@ -14317,7 +14245,7 @@ const deleteVariant = async() => {
 
 }
   // Getting the fuel type from the Sidebar context
-
+  const {module, master,userData, activeSubmenu } = useSidebar();
   // console.log(fuel)
   const [office, setOffice] = useState(null);
   // Get the columns for the current fuel type
@@ -14336,10 +14264,8 @@ const deleteVariant = async() => {
     if(userData){
       createVariantData();
       fetchVariantData();
-
-      
     }
-  },[userData,module])
+  },[userData])
 
   useEffect(()=>{
     if(fetchedVariant?.length>0){
@@ -14347,11 +14273,7 @@ const deleteVariant = async() => {
     }
   },[fetchedVariant])
 
-
-
  const branchChange = async (value) => {
-  console.log("Module",module)
-  console.log("tabledata",fetchedVariant)
     const parsedValue = JSON.parse(value);
     const branch = parsedValue?.branch;
     console.log("parsed Value",parsedValue.branch)
@@ -14444,162 +14366,6 @@ const deleteVariant = async() => {
       }
   };
 
-//   const groupSubmittedModulesByBranch = (data, moduleCategories, getModuleCategory) => {
-//     let branchWiseData = {};
-
-//     const scopeData = {
-//         "Fuel": "Scope 1",
-//         "Bioenergy": "Scope 1",
-//         "Refrigerant and other": "Scope 1",
-//         "Elec heat cooling": "Scope 2",
-//         "Owned Vehicles": "Scope 1",
-//         "Materials": "Scope 3",
-//         "WTT- fuels": "Scope 3",
-//         "Waste Disposal": "Scope 3",
-//         "Flight": "Scope 3",
-//         "Business travel - land and sea": "Scope 3",
-//         "Freighting goods": "Scope 3",
-//         "Employees commuting": "Scope 3",
-//         "Water": "Scope 3",
-//         "Accommodation": "Scope 3",
-//         "Food": "Scope 3",
-//         "Home Office": "Scope 3"
-//     };
-
-//     // Iterate over each module in the data
-//     data.forEach(moduleData => {
-//         const moduleName = Object.keys(moduleData)[0];
-//         const moduleCategory = getModuleCategory(moduleName, moduleCategories);
-//         const branches = moduleData[moduleName];
-
-//         // Iterate over each branch in the module
-//         Object.keys(branches).forEach(branch => {
-//             const branchData = branches[branch];
-
-//             // Only process modules with the "Submitted" status
-//             if (branchData.status === "Submitted") {
-//                 if (!branchWiseData[branch]) {
-//                     branchWiseData[branch] = {
-//                         modules: {},
-//                         Overview: {
-//                             TotalEmissions: 0,
-//                             Water: 0,
-//                             Waste: 0,
-//                             Biodiversity: 0,
-//                             Beneficiaries: 0,
-//                             GenderSplit: 0,
-//                             SocialSpend: 0,
-//                             AgeCount: {
-//                                 "50+": 0,
-//                                 "35 to 50": 0,
-//                                 "22 to 35": 0,
-//                                 "Less than 22": 0
-//                             },
-//                             GenderCount: { "Male": 0, "Female": 0, "Others": 0 },
-//                             Scope: {
-//                                 "Scope 1": 0,
-//                                 "Scope 2": 0,
-//                                 "Scope 3": 0
-//                             }
-//                         },
-//                         Environment: {
-//                             Overview: {
-//                                 TotalEmissions: 0,
-//                                 "Scope 1": 0,
-//                                 "Scope 2": 0,
-//                                 "Scope 3": 0,
-//                                 Water: 0,
-//                                 "Water Stress": 0,
-//                                 Waste: 0,
-//                                 Scope: {
-//                                     "Scope 1": 0,
-//                                     "Scope 2": 0,
-//                                     "Scope 3": 0
-//                                 }
-//                             },
-//                             "Scope 1": {
-//                                 "Scope 1": 0,
-//                                 "Bioenergy": 0,
-//                                 "Fuels": 0,
-//                                 "Owned Vehicles": 0,
-//                                 "Refrigerant": 0,
-//                                 Emission: {},
-//                                 BioenergySplit: {}
-//                             },
-//                             "Scope 2": {
-//                                 "Scope 2": 0,
-//                                 "District Cooling": 0,
-//                                 "Electricity": 0,
-//                                 "Heat and steam": 0,
-//                                 "Electricity - Backup": 0,
-//                                 "Owned Vehicles": 0,
-//                                 Activities: {},
-//                                 Emission: {}
-//                             },
-//                             "Scope 3": {
-//                                 "Scope 3": 0,
-//                                 "Business travel - land and sea": 0,
-//                                 "Employees commuting": 0,
-//                                 "Flight": 0,
-//                                 "Freighting goods": 0,
-//                                 "Materials": 0,
-//                                 "Waste Disposal": 0,
-//                                 "WTT- fuels": 0,
-//                                 Emission: {}
-//                             }
-//                         },
-//                         Social: {
-//                             Overview: {
-//                                 Headcount: 0,
-//                                 "Female:Male": 0,
-//                                 "Total training Hrs": 0,
-//                                 "CSR Spend": 0,
-//                                 Attrition: 0,
-//                                 Retention: 0,
-//                                 EmployementType: {},
-//                                 Gender: {},
-//                                 GenderForInjuries: {},
-//                                 ChildLabor: {},
-//                                 Training: {},
-//                                 InjuryType: {},
-//                                 ChildLaborSupplier: {},
-//                                 TrainingType: {}
-//                             },
-//                             PrivacyOthers: {
-//                                 Complaints: {},
-//                                 CHS: {},
-//                                 "Mktg and Labelling": {},
-//                                 SocialEx: {},
-//                                 SocialBe: {}
-//                             }
-//                         },
-//                         Governance: {
-//                             Overview: {
-//                                 BODs: 0,
-//                                 "BODSFemale": 0,
-//                                 "CFO/CEO": 0,
-//                                 "CFO/CEO-Female": 0,
-//                                 "Independent Directors": 0,
-//                                 Revenue: 0,
-//                                 Turnover: 0,
-//                                 Gender: {},
-//                                 EntityType: {}
-//                             }
-//                         }
-//                     };
-//                 }
-
-//                 // Store module data under the branch
-//                 branchWiseData[branch].modules[moduleName] = branchData;
-//             }
-//         });
-//     });
-
-//     return branchWiseData;
-// };
-
-
-
   const saveRecord = async () =>{
     if(!branch){
       setShowModal(true);
@@ -14615,8 +14381,14 @@ const deleteVariant = async() => {
     //do u want to save this data conformation msg after branch check
     var domain = userData?.username.split("@");
     var monthYear = master?.currentReportingCycle;
+    // var selectedData = selectedVariant;
     var totalEmission = calculateEmissions();
-
+    // selectedData.map((val)=>{
+    //   var a = val.Amount || 0;
+    //   var b = val.Factor || 0;
+    //   totalEmission+=a*b;
+    // })
+    // var flag = fetchedVariant[officeType]
     setDoc(doc(firestore,domain[1],"TransactionData",monthYear.month+"-"+monthYear.year,module),{
       [branch]: {
           data: selectedVariant,
@@ -14709,41 +14481,6 @@ const deleteVariant = async() => {
       });
   }
 
-  const downloadTableAsExcel = () => {
-    // Convert table data to worksheet
-    const tableData = selectedVariant;
-    const worksheet = XLSX.utils.json_to_sheet(tableData);
-  
-    // Create a workbook and append the worksheet
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-  
-    // Trigger download
-    XLSX.writeFile(workbook,"table 1.xlsx");
-  };
-
-  const handleUpload = (event) => {
-    const file = event.target.files[0];
-  
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const binaryStr = e.target.result;
-  
-        // Parse the uploaded Excel file
-        const workbook = XLSX.read(binaryStr, { type: "binary" });
-        const worksheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[worksheetName];
-  
-        // Convert worksheet to JSON
-        const data = XLSX.utils.sheet_to_json(worksheet);
-  
-        // Set the data to your table
-        setSelectedVariant(data);
-      };
-      reader.readAsBinaryString(file);
-    }
-  };
   
 
   console.log("Branches",userData?.branches)
@@ -14803,40 +14540,39 @@ const deleteVariant = async() => {
       {tab!="createVariant"?
       <>
       {tab=='recorded'&&
-    
-    <>
     <div className={`flex justify-between items-center`}>
-      <div className="w-32">
+      <div className={"w-32"}>
         {userData?.branches&&userData?.branches.length>0&&
         <select
         placeholder="All"
-        className={`text-[#718EBF] p-3 min-w-[200px] rounded-xl mt-2`}
+        className={`text-[#718EBF] p-3 rounded-xl mt-2`}
         // value={branch}
         onChange={(e)=>{
-          branchChange(e.target.value);
+            // setBranch(JSON.parse(e.target.value)?.branch)
+            // console.log("check",JSON.parse(e.target.value)?.officeType)
+            // setSelectedVariant(fetchedVariant[JSON.parse(e.target.value)?.officeType])
+            branchChange(e.target.value);
         }}
-      >
+        >
         <option value={""} selected disabled>Select a Value</option>
         {userData?.branches?.map((branch,index)=>(
-          <option           
+            <option           
             key={index} value={JSON.stringify(branch)}>
             {branch.branch}
-          </option>
+            </option>
         ))}
-      </select>
+        </select>
         }
       </div>
-
-      <div className="flex mt-3">
-        <div className='flex'>
-          <input type='file' accept=".xls, .xlsx" placeholder="Upload Excel"  onChange={(event) => handleUpload(event)}></input>
+      <div className="flex gap-10 mt-2">
+        <div className="flex border-2 rounded-xl cursor-pointer px-4 py-2">
+            Add row
+        </div >
+        <div className="flex border-2 rounded-xl cursor-pointer px-4 py-2">
+            Delete Row
         </div>
-        <div className="flex border-2 rounded-xl cursor-pointer px-4 py-2" onClick={()=>downloadTableAsExcel()}>Download Excel</div>
       </div>
-
-    </div>
-    
-    </>
+</div>
       }
       {tab=='variant'&&
       <div className={`flex flex-col `}>
@@ -14859,21 +14595,6 @@ const deleteVariant = async() => {
       ))}
     </select>
       }
-      {(module=="Flight"||module=="Accommodation")&&
-    <div className=" flex items-center justify-between mt-3 px-3">
-      <div className="font-semibold text-xl text-[#343C6A]">Editable Table</div>
-      <div className="flex gap-3">
-        <div onClick={()=>addRow()} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
-          <FaPlus/>
-          Add row
-        </div>
-        <div onClick={()=>deleteRow()} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
-          <FaMinus />
-          Delete selected row
-        </div>
-      </div>
-    </div>
-    }
 </div>
       }
       <div className="rounded-[1rem] flex justify-center mt-5 pb-3 px-5 bg-white shadow-lg overflow-y-auto">
@@ -14893,70 +14614,48 @@ const deleteVariant = async() => {
         </thead>
     
         <tbody>
-  {selectedVariant?.map((ticket, index) => (
-    <tr key={index} className="text-gray-700 text-sm border-b">
-      <td>
-        {tab !== "recorded" && (
-          <input
-            type="checkbox"
-            onChange={(e) => {
-              console.log(selectedVariant);
-              console.log(fetchedVariant);
-              if (e.target.checked) {
-                selectedIndexes2.current.push(index);
-              } else {
-                const itemIndex = selectedIndexes2.current.indexOf(index);
-                if (itemIndex !== -1) {
-                  selectedIndexes2.current.splice(itemIndex, 1);
-                }
-              }
-            }}
-          />
-        )}
-      </td>
-      {getColumns(module)?.map((column, columnIndex) => (
-        <td
-          key={columnIndex}
-          className="py-3 px-3"
-          style={{ width: `${100 / getColumns(module).length}%` }}
-        >
-          {column.editable ? (
-            <input
-              placeholder={column.title}
-              className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
-              type={column.type === "Number" ? "number" : "text"}
-              disabled={tab === "variant"}
-              value={ticket[column.title] || ""}
-              onChange={(e) => {
-                const updatedValue = e.target.value;
-
-                // Update selectedVariant safely
-                const updatedVariant = [...selectedVariant];
-                updatedVariant[index] = {
-                  ...updatedVariant[index],
-                  [column.title]: updatedValue,
-                };
-                setSelectedVariant(updatedVariant);
-              }}
-            />
-          ) : (
-            tooltipData[ticket[column.title]]
-              ? (<div className="flex gap-2 items-center">
-                <span>{ticket[column.title]}</span>
-                <div className="group flex mt-2 cursor-pointer gap-2" >
-                  <FaExclamationCircle size={12} />
-                  <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg">{tooltipData[ ticket[column.title]]}</div>
-                </div>
-                
-              </div>)
-              : ticket[column.title] || "--"
-          )}
-        </td>
-      ))}
-    </tr>
-  ))}
-</tbody>
-
+          {selectedVariant?.map((ticket, index) => (
+            <tr key={index} className="text-gray-700 text-sm border-b">
+              <td >
+                <input type='checkbox' onChange={(e)=>{
+                  console.log(selectedVariant);
+                  console.log(fetchedVariant);
+                  e.target.checked?selectedIndexes2.current.push(index):selectedIndexes2.current.splice(selectedIndexes2.current.indexOf(index),1)
+                }}></input>
+              </td>
+              {getColumns(module)?.map((column, columnIndex) => (
+                <td 
+                  key={columnIndex} 
+                  className="py-3 px-3"
+                  style={{ width: `${100 / getColumns(module).length}%` }} // Ensure row width matches header
+                >
+                  {column.editable ? (
+                    <input
+                      placeholder={column.title}
+                      className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
+                      type={column.type === "Number" ? "number" : "text"}
+                      disabled={tab==='variant'}
+                      value={ticket[column.title]}
+                      onChange={(e) => {
+                        const updatedValue = e.target.value;
+          
+                        // Update the corresponding field in selectedVariant
+                        const updatedVariant = [...selectedVariant];
+                        updatedVariant[index] = {
+                          ...updatedVariant[index],
+                          [column.title]: updatedValue, // Update the specific column's value
+                        };
+                        setSelectedVariant(updatedVariant); // Trigger re-render with updated state
+                      }}
+                    />
+                  ) : (
+                    ticket[column.title] || "--"
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
       </table>
     </div>
     </>
@@ -14982,7 +14681,6 @@ const deleteVariant = async() => {
           </select>
             }
       </div>
-
 
       <table className="w-full border-collapse rounded-[1rem]">
         <thead>
@@ -15057,4 +14755,4 @@ const deleteVariant = async() => {
   );
 };
 
-export default Fuels;
+export default FuelsException;

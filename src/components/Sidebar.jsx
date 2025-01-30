@@ -17,7 +17,7 @@ export default function Sidebar({ onRaiseIncident }) {
 
   const [analyticsDropdown, setAnalyticsDropdown] = useState(false); // State for analytics dropdown
 
-  const [adminDropdown,setAdminDropdown] = useState(false);
+  const [reporitngDropdown,setReportingDropdown] = useState(false);
 
   
 
@@ -74,7 +74,7 @@ export default function Sidebar({ onRaiseIncident }) {
     });
 }
 
-  const handleClick = (value) => {
+  const handleClick = (value, item) => {
     if (value !== "logout") setPage(value);
 
     switch (value) {
@@ -94,6 +94,18 @@ export default function Sidebar({ onRaiseIncident }) {
         navigate("/analytics");
         setExpanded(true);
         break;
+      case "social":
+        navigate("/social");
+        setExpanded(true);
+        break;
+      case "enviorment":
+        navigate("/enviorment");
+        setExpanded(true);
+        break;
+      case "governance":
+        navigate("/governance");
+        setExpanded(true);
+        break;
       case "admin":
         navigate("/admin");
         setExpanded(true);
@@ -102,7 +114,13 @@ export default function Sidebar({ onRaiseIncident }) {
         break;
       case "fuels":
         setExpanded(true);
-        navigate("/fuels");
+        if(item=="Accomodation" || item=="Flight" || item=="Home Office" || item=="Market Presence"){
+          navigate('/fuels');
+        }
+        else{
+          navigate("/fuels");
+        }
+        
         break;
       case "logout":
         setPage("home");
@@ -165,10 +183,9 @@ export default function Sidebar({ onRaiseIncident }) {
             >
               
               <MdLeaderboard className="text-lg" size={20} />
-              {expanded && <span className="ml-3">Analytics</span>}
+              {expanded && <span className="ml-3">graphs</span>}
             </li>
 
-            {/* Reporting Dropdown */}
             <li
               className={`flex flex-col font-medium rounded-md ${
                 expanded ? "justify-center" : "justify-center pl-4"
@@ -189,7 +206,7 @@ export default function Sidebar({ onRaiseIncident }) {
                 <IoIosCall className="text-lg" size={20} />
                 {expanded && (
                   <>
-                    <span className="ml-3">Reporting</span>
+                    <span className="ml-3">Analytics</span>
                     <IoIosArrowForward
                       className={`ml-auto transition-transform ${
                         analyticsDropdown ? "rotate-90" : ""
@@ -199,6 +216,112 @@ export default function Sidebar({ onRaiseIncident }) {
                 )}
               </div>
               {analyticsDropdown && (
+                <ul className="ml-5 mt-2">
+                  {/* {Object.entries(dataList).map(([key, values]) => (
+                    <li key={key} className="flex flex-col">
+                      <div
+                        onClick={() => setActiveSubmenu((prev) => (prev === key ? null : key))}
+                        className={`py-2 px-3 flex items-center font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
+                          activeSubmenu === key ? "text-[#29C472] bg-[#f5fcf9]" : "text-slate-600"
+                        }`}
+                      >
+                        <span className=''>{key}</span>
+                        <IoIosArrowForward
+                          className={`ml-auto transition-transform ${activeSubmenu === key ? "rotate-90" : ""}`}
+                        />
+                      </div>
+                      {activeSubmenu === key && (
+                        <ul className="px-3 max-h-[9rem] overflow-y-auto [&::-webkit-scrollbar]:w-2
+                        [&::-webkit-scrollbar-track]:rounded-full
+                        [&::-webkit-scrollbar-track]:bg-[#f5fcf9]
+                        [&::-webkit-scrollbar-thumb]:rounded-full
+                        [&::-webkit-scrollbar-thumb]:bg-[#29C472]]
+                        bg-[#f5fcf9]">
+                          {values.map((item) => (
+                            <li
+                              key={item}
+                              onClick={() => {
+                                setModule(item);
+                                handleClick("fuels",item);
+                              }}
+                              className={`py-2 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
+                                module === item.toLowerCase().replace(/\s+/g, "-") && page === "fuels"
+                                  ? "text-[#29C472]"
+                                  : "text-slate-600"
+                              }`}
+                            >
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))} */}
+                  <li
+                    onClick={() => handleClick("enviorment")}
+                    className={`flex items-center py-2 px-3 my-3 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
+                      page === "branchwise" ? "text-[#29C472] bg-[#f5fcf9]" : ""
+                    } ${expanded ? "justify-start" : "justify-center"}`}
+                  >
+                    
+                    <MdLeaderboard className="text-lg" size={20} />
+                    {expanded && <span className="ml-3">Enviorment</span>}
+                  </li>
+                  <li
+                    onClick={() => handleClick("social")}
+                    className={`flex items-center py-2 px-3 my-3 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
+                      page === "branchwise" ? "text-[#29C472] bg-[#f5fcf9]" : ""
+                    } ${expanded ? "justify-start" : "justify-center"}`}
+                  >
+                    
+                    <MdLeaderboard className="text-lg" size={20} />
+                    {expanded && <span className="ml-3">Social</span>}
+                  </li>
+                  <li
+                    onClick={() => handleClick("governance")}
+                    className={`flex items-center py-2 px-3 my-3 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
+                      page === "branchwise" ? "text-[#29C472] bg-[#f5fcf9]" : ""
+                    } ${expanded ? "justify-start" : "justify-center"}`}
+                  >
+                    
+                    <MdLeaderboard className="text-lg" size={20} />
+                    {expanded && <span className="ml-3">Governance</span>}
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            {/* Reporting Dropdown */}
+            <li
+              className={`flex flex-col font-medium rounded-md ${
+                expanded ? "justify-center" : "justify-center pl-4"
+              }  ${
+                  reporitngDropdown? "text-[#29C472] bg-[#f5fcf9]" : ""
+                }`}
+            >
+              <div
+                onClick={() => {
+                  setReportingDropdown((prev) => !prev)
+                  setExpanded(true)
+                  // setPage("analytics")
+                }}
+                className={`flex items-center py-2 px-3 cursor-pointer hover:bg-indigo-50 ${
+                  page === "analytics" ? "text-[#29C472] bg-[#f5fcf9]" : ""
+                } ${expanded?"":"ml-3"}`}
+              >
+                <IoIosCall className="text-lg" size={20} />
+                {expanded && (
+                  <>
+                    <span className="ml-3">Reporting</span>
+                    <IoIosArrowForward
+                      className={`ml-auto transition-transform ${
+                        reporitngDropdown ? "rotate-90" : ""
+                      }`}
+                    />
+                  </>
+                )}
+              </div>
+              {reporitngDropdown&& (
                 <ul className="ml-5 mt-2">
                   {Object.entries(dataList).map(([key, values]) => (
                     <li key={key} className="flex flex-col">
@@ -224,8 +347,8 @@ export default function Sidebar({ onRaiseIncident }) {
                             <li
                               key={item}
                               onClick={() => {
-                                handleClick("fuels");
                                 setModule(item);
+                                handleClick("fuels",item);
                               }}
                               className={`py-2 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
                                 module === item.toLowerCase().replace(/\s+/g, "-") && page === "fuels"

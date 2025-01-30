@@ -8,8 +8,10 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler,  // Import the Filler plugin
 } from "chart.js";
 
+// Register all components, including Filler
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -17,18 +19,19 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler // Register the Filler plugin
 );
 
-const LineChart = ({ data, lines, xKey, yLabel }) => {
+const LineChart = ({ data, lines, xKey, yLabel, fillVal = false }) => {
   // Prepare datasets for Chart.js
   const datasets = lines.map((line) => ({
     label: line.label,
     data: data.map((item) => item[line.dataKey]),
     borderColor: line.color,
-    backgroundColor: line.color,
+    backgroundColor: fillVal ? `${line.color}80` : 'transparent', // Use transparent if no fill
     tension: 0.4,
-    fill: false,
+    fill: fillVal ? 'origin' : false, // Use 'origin' for area chart, false for line chart
   }));
 
   const chartData = {
@@ -38,9 +41,10 @@ const LineChart = ({ data, lines, xKey, yLabel }) => {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        display:false,
+        display: false,
         position: "top",
       },
       title: {
@@ -48,40 +52,29 @@ const LineChart = ({ data, lines, xKey, yLabel }) => {
       },
     },
     scales: {
-            x: {
-              grid: {
-                drawOnChartArea: false, // hide gridlines
-                text:xKey
-              },
-            },
-            y: {
-              grid: {
-                drawOnChartArea: true, // show gridlines
-                borderDash: [8, 4], // Dotted line style
-                text:yLabel,
-                borderDashOffset: 0, // Adjust dash offset (if necessary)
-              },
-              beginAtZero: true,
-              max: 100,
-            },
-          },
+      x: {
+        grid: {
+          drawOnChartArea: false, // hide gridlines
+        },
+      },
+      y: {
+        grid: {
+          drawOnChartArea: true, // show gridlines
+          borderDash: [8, 4], // Dotted line style
+        },
+        beginAtZero: true,
+        max: 100,
+        title: {
+          display: true,
+          text: yLabel,
+        },
+      },
+    },
   };
 
   return (
-    <div className="p-4 rounded-2xl bg-white">
-      {/* <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">{title}</h2>
-        {dropdownOptions && (
-          <select className="border border-gray-300 rounded-md px-2 py-1">
-            {dropdownOptions.map((option, index) => (
-              <option key={index} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        )}
-      </div> */}
-      <Line data={chartData} options={chartOptions} />
+    <div className="p-4 rounded-2xl bg-white w-full h-[300px]">
+      <Line data={chartData} options={chartOptions}/>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import BarChart from "../components/BarChart";
 import LineChart from "../components/LineChart";
+import SocialGraph from "../components/SocialGraph";
 
 const Analytics = () => {
     const yearWiseData = {
@@ -103,12 +104,13 @@ const Analytics = () => {
                         </select>
                     </div>
                 </div>
-                <LineChart
+                {/* <LineChart
                     data={sampleData}
                     lines={linesConfig}
                     xKey="year"
                     yLabel="Number of People"
-                />
+                /> */}
+                <SocialGraph data={yearWiseData}/>
             </div>
           
         </div>

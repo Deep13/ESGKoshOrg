@@ -3,28 +3,35 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const SocialGraph = ({ data, stacked = false }) => {
+const SocialGraph = ({ data, stacked = false, setYear=null }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false, position: "top" },
+      legend: { display:true, position: "top" },
     },
     scales: {
       y: { 
         beginAtZero: true,
-        stacked: stacked, // Apply stacked property based on the `stacked` prop
+        stacked: stacked, 
       },
       x: { 
         grid: { display: false },
-        stacked: stacked, // Apply stacked property for x-axis as well
+        stacked: stacked, 
       },
     },
     elements: {
       bar: {
-        borderRadius: 10, // Rounded corners for bars
+        borderRadius: 10, 
       },
     },
+    onClick: (event, elements) => {
+      if (elements.length > 0) {
+        const index = elements[0].index; // Get clicked bar index
+        const xValue = data.labels[index]; // Get x-axis value
+        setYear(xValue); // Update year state
+      }
+    }
   };
 
   return (

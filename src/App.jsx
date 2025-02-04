@@ -8,10 +8,9 @@ import Admin from './pages/Admin'
 import Fuels from './pages/Fuels'
 import Layout from './Layout' // Import Layout Component
 import { useEffect } from 'react'
-import { auth,firestore } from './firebase'
+import { auth} from './firebase'
 import Loading from './pages/Loading'
 import Analytics from './pages/Analytics'
-import FuelsException from './pages/FuelsException'
 import SocialOverview from './pages/SocialOverview'
 import EnvOverview from './pages/EnvOverview'
 import GovOverview from './pages/GovOverview'
@@ -55,8 +54,8 @@ function App() {
           <Route path='/fuels' element={<Fuels/>}/>
           <Route path='/analytics' element={<Analytics/>} />
           <Route path='/social' element={<SocialOverview/>} />
-          <Route path='/enviorment' element={<EnvOverview/>}/>
-          <Route path='/governance' element={<GovOverview/>}/>
+          <Route path='/environment' element={<EnvOverview/>}/>
+          <Route path='/government' element={<GovOverview/>}/>
         </Route>
       </Routes>
     </>

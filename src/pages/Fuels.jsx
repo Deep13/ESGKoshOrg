@@ -5,6 +5,7 @@ import { getDoc,doc,arrayUnion,setDoc,updateDoc,deleteField,collection,getDocs} 
 import { FaExclamationCircle,FaPlus,FaMinus } from "react-icons/fa";
 import modalIcon from '../assets/modalIcon.png'
 import * as XLSX from "xlsx"
+import Spinner from '../components/Spinner'
 
 const Fuels = () => {
   const [tab, setTab] = useState("recorded");
@@ -13,8 +14,7 @@ const Fuels = () => {
   const [variantOffice,setVariantOffice] =useState();
   const [selectedVariant,setSelectedVariant]=useState();
   const [dataStatus, setDataStatus] = useState();
-  // const [confirmSave, setConfirmSave] = useState(false);
-  // const [flag, setFlag] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [branch,setBranch] = useState();
   const [showModal, setShowModal] = useState(false);
   const [modalText, setModalText] = useState("");
@@ -23,7 +23,7 @@ const Fuels = () => {
   const selectedIndexes2=useRef([]);
 
   // Data configurations based on the fuel type (fuel, bioenergy)
-  const {module, master,userData, activeSubmenu } = useSidebar();
+  const {module, master,userData, activeSubmenu,sheet } = useSidebar();
   // useEffect(() => {
   //   const fetchData = async () => {
   //     // Get Firestore instance
@@ -106,6 +106,16 @@ const deleteRow=()=>{
     [variantOffice]:[updatedRows],})
 }
 
+const checkKey=(moduleValue)=>{
+  for (let key in sheet) {
+    if (sheet[key].includes(moduleValue)) {
+        return key;  // Return the module name (key)
+    }
+
+  return null;
+}
+}
+
 
 const calculateEmissions = () => {
     let totalEmissions = 0;
@@ -114,7 +124,11 @@ const calculateEmissions = () => {
     let disposalMethodEmissions = { DisposalMethod: {}, Activity: {} }; // For Waste Disposal (grouped by Disposal Method)
     let level2Emissions = { Level2: {} }; // For Owned Vehicles (grouped by Level 2)
     let vehiclesEmissions = { Vehicles: {} }; // For Freighting goods, Business travel land and sea, Employee commuting
-    
+    let entityEmissions = { EntityType: {}, Gender: {} };
+    let employmentEmissions = { EmploymentType: {}, Gender: {} };
+    let retentionData = { EmployeeType: {}, Gender: {} };
+    let ohsData = { InjuryType: {} }; // For OH and S module
+
     const checkValue = (value) => {
         return (value === undefined || value === "--") ? "Unknown" : value;
     };
@@ -140,39 +154,36 @@ const calculateEmissions = () => {
             return bifurcatedEmissions;
 
        
-        case "Elec heat cooling":
-        selectedVariant.forEach(item => {
-            const countryType = item["Country Type"] || "Unknown"; // Using Country Type
-            const activity = item.Activity || "Unknown"; // Activity filter
-            const amount = parseFloat(item.Amount || 0);
-            const gefFactor = parseFloat(item["GEF Factors"] || 0);
-            const tdFactor = parseFloat(item["T&D Factors"] || 0);
-            const emission = amount * gefFactor + amount * tdFactor;
-
-            // Group by Country Type
-            if (!bifurcatedEmissions.CountryType) {
-                bifurcatedEmissions.CountryType = {};
-            }
-            if (!bifurcatedEmissions.CountryType[countryType]) {
-                bifurcatedEmissions.CountryType[countryType] = 0;
-            }
-            bifurcatedEmissions.CountryType[countryType] += emission;
-
-            // Group by Activity
-            if (!activityEmissions.Activity) {
-                activityEmissions.Activity = {};
-            }
-            if (!activityEmissions.Activity[activity]) {
-                activityEmissions.Activity[activity] = 0;
-            }
-            activityEmissions.Activity[activity] += emission;
-        });
-
-        return {
-            CountryType: bifurcatedEmissions.CountryType,
-            Activity: activityEmissions.Activity
-        };
-
+            case "Elec heat cooling":
+              selectedVariant.forEach(item => {
+                  const countryType = item["Country-Type"] || "Unknown"; // Using Country-Type
+                  const activity = item.Activity || "Unknown"; // Activity filter
+                  const amount = parseFloat(item.Amount || 0);
+                  const gefFactor = parseFloat(item["GEF Factors"] || 0);
+                  const tdFactor = parseFloat(item["T&D Factors"] || 0);
+                  const emission = amount * gefFactor + amount * tdFactor;
+          
+                  // Group by Country-Type
+                  if (!bifurcatedEmissions["Country-Type"]) {
+                      bifurcatedEmissions["Country-Type"] = {};
+                  }
+                  if (!bifurcatedEmissions["Country-Type"][countryType]) {
+                      bifurcatedEmissions["Country-Type"][countryType] = 0;
+                  }
+                  bifurcatedEmissions["Country-Type"][countryType] += emission;
+          
+                  // Group by Activity (directly using Activity as key)
+                  if (!activityEmissions.Activity[activity]) {
+                      activityEmissions.Activity[activity] = 0;
+                  }
+                  activityEmissions.Activity[activity] += emission;
+              });
+          
+              return {
+                  "Country-Type": bifurcatedEmissions["Country-Type"],
+                  Activity: activityEmissions.Activity
+              };
+          
 
         case "Materials":
             selectedVariant.forEach(item => {
@@ -264,12 +275,138 @@ const calculateEmissions = () => {
                                    (parseFloat(item.Factor) || 0);
             });
             break;
+        
+        case "Entity":
+          {
+            selectedVariant.forEach(item => {
+                const entityType = checkValue(item["Entity Type"]);
+                const gender = checkValue(item["Gender"]);
+                const headCount = parseInt(item["Head Count"]) || 0;
+    
+                // Group by Entity Type
+                if (!entityEmissions.EntityType[entityType]) {
+                    entityEmissions.EntityType[entityType] = 0;
+                }
+                entityEmissions.EntityType[entityType] += headCount;
+    
+                // Group by Gender
+                if (!entityEmissions.Gender[gender]) {
+                    entityEmissions.Gender[gender] = 0;
+                }
+                entityEmissions.Gender[gender] += headCount;
+            });
+    
+            return entityEmissions;
+        }
+        case "Retention":{
+          selectedVariant.forEach(item => {
+              const employeeType = checkValue(item["Employee Type"]);
+              const gender = checkValue(item["Gender"]);
+              const headCount = parseInt(item["Head Count"]) || 0;
+  
+              // Group by Employee Type
+              if (!retentionData.EmployeeType[employeeType]) {
+                  retentionData.EmployeeType[employeeType] = 0;
+              }
+              retentionData.EmployeeType[employeeType] += headCount;
+  
+              // Group by Gender
+              if (!retentionData.Gender[gender]) {
+                  retentionData.Gender[gender] = 0;
+              }
+              retentionData.Gender[gender] += headCount;
+          });
+  
+          return retentionData;
+      }
+        case "Employment":{
+          selectedVariant.forEach(item => {
+              const employmentType = checkValue(item["Employment Type"]);
+              const gender = checkValue(item["Gender"]);
+              const headCount = parseInt(item["Head Count"]) || 0;
+  
+              // Group by Employment Type
+              if (!employmentEmissions.EmploymentType[employmentType]) {
+                  employmentEmissions.EmploymentType[employmentType] = 0;
+              }
+              employmentEmissions.EmploymentType[employmentType] += headCount;
+  
+              // Group by Gender
+              if (!employmentEmissions.Gender[gender]) {
+                  employmentEmissions.Gender[gender] = 0;
+              }
+              employmentEmissions.Gender[gender] += headCount;
+          });
+  
+          return employmentEmissions;
+      }
+
+      case "OH and S":{
+        selectedVariant.forEach(item => {
+            const injuryType = checkValue(item["Injury Type"]);
+            const headCount = parseInt(item["Head Count"]) || 0;
+            const incidents = parseInt(item["Number of Incidents"]) || 0;
+
+            // Group by Injury Type
+            if (!ohsData.InjuryType[injuryType]) {
+                ohsData.InjuryType[injuryType] = { HeadCount: 0, Incidents: 0 };
+            }
+            ohsData.InjuryType[injuryType].HeadCount += headCount;
+            ohsData.InjuryType[injuryType].Incidents += incidents;
+        });
+
+        return ohsData;
+    }
+    case "Training and Edu": {
+      selectedVariant.forEach(item => {
+          const segment = checkValue(item.Segment); // Group by Segment
+  
+          // Initialize the segment object if not present
+          if (!bifurcatedEmissions.Segment) {
+              bifurcatedEmissions.Segment = {};
+          }
+          if (!bifurcatedEmissions.Segment[segment]) {
+              bifurcatedEmissions.Segment[segment] = {};
+          }
+  
+          // Loop through all fields in the item
+          Object.keys(item).forEach(field => {
+              if (field !== "Segment") { // Skip the grouping key
+                  const value = parseFloat(item[field]) || 0; // Convert to number
+                  if (!bifurcatedEmissions.Segment[segment][field]) {
+                      bifurcatedEmissions.Segment[segment][field] = 0;
+                  }
+                  bifurcatedEmissions.Segment[segment][field] += value;
+              }
+          });
+      });
+  
+      return bifurcatedEmissions;
+  }
+  
+                
 
         default:
             break;
     }
 
-    return { total: totalEmissions };
+    if(checkKey(module)!="Environment"){
+      return selectedVariant.reduce((acc, obj) => {
+        Object.keys(obj).forEach(key => {
+          if (!isNaN(obj[key])) {  // Only sum up numeric values
+            acc[key] = (acc[key] || 0) + Number(obj[key]);
+          }
+        });
+        return acc;
+      }, {});
+    }
+    else{
+      selectedVariant.forEach(item => {
+        totalEmissions += (parseFloat(item.Amount) || 0) * (parseFloat(item.Factor) || 0);
+    })
+    }
+
+    return totalEmissions
 };
 
 
@@ -14169,7 +14306,7 @@ const getColumns=(module)=> {
     var domain = userData?.username.split("@");
     await getDoc(doc(firestore,domain[1], "Master Data","Reporting Variant",module))
     .then((docRef)=>{
-      if(docRef.exists && docRef.data()[office]){
+      if(docRef.exists && docRef.data() && docRef.data()[office]){
         setDoc(doc(firestore,domain[1],"Master Data","Reporting Variant",module),{
           [office]:arrayUnion(...selectData)
         },{merge:true}).then(()=>{
@@ -14363,8 +14500,8 @@ const deleteVariant = async() => {
     console.log("check", officeType);
   
     // Update the selected variant based on the office type
-    setSelectedVariant(fetchedVariant[officeType]);
-  
+    if(fetchedVariant && fetchedVariant[officeType]){setSelectedVariant(fetchedVariant[officeType]);}
+      setLoading(true)
     try {
       // Fetch data from Firestore
       const docRef = doc(
@@ -14383,12 +14520,14 @@ const deleteVariant = async() => {
                 console.log("Data exists for the branch:", tableData[branch].data);
                 setSelectedVariant(tableData[branch].data)
                 setDataStatus(tableData[branch].status);
+                setLoading(false)
               }
               else{
                 if (fetchedVariant[officeType]) {
                   console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
                   setSelectedVariant(fetchedVariant[officeType])
                   console.log("selected Variant",selectedVariant)
+                  setLoading(false)
                   
                   // Handle logic if branch exists in reporting variant
                   // setTableData([]); // Show an empty table
@@ -14414,10 +14553,11 @@ const deleteVariant = async() => {
               // setTableData(tableData); // Update the table with the fetched data
           } else {
               // Data does not exist, check the reporting variant
-              if (fetchedVariant[officeType]) {
+              if (fetchedVariant&&fetchedVariant[officeType]) {
                   console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
                   setSelectedVariant(fetchedVariant[officeType])
                   console.log("selected Variant",selectedVariant)
+                  setLoading(false)
                   
                   // Handle logic if branch exists in reporting variant
                   // setTableData([]); // Show an empty table
@@ -14425,6 +14565,7 @@ const deleteVariant = async() => {
                   console.log("Branch does not exist in reporting variant, creating table...");
                   console.log("selected Variant",selectedVariant)
                   // console.log("data from func",getVariantData(module))
+                  setLoading(false)
                   setSelectedVariant(getVariantData(module))
                   // Create the whole table (example logic)
                   // const newTableData = {
@@ -14438,6 +14579,8 @@ const deleteVariant = async() => {
                   // console.log("New table created for the branch.");
                   // setTableData(newTableData); // Update the table with the created data
               }
+
+              
           }
       } catch (error) {
           console.error("Error fetching data:", error);
@@ -14600,6 +14743,21 @@ const deleteVariant = async() => {
 
 
 
+const ignoreFields=()=>{
+  const checkList=getColumns(module)
+  const titles = checkList.map(item => item.title);
+  selectedVariant.map((entry)=>{
+    Object.keys(entry).map((item)=>{
+      if(titles.indexOf(item)==-1){
+        delete(entry[item])
+      }
+      
+    })
+
+    
+  })
+
+}
   const saveRecord = async () =>{
     if(!branch){
       setShowModal(true);
@@ -14616,6 +14774,7 @@ const deleteVariant = async() => {
     var domain = userData?.username.split("@");
     var monthYear = master?.currentReportingCycle;
     var totalEmission = calculateEmissions();
+    ignoreFields();
 
     setDoc(doc(firestore,domain[1],"TransactionData",monthYear.month+"-"+monthYear.year,module),{
       [branch]: {
@@ -14825,7 +14984,9 @@ const deleteVariant = async() => {
         ))}
       </select>
         }
+        
       </div>
+      
 
       <div className="flex mt-3">
         <div className='flex'>
@@ -14835,6 +14996,22 @@ const deleteVariant = async() => {
       </div>
 
     </div>
+
+    {(module=="Flight"||module=="Accommodation")&&
+    <div className=" flex items-center justify-between mt-3 px-3">
+      <div className="font-semibold text-xl text-[#343C6A]">Editable Table</div>
+      <div className="flex gap-3">
+        <div onClick={()=>addRow()} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
+          <FaPlus/>
+          Add row
+        </div>
+        <div onClick={()=>deleteRow()} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
+          <FaMinus />
+          Delete selected row
+        </div>
+      </div>
+    </div>
+    }
     
     </>
       }
@@ -14859,106 +15036,103 @@ const deleteVariant = async() => {
       ))}
     </select>
       }
-      {(module=="Flight"||module=="Accommodation")&&
-    <div className=" flex items-center justify-between mt-3 px-3">
-      <div className="font-semibold text-xl text-[#343C6A]">Editable Table</div>
-      <div className="flex gap-3">
-        <div onClick={()=>addRow()} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
-          <FaPlus/>
-          Add row
-        </div>
-        <div onClick={()=>deleteRow()} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
-          <FaMinus />
-          Delete selected row
-        </div>
-      </div>
-    </div>
-    }
+     
 </div>
       }
       <div className="rounded-[1rem] flex justify-center mt-5 pb-3 px-5 bg-white shadow-lg overflow-y-auto">
-      <table className="w-full border-collapse rounded-[1rem]">
-        <thead>
-          <tr className="text-left text-[#718EBF] text-md rounded-lg border-b">
+  {loading ? (
+    // Show the spinner while loading
+    <div className="flex justify-center items-center py-10">
+      <Spinner /> {/* Assuming Spinner component is properly imported */}
+    </div>
+  ) : (
+    // Show the table once data is loaded
+    <table className="w-full border-collapse rounded-[1rem]">
+      <thead>
+        <tr className="text-left text-[#718EBF] text-md rounded-lg border-b">
           <th></th>
-            {getColumns(module)?.map((column, index) => (
-              <th 
-                key={index} 
-                className={`py-2 px-3 text-left font-medium max-w-[100%] w-[${100 / getColumn().length}%]`}
+          {getColumns(module)?.map((column, index) => (
+            <th
+              key={index}
+              className={`py-2 px-3 text-left font-medium max-w-[100%] w-[${100 / getColumn().length}%]`}
+            >
+              {column.title}
+            </th>
+          ))}
+        </tr>
+      </thead>
+  
+      <tbody>
+        {selectedVariant?.map((ticket, index) => (
+          <tr key={index} className="text-gray-700 text-sm border-b">
+            <td>
+              {(tab !== "recorded" || module == "Flight" || module == "Accommodation") && (
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    console.log(selectedVariant);
+                    console.log(fetchedVariant);
+                    if (e.target.checked) {
+                      selectedIndexes2.current.push(index);
+                    } else {
+                      const itemIndex = selectedIndexes2.current.indexOf(index);
+                      if (itemIndex !== -1) {
+                        selectedIndexes2.current.splice(itemIndex, 1);
+                      }
+                    }
+                  }}
+                />
+              )}
+            </td>
+            {getColumns(module)?.map((column, columnIndex) => (
+              <td
+                key={columnIndex}
+                className="py-3 px-3"
+                style={{ width: `${100 / getColumns(module).length}%` }}
               >
-                {column.title}
-              </th>
+                {column.editable ? (
+                  <input
+                    placeholder={column.title}
+                    className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
+                    type={column.type === "Number" ? "number" : "text"}
+                    disabled={tab === "variant"}
+                    value={ticket[column.title] || ""}
+                    onChange={(e) => {
+                      const updatedValue = e.target.value;
+
+                      // Update selectedVariant safely
+                      const updatedVariant = [...selectedVariant];
+                      updatedVariant[index] = {
+                        ...updatedVariant[index],
+                        [column.title]: updatedValue,
+                      };
+                      setSelectedVariant(updatedVariant);
+                    }}
+                  />
+                ) : (
+                  tooltipData[ticket[column.title]] ? (
+                    <div className="flex gap-2 items-center">
+                      <span>{ticket[column.title]}</span>
+                      <div className="group flex mt-2 cursor-pointer gap-2">
+                        <FaExclamationCircle size={12} />
+                        <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg">
+                          {tooltipData[ticket[column.title]]}
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    ticket[column.title] || "--"
+                  )
+                )}
+              </td>
             ))}
           </tr>
-        </thead>
-    
-        <tbody>
-  {selectedVariant?.map((ticket, index) => (
-    <tr key={index} className="text-gray-700 text-sm border-b">
-      <td>
-        {tab !== "recorded" && (
-          <input
-            type="checkbox"
-            onChange={(e) => {
-              console.log(selectedVariant);
-              console.log(fetchedVariant);
-              if (e.target.checked) {
-                selectedIndexes2.current.push(index);
-              } else {
-                const itemIndex = selectedIndexes2.current.indexOf(index);
-                if (itemIndex !== -1) {
-                  selectedIndexes2.current.splice(itemIndex, 1);
-                }
-              }
-            }}
-          />
-        )}
-      </td>
-      {getColumns(module)?.map((column, columnIndex) => (
-        <td
-          key={columnIndex}
-          className="py-3 px-3"
-          style={{ width: `${100 / getColumns(module).length}%` }}
-        >
-          {column.editable ? (
-            <input
-              placeholder={column.title}
-              className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
-              type={column.type === "Number" ? "number" : "text"}
-              disabled={tab === "variant"}
-              value={ticket[column.title] || ""}
-              onChange={(e) => {
-                const updatedValue = e.target.value;
+        ))}
+      </tbody>
+    </table>
+  )}
+</div>
 
-                // Update selectedVariant safely
-                const updatedVariant = [...selectedVariant];
-                updatedVariant[index] = {
-                  ...updatedVariant[index],
-                  [column.title]: updatedValue,
-                };
-                setSelectedVariant(updatedVariant);
-              }}
-            />
-          ) : (
-            tooltipData[ticket[column.title]]
-              ? (<div className="flex gap-2 items-center">
-                <span>{ticket[column.title]}</span>
-                <div className="group flex mt-2 cursor-pointer gap-2" >
-                  <FaExclamationCircle size={12} />
-                  <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg">{tooltipData[ ticket[column.title]]}</div>
-                </div>
-                
-              </div>)
-              : ticket[column.title] || "--"
-          )}
-        </td>
-      ))}
-    </tr>
-  ))}
-</tbody>
-
-      </table>
-    </div>
     </>
     :
     <div>
@@ -14982,6 +15156,17 @@ const deleteVariant = async() => {
           </select>
             }
       </div>
+      {/* {(module=="Flight"||module=="Accommodation")&&
+    <div className=" flex items-center justify-between mt-3 px-3">
+      <div className="font-semibold text-xl text-[#343C6A]">Editable Table</div>
+      <div className="flex gap-3">
+        <div onClick={()=>addRow()} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
+          <FaPlus/>
+          Add row
+        </div>
+      </div>
+    </div>
+    } */}
 
 
       <table className="w-full border-collapse rounded-[1rem]">

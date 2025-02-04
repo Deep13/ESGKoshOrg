@@ -1,5 +1,6 @@
 import DoughnutChart from '../components/DoughnutChart';
 import LineChart from '../components/LineChart'
+import MapComponent from '../components/Map'
 
 const sampleData = [
     { year: 2001, men: 75, women: 50, others: 25 },
@@ -31,6 +32,12 @@ const sampleData = [
         ],
       };
 
+      const markers = [
+        { position: [51.505, -0.09], color: 'red' },
+        { position: [51.515, -0.1], color: 'blue' },
+        { position: [51.525, -0.11], color: 'green' },
+      ];
+
 const GovOverview = () => {
 
   return (
@@ -40,8 +47,9 @@ const GovOverview = () => {
                 <div className='font-semibold text-xl text-[#343C6A]'>ENTITY</div>
                 <DoughnutChart data={data}/>
             </div>
-            <div className=" bg-white rounded-xl border w-[40rem] h-[15.5rem] px-3 py-2">
-                
+            <div className=" bg-white rounded-xl border w-[40rem] h-[15.5rem] px-3 py-2 flex-1">
+              <div className=' font-semibold mb-2 text-xl text-[#343C6A]'>MARKET PRESENCE</div>
+              <MapComponent/>
             </div>
         </div>
         <div className='bg-white rounded-xl border w-full px-3 py-2 '>

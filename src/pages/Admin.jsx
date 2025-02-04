@@ -3,17 +3,20 @@ import { useSidebar } from "../context/SidebarContext";
 import { firestore } from "../firebase";
 import { getDoc, doc, collection,getDocs,setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import Spinner from "../components/Spinner";
 
 const Admin = () => {
   const [action, setAction] = useState("Terminate");
   const [tableInfo, setTableInfo] = useState();
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const [terminateModal, setTerminateModal] = useState(false);
+  const [loading,setLoading] = useState(false);
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
   const { master, userData, sheets,module } = useSidebar();
 
   const getData = async (domain) => {
+    setLoading(true)
     try {
       console.log(domain);
       const docRef = doc(firestore, domain[1], "Master Data", "Reporting Cycle", "All Cycle");
@@ -32,6 +35,7 @@ const Admin = () => {
 
         // Set the formatted data to tableInfo
         setTableInfo(formattedData);
+        setLoading(false)
       } else {
         console.log("No such document!");
       }
@@ -955,25 +959,32 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
             [&::-webkit-scrollbar-thumb]:rounded-full
             [&::-webkit-scrollbar-thumb]:bg-[#29C472]"
       >
-        <table className="w-full border-collapse rounded-[1rem] py-5">
-          <thead>
-            <tr className="text-left text-[#718EBF] text-md rounded-lg border-b">
-              <th className="py-2 px-3">Month-Year</th>
-              <th className="py-2 px-3">Start Date</th>
-              <th className="py-2 px-3">End date</th>
-            </tr>
-          </thead>
+        {loading?(
+            <div className="flex justify-center items-center py-10">
+            <Spinner />
+          </div>):(
+            <>
+                <table className="w-full border-collapse rounded-[1rem] py-5">
+            <thead>
+                <tr className="text-left text-[#718EBF] text-md rounded-lg border-b">
+                <th className="py-2 px-3">Month-Year</th>
+                <th className="py-2 px-3">Start Date</th>
+                <th className="py-2 px-3">End date</th>
+                </tr>
+            </thead>
 
-          <tbody className="rounded-lg">
-            {tableInfo?.map((tableData, index) => (
-              <tr key={index} className="text-gray-700 text-sm border-b mx-auto px-20">
-                <td className="py-3 px-3">{tableData.monthYear}</td>
-                <td className="py-3 px-3">{tableData.startDate}</td>
-                <td className="py-3 px-3">{tableData.endDate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            <tbody className="rounded-lg">
+                {tableInfo?.map((tableData, index) => (
+                <tr key={index} className="text-gray-700 text-sm border-b mx-auto px-20">
+                    <td className="py-3 px-3">{tableData.monthYear}</td>
+                    <td className="py-3 px-3">{tableData.startDate}</td>
+                    <td className="py-3 px-3">{tableData.endDate}</td>
+                </tr>
+                ))}
+            </tbody>
+            </table>
+            </>
+        )}
       </div>
 
       {/* Modal */}

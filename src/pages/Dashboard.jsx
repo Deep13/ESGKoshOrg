@@ -153,6 +153,7 @@ const Dashboard = () => {
     }
   },[userData,master,sheets])
 
+
   console.log("avg ",avgEmissionsPercentage)
 
   return (

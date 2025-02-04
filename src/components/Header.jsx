@@ -8,6 +8,9 @@ const Header = () => {
         "home":"Dashboard",
         "support":"Incidents",
         "branchwise":"Branch Wise Progress",
+        "Environment Overview":module,
+        "Social Overview":module,
+        "Government Overview":module,
         "fuels":module
     }
   return (

@@ -33,10 +33,25 @@ const SocialOverview = () => {
     ],
   };
 
+  const dummyData=[
+    {"BOD":[{"KG":2,"OG":23,"LG":10,"SG":28,"MG":70,"PG":2,},"#4ba9dd"]},
+    {"COD":[{"KG":20,"rG":12,"Kr":2,"MG":92,"BG":20,"AG":10,},"#239b62"]},
+    {"DOD":[{"KG":10,"5G":20,"ZG":25,"UG":15,"YG":10,"mG":200,},"#ffde52"]},
+    {"AOD":[{"KG":20,"4G":20,"2DG":20,"pG":20,"UG":20,"kG":20,},"#e34444"]},
+  ]
+
+  dummyData.map((data)=>{
+    console.log(Object.keys(data))
+    console.log(data[Object.keys(data)[0]][0])
+    console.log(data[Object.keys(data)[0]][1])
+  })
+
+
+
   return (
     <div className="p-2 flex flex-col gap-3 items-center">
-        <div className=" flex items-center gap-2 w-ful">
-            <div className=" bg-white rounded-xl border w-[40rem] px-3 py-2">
+        <div className=" flex items-center justify-between gap-2 w-full">
+            <div className=" bg-white rounded-xl border w-[40rem] px-3 py-2 flex-1">
                 <div className="flex justify-between items-center">
                     <div className="font-semibold text-[#343C6A]">EMPLOYEE</div>
                     <select className="bg-transparent">
@@ -69,9 +84,34 @@ const SocialOverview = () => {
                 </div>
             </div>
         </div>
-        <div className="bg-white rounded-xl w-full h-[15rem] px-3 py-2">
+        <div className="bg-white rounded-xl w-full px-3 py-2">
             <div className=" font-semibold text-[#343C6A]">
                 TRAINING AND EDUCATION
+            </div>
+
+            <div className="w-full flex flex-col px-3 py-2">
+              
+              {dummyData.map((data, index) => {
+                const key = Object.keys(data)[0]; // Get the first key (e.g., "BOD", "COD", etc.)
+                const values = data[key][0]; // Get the first object inside the array
+                const bgColor=data[key][1];
+
+                return (
+                  <div key={index} className="flex items-center gap-[5rem] p-3 my-2 rounded">
+                    {/* First key */}
+                    <div className="text-slate-500 font-medium mb-2">{key}</div>
+                    
+                    {/* Key-value pairs */}
+                    <div className="flex flex-wrap gap-4">
+                      {Object.entries(values).map(([k, v], idx) => (
+                        <div style={{ backgroundColor: bgColor }} key={idx} className={`p-2 rounded shadow-sm px-${v}`}>
+                          {k},
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
         </div>
     </div>

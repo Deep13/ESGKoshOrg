@@ -68,7 +68,7 @@ const RecentTicketsTable = () => {
     };
   
     return (
-      <div className="bg-white h-[15rem] w-full rounded-lg pl-5 overflow-y-auto 
+      <div className="bg-white h-[18rem] w-full rounded-lg pl-5 overflow-y-auto 
             [&::-webkit-scrollbar]:w-1
             [&::-webkit-scrollbar-track]:rounded-full
             [&::-webkit-scrollbar-track]:bg-[#f5fcf9]

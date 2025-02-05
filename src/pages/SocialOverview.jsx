@@ -21,12 +21,12 @@ const SocialOverview = () => {
     labels: ["60%", "40%", "20%", "0%", "20%", "40%", "60%", "60%"],
     datasets: [
       {
-        label: "Category A",
+        label: "Male",
         data: [25, 40, 35, 10, 15, 30, 40, 20],
         backgroundColor: "#2563EB",
       },
       {
-        label: "Category B",
+        label: "Female",
         data: [30, 45, 40, 10, 10, 35, 45, 25],
         backgroundColor: "#DC2626",
       },
@@ -54,11 +54,11 @@ const SocialOverview = () => {
             <div className=" bg-white rounded-xl border w-[40rem] px-3 py-2 flex-1">
                 <div className="flex justify-between items-center">
                     <div className="font-semibold text-[#343C6A]">EMPLOYEE</div>
-                    <select className="bg-transparent">
+                    {/* <select className="bg-transparent">
                         <option className="text-black">A</option>
                         <option className="text-black">A</option>
                         <option className="text-black">A</option>
-                    </select>
+                    </select> */}
                 </div>
                 <div className="mt-2">
                     <SocialGraph data={employeeData}/>
@@ -74,14 +74,14 @@ const SocialOverview = () => {
                         <img src={retention} alt="retention Icon"/>
                     </div>
                 </div>
-                <div className=" w-full rounded-lg p-3 border flex items-center justify-between">
+                {/* <div className=" w-full rounded-lg p-3 border flex items-center justify-between">
                     <div>Type</div>
                     <select className="bg-transparent">
                         <option className="text-black">A</option>
                         <option className="text-black">A</option>
                         <option className="text-black">A</option>
                     </select>
-                </div>
+                </div> */}
             </div>
         </div>
         <div className="bg-white rounded-xl w-full px-3 py-2">

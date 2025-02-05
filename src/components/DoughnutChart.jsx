@@ -14,8 +14,8 @@ const options = {
   responsive: true,
   plugins: {
     legend: {
-      display: false,
-      position: "top",
+      display: true,
+      position: "bottom",
     },
     title: {
       display: false,

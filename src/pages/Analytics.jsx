@@ -1,68 +1,73 @@
 import { useState, useEffect } from 'react';
 import { firestore } from '../firebase';
-import { getDocs, collection, query, where } from "firebase/firestore";
+import { getDocs, collection, query, where} from "firebase/firestore";
 import LineChart from "../components/LineChart";
 import SocialGraph from "../components/SocialGraph";
 import BubbleChart from "../components/BubbleChart";
 import { useSidebar } from "../context/SidebarContext";
+import Spinner from '../components/Spinner';
 
 const Analytics = () => {
   const { module, userData, master } = useSidebar();
   const [year, setYear] = useState();
-  const [entityType,setEntityType] = useState("BOD");
+  const [entityType,setEntityType] = useState("All");
+  const [loading,setLoading] = useState(true);
   const [fetchedData, setFetchedData] = useState(null);  // State to store fetched data
-  let filterList=[];
-  let monthFilterList=[]
+  const [yearData,setYearData] = useState();
+  const [monthWiseData,setMonthWiseData] = useState();
+  const [filterList,setFilterList] = useState(null);
+  const [monthFilterList,setMonthFilterList] = useState(null);
+  // let monthFilterList=[]
   let yearWiseData;
   let monthData;
   console.log(module);
 
   
 
-const transformMonthWiseData = (data, selectedYear) => {
-    const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+// const transformMonthWiseData = (data, selectedYear) => {
+//     const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     
-    // Initialize empty array for each month
-    let emissionData = new Array(12).fill(0);
+//     // Initialize empty array for each month
+//     let emissionData = new Array(12).fill(0);
 
-    // Find the entry for the selected year
-    const yearData = data?.find(entry => entry.year == selectedYear);
-    if (!yearData) return { labels: monthLabels, datasets: [] };
+//     // Find the entry for the selected year
+//     const yearData = data?.find(entry => entry.year == selectedYear);
+//     if (!yearData) return { labels: monthLabels, datasets: [] };
 
-    // Loop through the months (10, 11, etc.), ensuring numerical keys are considered
-    Object.entries(yearData).forEach(([monthKey, monthData]) => {
-        if (!isNaN(monthKey) && monthKey !== "year" && monthKey !== "type") {
-            const monthIndex = parseInt(monthKey, 10) - 1; // Convert 10 -> 9 (Oct), 11 -> 10 (Nov), etc.
-            if (monthIndex >= 0 && monthIndex < 12) {
-                let totalEmission = 0;
+//     // Loop through the months (10, 11, etc.), ensuring numerical keys are considered
+//     Object.entries(yearData).forEach(([monthKey, monthData]) => {
+//         if (!isNaN(monthKey) && monthKey !== "year" && monthKey !== "type") {
+//             const monthIndex = parseInt(monthKey, 10) - 1; // Convert 10 -> 9 (Oct), 11 -> 10 (Nov), etc.
+//             if (monthIndex >= 0 && monthIndex < 12) {
+//                 let totalEmission = 0;
 
-                // Sum up all values in the month data
-                Object.values(monthData).forEach(locationData => {
-                    Object.entries(locationData).forEach(([key, value]) => {
-                        if (key.includes("Emission")) {
-                            totalEmission += Number(value) || 0;
-                        }
-                    });
-                });
+//                 // Sum up all values in the month data
+//                 Object.values(monthData).forEach(locationData => {
+//                     Object.entries(locationData).forEach(([key, value]) => {
+//                         if (key.includes("Emission")) {
+//                             totalEmission += Number(value) || 0;
+//                         }
+//                     });
+//                 });
 
-                emissionData[monthIndex] = totalEmission; // Assign total emission to the correct month
-            }
-        }
-    });
+//                 emissionData[monthIndex] = totalEmission; // Assign total emission to the correct month
+//             }
+//         }
+//     });
 
-    return {
-        labels: monthLabels,
-        datasets: [
-            {
-                label: "Emission %",
-                data: emissionData,
-                backgroundColor: "#4BA0B6",
-                borderColor: "#4BA0B6",
-                borderWidth: 1,
-            }
-        ],
-    };
-};
+//     return {
+//         labels: monthLabels,
+//         datasets: [
+//             {
+//                 label: "Emission %",
+//                 data: emissionData,
+//                 backgroundColor: "#4BA0B6",
+//                 borderColor: "#4BA0B6",
+//                 borderWidth: 1,
+//             }
+//         ],
+//     };
+// };
 function transformDataForGraph(backendData, selectedYear) {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   
@@ -97,8 +102,8 @@ function transformDataForGraph(backendData, selectedYear) {
     monthWiseData.datasets.push({
       label: metric,
       data: data,
-      backgroundColor: "#4BA0B6",
-      borderColor: "#4BA0B6",
+      backgroundColor: getRandomColor(),
+      borderColor: getRandomColor(),
       borderWidth: 1,
     });
   });
@@ -143,8 +148,8 @@ function transformDataForGraphByYear(backendData) {
     yearWiseData.datasets.push({
       label: metric,
       data: data,
-      backgroundColor: "#4BA0B6",
-      borderColor: "#4BA0B6",
+      backgroundColor: getRandomColor(),
+      borderColor: getRandomColor(),
       borderWidth: 1,
     });
   });
@@ -153,148 +158,356 @@ function transformDataForGraphByYear(backendData) {
 }
 
 
+  // const monthWiseData = {
+  //   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  //   datasets: [
+  //     {
+  //       label: "Emission %",
+  //       data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
+  //       backgroundColor: "#4BA0B6",
+  //       borderColor: "#4BA0B6",
+  //       borderWidth: 1,
+  //     },
+  //     {
+  //       label: "Emission %",
+  //       data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
+  //       backgroundColor: "#4BA0B6",
+  //       borderColor: "#4BA0B6",
+  //       borderWidth: 1,
+  //     },
+  //     {
+  //       label: "Emission %",
+  //       data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
+  //       backgroundColor: "#4BA0B6",
+  //       borderColor: "#4BA0B6",
+  //       borderWidth: 1,
+  //     },
+  //   ],
+  // };
 
-console.log("A",transformDataForGraph(fetchedData,"2024"))
-console.log('B',transformDataForGraphByYear(fetchedData));
-
-
-
-  const monthWiseData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    datasets: [
-      {
-        label: "Emission %",
-        data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
-        backgroundColor: "#4BA0B6",
-        borderColor: "#4BA0B6",
-        borderWidth: 1,
-      },
-      {
-        label: "Emission %",
-        data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
-        backgroundColor: "#4BA0B6",
-        borderColor: "#4BA0B6",
-        borderWidth: 1,
-      },
-      {
-        label: "Emission %",
-        data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
-        backgroundColor: "#4BA0B6",
-        borderColor: "#4BA0B6",
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  function entityTransform(data) {
-    const labels = [];
-    const dataObj = {};
-    const uniqueEntityTypes = new Set();  // To store unique entity types
-
-    // Loop through the data and extract labels and entity type information
-    data?.forEach(entry => {
-        const year = entry.year;
-        if (!labels.includes(year)) labels.push(year);
-
-        const yearData = entry[Object.keys(entry).find(key => key !== 'year' && key !== 'type')];
-
-        // Initialize the arrays for Male, Female, Others for each year
-        Object.values(yearData).forEach(locationData => {
-            Object.entries(locationData?.EntityType)?.forEach(([entityType, count]) => {
-                uniqueEntityTypes.add(entityType);  // Collect unique entity types
-
-                if (!dataObj[entityType]) {
-                    // Initialize arrays for Male, Female, Others with default 0 values
-                    dataObj[entityType] = { Male: [], Female: [], Others: [] };
-                }
-
-                // Add headcount based on gender, grouped by year
-                labels.forEach((label, index) => {
-                    const genderData = locationData.Gender || {};
-                    if (label === year) {
-                        // For the current year, add gender counts
-                        dataObj[entityType].Male[index] = genderData.Male || 0;
-                        dataObj[entityType].Female[index] = genderData.Female || 0;
-                        dataObj[entityType].Others[index] = genderData.Others || 0;
+  function entityTransform(inputData) {
+    const transformedData = {};
+    const years = [...new Set(inputData.map(entry => entry.year))].sort(); // Ensure years are sorted in ascending order
+    const entityTypes = new Set();
+     
+    // Process the data
+    inputData.forEach(entry => {
+        const yearIndex = years.indexOf(entry.year);
+        if (yearIndex === -1) return;
+     
+        Object.keys(entry).forEach(key => {
+            if (key !== "year" && key !== "type") {
+                const region = entry[key];
+                Object.values(region).forEach(location => {
+                    if (location.EntityType) {
+                        Object.entries(location.EntityType).forEach(([type, counts]) => {
+                            entityTypes.add(type);
+                            if (!transformedData[type]) {
+                                transformedData[type] = { Male: Array(years.length).fill(0), Female: Array(years.length).fill(0), Others: Array(years.length).fill(0) };
+                            }
+                            Object.entries(counts).forEach(([gender, count]) => {
+                                if (transformedData[type][gender]) {
+                                    transformedData[type][gender][yearIndex] += count;
+                                }
+                            });
+                        });
                     }
+                    
                 });
-            });
+            }
         });
     });
+     
+    // Ensure EntityTypes are sorted with "All" first
+    const sortedEntityTypes = ["All", ...[...entityTypes].filter(type => type !== "All").sort()];
+     
+    const sortedTransformedData = {};
+    sortedEntityTypes.forEach(type => {
+        if (transformedData[type]) {
+            sortedTransformedData[type] = transformedData[type];
+        }
+    });
+     
+    console.log({ transformedData: sortedTransformedData, years, entityTypes: sortedEntityTypes });
 
-    // Convert the Set to an array
-    const entityTypes = Array.from(uniqueEntityTypes);
-
-    return { labels, dataObj, entityTypes };
+    return { labels:years, dataObj:sortedTransformedData, entityTypes:sortedEntityTypes };
 }
-function retentionTransform(data) {
-  const transformedData = [];
-  const uniqueEmployeeTypes = new Set();
+function monthEntityTransform(inputData, year) {
+  const monthLabels = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+  const transformedData = {};
+  const entityTypes = new Set();
 
-  data?.forEach(entry => {
-      const year = entry.year;
-      let menCount = 0, womenCount = 0, othersCount = 0;
+  // Process the data for the given year
+  inputData.forEach(entry => {
+      if (entry.year !== year) return; // Only process data for the specified year
 
-      // Loop through each month's data
-      Object.entries(entry).forEach(([key, monthData]) => {
-          if (!isNaN(key)) { // Ensure it's a month key
-              Object.values(monthData).forEach(locationData => {
-                  if (!locationData.EmployeeType) return;
+      Object.keys(entry).forEach(monthKey => {
+          if (monthKey !== "year" && monthKey !== "type") {
+              const monthIndex = parseInt(monthKey, 10) - 1; // Convert "10" to 9 (0-based index)
+              if (monthIndex < 0 || monthIndex > 11) return; // Skip invalid month indexes
 
-                  // Collect unique employee types
-                  Object.keys(locationData.EmployeeType).forEach(empType => {
-                      uniqueEmployeeTypes.add(empType);
-                  });
-
-                  const genderData = locationData.Gender || {};
-                  menCount += genderData.Male || 0;
-                  womenCount += genderData.Female || 0;
-                  othersCount += genderData.Others || 0;
+              Object.values(entry[monthKey]).forEach(location => {
+                  if (location.EntityType) {
+                      Object.entries(location.EntityType).forEach(([type, counts]) => {
+                          entityTypes.add(type);
+                          if (!transformedData[type]) {
+                              transformedData[type] = {
+                                  Male: Array(12).fill(0),
+                                  Female: Array(12).fill(0),
+                                  Others: Array(12).fill(0)
+                              };
+                          }
+                          Object.entries(counts).forEach(([gender, count]) => {
+                              if (transformedData[type][gender]) {
+                                  transformedData[type][gender][monthIndex] += count;
+                              }
+                          });
+                      });
+                  }
               });
           }
       });
-
-      // Push formatted data
-      transformedData.push({ year, men: menCount, women: womenCount, others: othersCount });
   });
 
-  return {
-      transformedData,
-      employeeTypes: Array.from(uniqueEmployeeTypes)
-  };
-}
-function convertMonthData(monthData) {
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+  // Ensure EntityTypes are sorted with "All" first
+  const sortedEntityTypes = ["All", ...[...entityTypes].filter(type => type !== "All").sort()];
+  const sortedTransformedData = {};
 
-  // Iterate over all months, setting values to 0 if missing
-  return months.map((month, index) => {
-    const monthNum = index + 1; // Get the month number (1-12)
-    const data = monthData[monthNum] || { men: 0, women: 0, others: 0 }; // Default to 0 if data is missing
-    return {
-      month,
-      men: data.men,
-      women: data.women,
-      others: data.others
-    };
+  sortedEntityTypes.forEach(type => {
+      if (transformedData[type]) {
+          sortedTransformedData[type] = transformedData[type];
+      }
   });
+
+  return { labels: monthLabels, dataObj: sortedTransformedData, entityTypes: sortedEntityTypes };
 }
 
+function wasteTransform(inputData) {
+  const transformedData = {};
+const years = [...new Set(inputData.map(entry => entry.year))].sort(); // Ensure years are sorted in ascending order
+const entityTypes = new Set();
+// Process the data
+inputData.forEach(entry => {
+    const yearIndex = years.indexOf(entry.year);
+    if (yearIndex === -1) return;
+    Object.keys(entry).forEach(key => {
+        if (key !== "year" && key !== "type") {
+            const region = entry[key];
+            Object.values(region).forEach(location => {
+                if (location.Activity) {
+                    Object.entries(location.Activity).forEach(([type, counts]) => {
+                        entityTypes.add(type);
+                        if (!transformedData[type]) {
+                            transformedData[type] = { Recycled: Array(years.length).fill(0), Landfilled: Array(years.length).fill(0), Combusted: Array(years.length).fill(0) };
+                        }
+                        Object.entries(counts).forEach(([gender, count]) => {
+                            if (transformedData[type][gender]) {
+                                transformedData[type][gender][yearIndex] += count;
+                            }
+                        });
+                    });
+                }
+                if (location.Gender) {
+                    if (!transformedData.All) {
+                        transformedData.All = { Recycled: Array(years.length).fill(0), Landfilled: Array(years.length).fill(0), Combusted: Array(years.length).fill(0) };
+                    }
+                    Object.entries(location.Gender).forEach(([gender, count]) => {
+                        if (transformedData.All[gender]) {
+                            transformedData.All[gender][yearIndex] += count;
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
+// Ensure EntityTypes are sorted with "All" first
+const sortedEntityTypes = ["All", ...[...entityTypes].filter(type => type !== "All").sort()];
+const sortedTransformedData = {};
+sortedEntityTypes.forEach(type => {
+    if (transformedData[type]) {
+        sortedTransformedData[type] = transformedData[type];
+    }
+});
+console.log({ transformedData: sortedTransformedData, years, entityTypes: sortedEntityTypes });
 
-  // const sampleData = [
-  //   { year: 2001, men: 75, women: 50, others: 25 },
-  //   { year: 2002, men: 65, women: 55, others: 35 },
-  //   { year: 2003, men: 50, women: 60, others: 45 },
-  //   { year: 2004, men: 55, women: 65, others: 75 },
-  //   { year: 2005, men: 45, women: 70, others: 65 },
-  //   { year: 2006, men: 60, women: 65, others: 50 },
-  //   { year: 2007, men: 50, women: 55, others: 40 },
-  //   { year: 2008, men: 55, women: 50, others: 45 },
-  //   { year: 2009, men: 65, women: 45, others: 50 },
-  //   { year: 2010, men: 75, women: 35, others: 55 },
-  // ];
+  return { dataObj: sortedTransformedData, labels:years, entityTypes: sortedEntityTypes }
+}
+const wasteTransformByMonth = (inputData, selectedYear) => {
+  const transformedData = {};
+  const allMonths = Array.from({ length: 12 }, (_, i) => (i + 1).toString()); // ["1", "2", ..., "12"]
+
+  // Extract and sort unique months for the selected year
+  const months = [...new Set(
+    inputData
+      .filter(entry => entry.year === selectedYear) // Filter only selected year
+      .flatMap(entry => Object.keys(entry).filter(key => !isNaN(parseInt(key)))) // Extract numeric month keys
+  )].sort((a, b) => parseInt(a) - parseInt(b)); // Sort numerically
+
+  const activityTypes = new Set();
+
+  // Process the data
+  inputData.forEach(entry => {
+    if (String(entry.year) !== String(selectedYear)) return; // Skip incorrect years
+
+    allMonths.forEach((monthKey, monthIndex) => { // Iterate over all months
+      const monthData = entry[monthKey] || {}; // Use empty object if month data is missing
+
+      Object.keys(monthData).forEach(regionKey => {
+        const region = monthData[regionKey];
+
+        if (region.Activity) {
+          Object.entries(region.Activity).forEach(([activity, methods]) => {
+            activityTypes.add(activity);
+
+            if (!transformedData[activity]) {
+              transformedData[activity] = {
+                Recycled: Array(12).fill(0),
+                Landfilled: Array(12).fill(0),
+                Combusted: Array(12).fill(0),
+              };
+            }
+
+            Object.entries(methods).forEach(([method, value]) => {
+              if (transformedData[activity][method]) {
+                transformedData[activity][method][monthIndex] += value;
+              }
+            });
+          });
+        }
+      });
+    });
+  });
+
+  // Ensure activity types are sorted alphabetically, with "All" first
+  const sortedActivityTypes = ["All", ...[...activityTypes].filter(type => type !== "All").sort()];
+  const sortedTransformedData = {};
+  sortedActivityTypes.forEach(type => {
+    if (transformedData[type]) {
+      sortedTransformedData[type] = transformedData[type];
+    }
+  });
+
+  // Convert numeric month labels to full month names (January - December)
+  const monthNames = allMonths.map(month => 
+    new Date(selectedYear, month - 1).toLocaleString('en-US', { month: 'long' })
+  );
+
+  console.log({ transformedData: sortedTransformedData, months: monthNames, activityTypes: sortedActivityTypes });
+
+  return { dataObj: sortedTransformedData, labels: monthNames, activityTypes: sortedActivityTypes };
+};
+
+
+
+
+function retentionTransform(inputData,filterType) {
+  const transformedData = {};
+    const years = [...new Set(inputData.map(entry => entry.year))].sort(); // Ensure years are sorted in ascending order
+    const entityTypes = new Set();
+     
+    // Process the data
+    inputData.forEach(entry => {
+        const yearIndex = years.indexOf(entry.year);
+        if (yearIndex === -1) return;
+     
+        Object.keys(entry).forEach(key => {
+            if (key !== "year" && key !== "type") {
+                const region = entry[key];
+                Object.values(region).forEach(location => {
+                    if (location[filterType]) {
+                        Object.entries(location[filterType]).forEach(([type, counts]) => {
+                            entityTypes.add(type);
+                            if (!transformedData[type]) {
+                                transformedData[type] = { Male: Array(years.length).fill(0), Female: Array(years.length).fill(0), Others: Array(years.length).fill(0) };
+                            }
+                            Object.entries(counts).forEach(([gender, count]) => {
+                                if (transformedData[type][gender]) {
+                                    transformedData[type][gender][yearIndex] += count;
+                                }
+                            });
+                        });
+                    }
+                    
+                });
+            }
+        });
+    });
+     
+    // Ensure EntityTypes are sorted with "All" first
+    const sortedEntityTypes = ["All", ...[...entityTypes].filter(type => type !== "All").sort()];
+     
+    const sortedTransformedData = {};
+    sortedEntityTypes.forEach(type => {
+        if (transformedData[type]) {
+            sortedTransformedData[type] = transformedData[type];
+        }
+    });
+     
+    console.log({ transformedData: sortedTransformedData, years, entityTypes: sortedEntityTypes });
+
+    return { labels:years, dataObj:sortedTransformedData, entityTypes:sortedEntityTypes };
+
+}
+function retentionTransformByMonth(inputData, filterType, selectedYear) {
+  const transformedData = {};
+  const allMonths = Array.from({ length: 12 }, (_, i) => (i + 1).toString()); // ["1", "2", ..., "12"]
+
+  const entityTypes = new Set();
+
+  // Process the data
+  inputData.forEach(entry => {
+    if (entry.year !== selectedYear) return; // Process only selected year
+
+    allMonths.forEach((monthKey, monthIndex) => { // Iterate over all 12 months
+      const monthData = entry[monthKey] || {}; // Use empty object if month is missing
+
+      Object.entries(monthData).forEach(([regionKey, region]) => {
+        if (region[filterType]) {
+          Object.entries(region[filterType]).forEach(([type, counts]) => {
+            entityTypes.add(type);
+
+            if (!transformedData[type]) {
+              transformedData[type] = {
+                Male: Array(12).fill(0),
+                Female: Array(12).fill(0),
+                Others: Array(12).fill(0),
+              };
+            }
+
+            Object.entries(counts).forEach(([gender, count]) => {
+              if (transformedData[type][gender]) {
+                transformedData[type][gender][monthIndex] += count;
+              }
+            });
+          });
+        }
+      });
+    });
+  });
+
+  // Ensure entity types are sorted alphabetically, with "All" first
+  const sortedEntityTypes = ["All", ...[...entityTypes].filter(type => type !== "All").sort()];
+  const sortedTransformedData = {};
+  sortedEntityTypes.forEach(type => {
+    if (transformedData[type]) {
+      sortedTransformedData[type] = transformedData[type];
+    }
+  });
+
+  // Convert numeric month labels to full month names
+  const monthNames = allMonths.map(month => 
+    new Date(selectedYear, month - 1).toLocaleString('en-US', { month: 'long' })
+  );
+
+  console.log({ transformedData: sortedTransformedData, months: monthNames, entityTypes: sortedEntityTypes });
+
+  return { labels: monthNames, dataObj: sortedTransformedData, entityTypes: sortedEntityTypes };
+}
+
 
   const linesConfig = [
     { dataKey: "men", color: "#1E90FF" },
@@ -302,28 +515,28 @@ function convertMonthData(monthData) {
     { dataKey: "others", color: "#800080" },
   ];
 
-  const bubbleData = {
-    datasets: [
-      {
-        label: "Dataset 1",
-        data: [
-          { x: 10, y: 20, r: 15 },
-          { x: 30, y: 10, r: 10 },
-          { x: 15, y: 25, r: 20 },
-        ],
-        backgroundColor: "rgba(54, 162, 235, 0.6)",
-      },
-      {
-        label: "Dataset 2",
-        data: [
-          { x: 5, y: 15, r: 10 },
-          { x: 25, y: 5, r: 15 },
-          { x: 20, y: 30, r: 18 },
-        ],
-        backgroundColor: "rgba(255, 99, 132, 0.6)",
-      },
-    ],
-  };
+  // const bubbleData = {
+  //   datasets: [
+  //     {
+  //       label: "Dataset 1",
+  //       data: [
+  //         { x: 10, y: 20, r: 15 },
+  //         { x: 30, y: 10, r: 10 },
+  //         { x: 15, y: 25, r: 20 },
+  //       ],
+  //       backgroundColor: "rgba(54, 162, 235, 0.6)",
+  //     },
+  //     {
+  //       label: "Dataset 2",
+  //       data: [
+  //         { x: 5, y: 15, r: 10 },
+  //         { x: 25, y: 5, r: 15 },
+  //         { x: 20, y: 30, r: 18 },
+  //       ],
+  //       backgroundColor: "rgba(255, 99, 132, 0.6)",
+  //     },
+  //   ],
+  // };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -332,11 +545,13 @@ function convertMonthData(monthData) {
         return;
       }
 
+      setLoading(true);
+
       yearWiseData=[]
 
       try {
         var monthYear = master?.currentReportingCycle;
-
+        setYear(monthYear.year);
         // Reference to the Firestore collection
         const collectionRef = collection(firestore, userData?.domain, "AnalyticsData", "Reporting Data");
 
@@ -354,6 +569,8 @@ function convertMonthData(monthData) {
           // You can also store this data if you need
           const data = querySnapshot.docs.map(doc => doc.data());
           setFetchedData(data);  // Store the fetched data in state
+          
+          // setLoading(false)
         } else {
           console.log("No documents matching the query.");
         }
@@ -365,102 +582,13 @@ function convertMonthData(monthData) {
   }, [userData, master, module]); // ✅ Dependencies
 
   useEffect(()=>{
-    setYear(null)
-    yearWiseData=null;
-    monthData=null;
-  },[module])
+    if(fetchedData){
+      updateData()
+    }
+  },[fetchedData,entityType])
 
-  function monthTransform(data, year) {
-    const monthLabels = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
-    const monthDataObj = {}; // To store month data
-    const uniqueEntityTypes = new Set(); // To store unique entity types
-    
-    // If no year is provided (year is null or undefined), return data for all years
-    const isYearProvided = year != null;  // Check for null or undefined
 
-    // Loop through the data for each year
-    data?.forEach(entry => {
-        const Year = entry.year;
 
-        // If year is not provided, process all years. If year is provided, match with the entry's year.
-        if (!isYearProvided || Year === year.toString()) {  
-            // Loop through the months in the data (keyed by numbers like "10", "11", etc.)
-            Object.entries(entry).forEach(([month, monthData]) => {
-                if (month !== "year" && month !== "type") {  // Skip "year" and "type" keys
-                    const monthIndex = parseInt(month, 10) - 1;  // Convert month number (1-12) to 0-indexed array
-                    const monthName = monthLabels[monthIndex]; // Get month name from the array
-
-                    // Initialize monthDataObj for the month if it doesn't exist
-                    if (!monthDataObj[monthName]) {
-                        monthDataObj[monthName] = { men: 0, women: 0, others: 0 };
-                    }
-
-                    // Loop through each location and entity type
-                    Object.entries(monthData).forEach(([location, locationData]) => {
-                        // Collect gender data for the given month
-                        const genderData = locationData.Gender || {};
-                        monthDataObj[monthName].men += genderData.Male || 0;
-                        monthDataObj[monthName].women += genderData.Female || 0;
-                        monthDataObj[monthName].others += genderData.Others || 0;
-
-                        // Collect entity types and counts
-                        Object.entries(locationData.EntityType).forEach(([entityType, count]) => {
-                            uniqueEntityTypes.add(entityType);  // Collect unique entity types
-                        });
-                    });
-                }
-            });
-        }
-    });
-
-    // Convert the Set to an array for entity types
-    const entityTypes = Array.from(uniqueEntityTypes);
-
-    // Prepare the datasets for the chart
-    const maleData = [];
-    const femaleData = [];
-    const othersData = [];
-
-    // Map the monthDataObj to the chart data
-    monthLabels.forEach(month => {
-        const monthData = monthDataObj[month] || { men: 0, women: 0, others: 0 };
-        maleData.push(monthData.men);
-        femaleData.push(monthData.women);
-        othersData.push(monthData.others);
-    });
-
-    // Return the chart-friendly data
-    return {
-        labels: monthLabels,
-        datasets: [
-            {
-                label: "Male",
-                data: maleData,
-                backgroundColor: "#2586d6",
-                borderColor: "#2586d6",
-                borderWidth: 1
-            },
-            {
-                label: "Female",
-                data: femaleData,
-                backgroundColor: "#d72528",
-                borderColor: "#d72528",
-                borderWidth: 1
-            },
-            {
-                label: "Others",
-                data: othersData,
-                backgroundColor: "#8b24d7",
-                borderColor: "#8b24d7",
-                borderWidth: 1
-            }
-        ]
-    };
-}
-  
   const ecoPerformanceTransform = (fetchedData) => {
     // Prepare the chart data object with labels for years
     const chartData = {
@@ -474,20 +602,20 @@ function convertMonthData(monthData) {
           borderWidth: 1,
         },
         {
-          label: "Direct Economic Value Distributed",
+          label: "Total Revenue",
           data: [],
           backgroundColor: "#ffae55",
           borderColor: "#ffae55",
           borderWidth: 1,
         },
         
-        {
-          label: "Financial Assistance from Governments",
-          data: [],
-          backgroundColor: "#e34545",
-          borderColor: "#e34545",
-          borderWidth: 1,
-        },
+        // {
+        //   label: "Financial Assistance from Governments",
+        //   data: [],
+        //   backgroundColor: "#e34545",
+        //   borderColor: "#e34545",
+        //   borderWidth: 1,
+        // },
       ],
     };
   
@@ -505,9 +633,9 @@ function convertMonthData(monthData) {
         const region = yearData[regionKey];
   
         let totalTurnover = 0;
-        let directEconomicValue = 0;
+        let totalRevenue = 0;
         // let totalRevenue = 0;
-        let financialAssistance = 0;
+        // let financialAssistance = 0;
   
         // Accumulate values from all regions under this year
         Object.keys(region).forEach((regionName) => {
@@ -516,95 +644,23 @@ function convertMonthData(monthData) {
           // Check if regionData exists before accessing the properties
           if (regionData) {
             totalTurnover += parseFloat(regionData["Total turnover"]) || 0;
-            directEconomicValue += parseFloat(regionData["Direct economic value Distributed"]) || 0;
-            // totalRevenue += parseFloat(regionData["Total Revenue"]) || 0;
-            financialAssistance += parseFloat(regionData["Financial assistance received from governments"]) || 0;
+            // directEconomicValue += parseFloat(regionData["Direct economic value Distributed"]) || 0;
+            totalRevenue += parseFloat(regionData["Total Revenue"]) || 0;
+            // financialAssistance += parseFloat(regionData["Financial assistance received from governments"]) || 0;
           }
         });
   
         // Push the accumulated values into the corresponding dataset
         chartData.datasets[0].data.push(totalTurnover);
-        chartData.datasets[1].data.push(directEconomicValue);
-        // chartData.datasets[2].data.push(totalRevenue);
-        chartData.datasets[2].data.push(financialAssistance);
+        // chartData.datasets[1].data.push(directEconomicValue);
+        chartData.datasets[1].data.push(totalRevenue);
+        // chartData.datasets[2].data.push(financialAssistance);
       });
     });
     
     console.log(chartData)
     return chartData;
   };
-//   const ecoPerformanceTransform = (fetchedData) => {
-//     if (!fetchedData || fetchedData.length === 0) return { labels: [], datasets: [] };
-
-//     const chartData = {
-//         labels: [],
-//         datasets: [],
-//     };
-
-//     const allKeys = new Set();
-
-//     // Collect all unique keys dynamically from the dataset
-//     fetchedData.forEach((yearData) => {
-//         Object.keys(yearData).forEach((monthKey) => {
-//             if (monthKey !== "year" && monthKey !== "type") {
-//                 Object.values(yearData[monthKey]).forEach((regionData) => {
-//                     if (typeof regionData === "object") {
-//                         Object.keys(regionData).forEach((key) => allKeys.add(key));
-//                     }
-//                 });
-//             }
-//         });
-//     });
-
-//     // Convert unique keys into dataset structures
-//     allKeys.forEach((key) => {
-//         chartData.datasets.push({
-//             label: key,
-//             data: [],
-//             backgroundColor: getRandomColor(),
-//             borderColor: getRandomColor(),
-//             borderWidth: 1,
-//         });
-//     });
-
-//     // Populate data dynamically year-wise
-//     fetchedData.forEach((yearData) => {
-//         chartData.labels.push(yearData.year); // Add year label
-
-//         // Initialize an object to store aggregated values for this year
-//         const aggregatedValues = {};
-//         allKeys.forEach((key) => (aggregatedValues[key] = 0));
-
-//         // Loop through months (10, 11, etc.)
-//         Object.keys(yearData).forEach((monthKey) => {
-//             if (monthKey !== "year" && monthKey !== "type") {
-//                 Object.values(yearData[monthKey]).forEach((regionData) => {
-//                     if (typeof regionData === "object") {
-//                         Object.keys(regionData).forEach((key) => {
-//                             if (allKeys.has(key)) {
-//                                 aggregatedValues[key] += parseFloat(regionData[key]) || 0;
-//                             }
-//                         });
-//                     }
-//                 });
-//             }
-//         });
-
-//         // Push aggregated values into the corresponding dataset
-//         chartData.datasets.forEach((dataset) => {
-//             dataset.data.push(aggregatedValues[dataset.label]);
-//         });
-//     });
-//     console.log("hoi",chartData)
-//     return chartData;
-// };
-
-// // Function to generate random colors for datasets
-// const getRandomColor = () => {
-//     const colors = ["#4BA0B6", "#FFAE55", "#E34545", "#4BA9DD", "#A55EEA", "#45D68D"];
-//     return colors[Math.floor(Math.random() * colors.length)];
-// };
-
 
   const transformBubbleChartData = (backendDataArray) => {
     const bubbleData = { datasets: [] };
@@ -647,6 +703,163 @@ function convertMonthData(monthData) {
 
     return bubbleData;
 };
+const transformBubbleChartDataByMonth = (backendDataArray, selectedYear) => {
+  const bubbleData = { datasets: [] };
+
+  // Month mapping
+  const monthNames = {
+      "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
+      "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
+  };
+
+  // Ensure all 12 months are included
+  const allMonths = Object.values(monthNames);
+
+  const segmentMap = new Map();
+
+  // Initialize all segments with zero values for all months
+  backendDataArray.forEach(backendData => {
+      if (backendData.year !== selectedYear) return;
+
+      Object.keys(backendData).forEach(month => {
+          if (!monthNames[month]) return; // Skip invalid month keys
+
+          const monthData = backendData[month] || {}; // Default to empty if missing
+
+          Object.entries(monthData).forEach(([location, locationData]) => {
+              if (!locationData.Segment) return;
+
+              Object.entries(locationData.Segment).forEach(([segment, data]) => {
+                  const avgHours = data["Avg Hours per batch"] || 0;
+                  const headCount = data["Head Count"] || 0;
+
+                  // Ensure the segment has a dataset
+                  if (!segmentMap.has(segment)) {
+                      segmentMap.set(segment, {
+                          label: segment,
+                          data: allMonths.map(m => ({ x: m, y: 0, r: 0 })), // Initialize with zero for all months
+                          backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`,
+                      });
+                  }
+
+                  // Find the correct month index and update values
+                  const dataset = segmentMap.get(segment);
+                  const monthIndex = allMonths.indexOf(monthNames[month]);
+                  dataset.data[monthIndex] = { x: monthNames[month], y: avgHours, r: headCount / 10 };
+              });
+          });
+      });
+  });
+
+  // Convert segment map to datasets array
+  bubbleData.datasets = Array.from(segmentMap.values());
+
+  return bubbleData;
+};
+
+
+
+const transformOHSChartData = (backendDataArray) => {
+  const bubbleData = { datasets: [] };
+
+  backendDataArray?.forEach((backendData) => {
+      const year = parseInt(backendData.year); // Extract year for x-axis
+
+      // Iterate over each module (e.g., "10")
+      Object.entries(backendData).forEach(([key, locations]) => {
+          if (key === "year" || key === "type") return; // Skip metadata
+
+          Object.entries(locations).forEach(([location, locationData]) => {
+              if (!locationData.InjuryType) return;
+
+              Object.entries(locationData.InjuryType).forEach(([segment, data]) => {
+                  const avgHours = data["Incidents"] || 0;
+                  const headCount = data["HeadCount"] || 0;
+
+                  // Ensure the segment has a dataset
+                  let dataset = bubbleData.datasets.find(ds => ds.label === segment);
+                  if (!dataset) {
+                      dataset = {
+                          label: segment,
+                          data: [],
+                          backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`,
+                      };
+                      bubbleData.datasets.push(dataset);
+                  }
+
+                  // Add data point
+                  dataset.data.push({
+                      x: year, // Year on x-axis
+                      y: avgHours, // Avg hours on y-axis
+                      r: avgHours, // Scale head count for bubble size
+                  });
+              });
+          });
+      });
+  });
+
+  return bubbleData;
+};
+const transformOHSChartDataByMonth = (backendDataArray, selectedYear) => {
+  const bubbleData = { datasets: [] };
+
+  // Month mapping
+  const monthNames = {
+    1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May", 6: "Jun",
+    7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"
+  };
+
+  console.log("Selected Year:", selectedYear);
+  console.log("Backend Data Array:", backendDataArray);
+
+  const segmentMap = new Map();
+
+  // Initialize all segments with zero values for all months
+  Object.values(monthNames).forEach(monthName => {
+    backendDataArray.forEach(backendData => {
+      if (String(backendData.year) !== String(selectedYear)) return;
+
+      Object.keys(backendData).forEach(monthKey => {
+        const monthNum = parseInt(monthKey);
+        if (isNaN(monthNum) || !monthNames[monthNum]) return;
+
+        const monthData = backendData[monthKey] || {}; // Default to empty if missing
+
+        Object.entries(monthData).forEach(([location, locationData]) => {
+          if (!locationData.InjuryType) return;
+
+          Object.entries(locationData.InjuryType).forEach(([segment, data]) => {
+            const incidents = data["Incidents"] || 0;
+
+            // Ensure the segment has a dataset
+            if (!segmentMap.has(segment)) {
+              segmentMap.set(segment, {
+                label: segment,
+                data: Object.values(monthNames).map(m => ({ x: m, y: 0, r: 0 })), // Initialize with zero for all months
+                backgroundColor: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`,
+              });
+            }
+
+            // Find the correct month index and update values
+            const dataset = segmentMap.get(segment);
+            const monthIndex = Object.values(monthNames).indexOf(monthNames[monthNum]);
+            dataset.data[monthIndex] = { x: monthNames[monthNum], y: incidents, r: incidents };
+          });
+        });
+      });
+    });
+  });
+
+  // Convert segment map to datasets array
+  bubbleData.datasets = Array.from(segmentMap.values());
+
+  console.log("Final Transformed Data:", JSON.stringify(bubbleData, null, 2));
+
+  return bubbleData;
+};
+
+
+
 
 const processDataForGraph= (data)=> {
   const monthMap = {
@@ -659,8 +872,8 @@ const processDataForGraph= (data)=> {
     labels:  ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     datasets: [
       { label: "Total Turnover", data: Array(12).fill(0), backgroundColor: "#4ba9dd", borderColor: "#4ba9dd", borderWidth: 1 },
-      { label: "Direct Economic Value Distributed", data: Array(12).fill(0), backgroundColor: "#ffae55", borderColor: "#ffae55", borderWidth: 1 },
-      { label: "Financial Assistance from Governments", data: Array(12).fill(0), backgroundColor: "#e34545", borderColor: "#e34545", borderWidth: 1 },
+      { label: "Total Revenue", data: Array(12).fill(0), backgroundColor: "#ffae55", borderColor: "#ffae55", borderWidth: 1 },
+      // { label: "Financial Assistance from Governments", data: Array(12).fill(0), backgroundColor: "#e34545", borderColor: "#e34545", borderWidth: 1 },
     ]
   };
 
@@ -675,54 +888,16 @@ const processDataForGraph= (data)=> {
         let monthIndex = parseInt(key) - 1; // Convert to 0-based index
 
         Object.values(entry[key]).forEach(location => {
-          let financialData = location.data;
+          let financialData = location;
           graphData.datasets[0].data[monthIndex] += parseFloat(financialData["Total turnover"] || 0);
-          graphData.datasets[1].data[monthIndex] += parseFloat(financialData["Direct economic value generated"] || 0);
-          graphData.datasets[2].data[monthIndex] += parseFloat(financialData["Financial assistance received from governments"] || 0);
+          graphData.datasets[1].data[monthIndex] += parseFloat(financialData["Total Revenue"] || 0);
+          // graphData.datasets[2].data[monthIndex] += parseFloat(financialData["Financial assistance received from governments"] || 0);
         });
       }
     });
   });
 
   return graphData;
-}
-
-function retentionByMonth(data, targetYear) {
-  const groupedData = [];
-
-  data?.forEach(entry => {
-      if (entry.year === targetYear) {
-          const year = entry.year;
-          
-          // Initialize month-based counters
-          const monthData = {};
-          
-          // Loop through each month's data
-          Object.entries(entry).forEach(([key, monthDataObj]) => {
-              if (!isNaN(key)) { // Ensure it's a month key
-                  const month = key; // month number as string
-                  let menCount = 0, womenCount = 0, othersCount = 0;
-
-                  Object.values(monthDataObj).forEach(locationData => {
-                      if (!locationData.EmployeeType) return;
-
-                      const genderData = locationData.Gender || {};
-                      menCount += genderData.Male || 0;
-                      womenCount += genderData.Female || 0;
-                      othersCount += genderData.Others || 0;
-                  });
-
-                  // Store the aggregated data for this month
-                  monthData[month] = { men: menCount, women: womenCount, others: othersCount };
-              }
-          });
-
-          // Push the year and month-level data
-          groupedData.push({ year, monthData });
-      }
-  });
-
-  return groupedData;
 }
 
 const groupByMonthBubble = (data) => {
@@ -789,58 +964,622 @@ const groupByMonthBubble = (data) => {
 
   return bubbleData;
 };
+
+function transformEnvDataForGraphByYear(backendData) {
+  const transformedData = {
+    labels: [],
+    datasets: []
+  };
+
+  const metricsMap = {}; // Store fuel type data grouped by year dynamically
+
+  backendData?.forEach(yearEntry => {
+    const year = yearEntry.year;
+    if (!transformedData.labels.includes(year)) {
+      transformedData.labels.push(year);
+    }
+
+    Object.entries(yearEntry).forEach(([key, monthData]) => {
+      if (key === "year" || key === "type") return;
+
+      Object.values(monthData).forEach(locationData => {
+        if (!locationData.Type) return; // Ensure "Type" exists
+
+        Object.entries(locationData.Type).forEach(([fuelType, value]) => {
+          if (!metricsMap[fuelType]) {
+            metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+          }
+
+          const yearIndex = transformedData.labels.indexOf(year);
+          metricsMap[fuelType][yearIndex] += Number(value) || 0;
+        });
+      });
+    });
+  });
+
+  // Convert metrics map into datasets dynamically
+  Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+    const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+    transformedData.datasets.push({
+      label: fuelType,
+      data: data,
+      backgroundColor: colors[index % colors.length], // Assign color dynamically
+      borderColor: colors[index % colors.length],
+      borderWidth: 1,
+    });
+  });
+
+  return transformedData;
+}
+function transformEnvDataForGraphByMonth(backendData, selectedYear) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const transformedData = {
+    labels: months,
+    datasets: []
+  };
+
+  const metricsMap = {}; // Store fuel type data grouped by month dynamically
+
+  // Find the entry for the selected year
+  const yearData = backendData.find(entry => entry.year == selectedYear);
+  if (!yearData) return transformedData; // Return empty if year not found
+
+  Object.entries(yearData).forEach(([monthKey, monthData]) => {
+    if (monthKey === "year" || monthKey === "type") return;
+
+    const monthIndex = parseInt(monthKey, 10) - 1; // Convert month number to index
+    if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) return;
+
+    Object.values(monthData).forEach(locationData => {
+      if (!locationData.Type) return; // Ensure "Type" exists
+
+      Object.entries(locationData.Type).forEach(([fuelType, value]) => {
+        if (!metricsMap[fuelType]) {
+          metricsMap[fuelType] = new Array(12).fill(0);
+        }
+
+        metricsMap[fuelType][monthIndex] += Number(value) || 0;
+      });
+    });
+  });
+
+  // Convert metrics map into datasets dynamically
+  Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+    const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+    transformedData.datasets.push({
+      label: fuelType,
+      data: data,
+      backgroundColor: colors[index % colors.length], // Assign color dynamically
+      borderColor: colors[index % colors.length],
+      borderWidth: 1,
+    });
+  });
+
+  return transformedData;
+}
+
+function transformVehicleDataForGraphByYear(backendData) {
+  const transformedData = {
+    labels: [],
+    datasets: []
+  };
+
+  const metricsMap = {}; // Store fuel type data grouped by year dynamically
+
+  backendData?.forEach(yearEntry => {
+    const year = yearEntry.year;
+    if (!transformedData.labels.includes(year)) {
+      transformedData.labels.push(year);
+    }
+
+    Object.entries(yearEntry).forEach(([key, monthData]) => {
+      if (key === "year" || key === "type") return;
+
+      Object.values(monthData).forEach(locationData => {
+        if (!locationData.Vehicles) return; // Ensure "Type" exists
+
+        Object.entries(locationData.Vehicles).forEach(([fuelType, value]) => {
+          if (!metricsMap[fuelType]) {
+            metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+          }
+
+          const yearIndex = transformedData.labels.indexOf(year);
+          metricsMap[fuelType][yearIndex] += Number(value) || 0;
+        });
+      });
+    });
+  });
+
+  // Convert metrics map into datasets dynamically
+  Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+    const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+    transformedData.datasets.push({
+      label: fuelType,
+      data: data,
+      backgroundColor: colors[index % colors.length], // Assign color dynamically
+      borderColor: colors[index % colors.length],
+      borderWidth: 1,
+    });
+  });
+
+  return transformedData;
+}
+function transformVehicleDataForGraphByMonth(backendData, selectedYear) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const transformedData = {
+    labels: months,
+    datasets: []
+  };
+
+  const metricsMap = {}; // Store fuel type data grouped by month dynamically
+
+  // Find the entry for the selected year
+  const yearData = backendData.find(entry => entry.year == selectedYear);
+  if (!yearData) return transformedData; // Return empty if year not found
+
+  Object.entries(yearData).forEach(([monthKey, monthData]) => {
+    if (monthKey === "year" || monthKey === "type") return;
+
+    const monthIndex = parseInt(monthKey, 10) - 1; // Convert month number to index
+    if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) return;
+
+    Object.values(monthData).forEach(locationData => {
+      if (!locationData.Vehicles) return; // Ensure "Type" exists
+
+      Object.entries(locationData.Vehicles).forEach(([fuelType, value]) => {
+        if (!metricsMap[fuelType]) {
+          metricsMap[fuelType] = new Array(12).fill(0);
+        }
+
+        metricsMap[fuelType][monthIndex] += Number(value) || 0;
+      });
+    });
+  });
+
+  // Convert metrics map into datasets dynamically
+  Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+    const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+    transformedData.datasets.push({
+      label: fuelType,
+      data: data,
+      backgroundColor: colors[index % colors.length], // Assign color dynamically
+      borderColor: colors[index % colors.length],
+      borderWidth: 1,
+    });
+  });
+
+  return transformedData;
+}
+
+function transformActivityDataForGraphByYear(backendData) {
+  const transformedData = {
+    labels: [],
+    datasets: []
+  };
+
+  const metricsMap = {}; // Store fuel type data grouped by year dynamically
+
+  backendData?.forEach(yearEntry => {
+    const year = yearEntry.year;
+    if (!transformedData.labels.includes(year)) {
+      transformedData.labels.push(year);
+    }
+
+    Object.entries(yearEntry).forEach(([key, monthData]) => {
+      if (key === "year" || key === "type") return;
+
+      Object.values(monthData).forEach(locationData => {
+        if (!locationData.Activity) return; // Ensure "Type" exists
+
+        Object.entries(locationData.Activity).forEach(([fuelType, value]) => {
+          if (!metricsMap[fuelType]) {
+            metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+          }
+
+          const yearIndex = transformedData.labels.indexOf(year);
+          metricsMap[fuelType][yearIndex] += Number(value) || 0;
+        });
+      });
+    });
+  });
+
+  // Convert metrics map into datasets dynamically
+  Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+    const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+    transformedData.datasets.push({
+      label: fuelType,
+      data: data,
+      backgroundColor: colors[index % colors.length], // Assign color dynamically
+      borderColor: colors[index % colors.length],
+      borderWidth: 1,
+    });
+  });
+
+  return transformedData;
+}
+function transformActivityDataForGraphByMonth(backendData, selectedYear) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const transformedData = {
+    labels: months,
+    datasets: []
+  };
+
+  const metricsMap = {}; // Store fuel type data grouped by month dynamically
+
+  // Find the entry for the selected year
+  const yearData = backendData.find(entry => entry.year == selectedYear);
+  if (!yearData) return transformedData; // Return empty if year not found
+
+  Object.entries(yearData).forEach(([monthKey, monthData]) => {
+    if (monthKey === "year" || monthKey === "type") return;
+
+    const monthIndex = parseInt(monthKey, 10) - 1; // Convert month number to index
+    if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) return;
+
+    Object.values(monthData).forEach(locationData => {
+      if (!locationData.Activity) return; // Ensure "Type" exists
+
+      Object.entries(locationData.Activity).forEach(([fuelType, value]) => {
+        if (!metricsMap[fuelType]) {
+          metricsMap[fuelType] = new Array(12).fill(0);
+        }
+
+        metricsMap[fuelType][monthIndex] += Number(value) || 0;
+      });
+    });
+  });
+
+  // Convert metrics map into datasets dynamically
+  Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+    const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+    transformedData.datasets.push({
+      label: fuelType,
+      data: data,
+      backgroundColor: colors[index % colors.length], // Assign color dynamically
+      borderColor: colors[index % colors.length],
+      borderWidth: 1,
+    });
+  });
+
+  return transformedData;
+}
+function transformLevelDataForGraphByYear(backendData) {
+  const transformedData = {
+    labels: [],
+    datasets: []
+  };
+
+  const metricsMap = {}; // Store fuel type data grouped by year dynamically
+
+  backendData?.forEach(yearEntry => {
+    const year = yearEntry.year;
+    if (!transformedData.labels.includes(year)) {
+      transformedData.labels.push(year);
+    }
+
+    Object.entries(yearEntry).forEach(([key, monthData]) => {
+      if (key === "year" || key === "type") return;
+
+      Object.values(monthData).forEach(locationData => {
+        if (!locationData.Level2) return; // Ensure "Type" exists
+
+        Object.entries(locationData.Level2).forEach(([fuelType, value]) => {
+          if (!metricsMap[fuelType]) {
+            metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+          }
+
+          const yearIndex = transformedData.labels.indexOf(year);
+          metricsMap[fuelType][yearIndex] += Number(value) || 0;
+        });
+      });
+    });
+  });
+
+  // Convert metrics map into datasets dynamically
+  Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+    const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+    transformedData.datasets.push({
+      label: fuelType,
+      data: data,
+      backgroundColor: colors[index % colors.length], // Assign color dynamically
+      borderColor: colors[index % colors.length],
+      borderWidth: 1,
+    });
+  });
+
+  return transformedData;
+}
+function transformLevelDataForGraphByMonth(backendData, selectedYear) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const transformedData = {
+    labels: months,
+    datasets: []
+  };
+
+  const metricsMap = {}; // Store fuel type data grouped by month dynamically
+
+  // Find the entry for the selected year
+  const yearData = backendData.find(entry => entry.year == selectedYear);
+  if (!yearData) return transformedData; // Return empty if year not found
+
+  Object.entries(yearData).forEach(([monthKey, monthData]) => {
+    if (monthKey === "year" || monthKey === "type") return;
+
+    const monthIndex = parseInt(monthKey, 10) - 1; // Convert month number to index
+    if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) return;
+
+    Object.values(monthData).forEach(locationData => {
+      if (!locationData.Level2) return; // Ensure "Type" exists
+
+      Object.entries(locationData.Level2).forEach(([fuelType, value]) => {
+        if (!metricsMap[fuelType]) {
+          metricsMap[fuelType] = new Array(12).fill(0);
+        }
+
+        metricsMap[fuelType][monthIndex] += Number(value) || 0;
+      });
+    });
+  });
+
+  // Convert metrics map into datasets dynamically
+  Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+    const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+    transformedData.datasets.push({
+      label: fuelType,
+      data: data,
+      backgroundColor: colors[index % colors.length], // Assign color dynamically
+      borderColor: colors[index % colors.length],
+      borderWidth: 1,
+    });
+  });
+
+  return transformedData;
+}
+
+function transformUnfilteredDataForGraphByYear(backendData) {
+  const transformedData = {
+    labels: [],
+    datasets: []
+  };
+
+  const yearMap = {}; // Store total value per year
+
+  backendData?.forEach(entry => {
+    const year = entry.year;
+    if (!yearMap[year]) {
+      yearMap[year] = 0;
+    }
+
+    Object.entries(entry).forEach(([key, monthData]) => {
+      if (key === "year" || key === "type") return;
+
+      Object.values(monthData).forEach(value => {
+        yearMap[year] += Number(value) || 0;
+      });
+    });
+  });
+
+  // Convert yearMap to chart format
+  transformedData.labels = Object.keys(yearMap);
+  transformedData.datasets.push({
+    label: "Total Emissions",
+    data: Object.values(yearMap),
+    backgroundColor: "#4BA0B6",
+    borderColor: "#4BA0B6",
+    borderWidth: 1,
+  });
+
+  return transformedData;
+}
+function transformUnfilteredDataForGraphByMonth(backendData, selectedYear) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const transformedData = {
+    labels: months,
+    datasets: []
+  };
+
+  const monthMap = new Array(12).fill(0); // Store total value per month
+
+  // Find the entry for the selected year
+  const yearData = backendData?.find(entry => entry.year == selectedYear);
+  if (!yearData) return transformedData; // Return empty if year not found
+
+  Object.entries(yearData).forEach(([monthKey, monthData]) => {
+    if (monthKey === "year" || monthKey === "type") return;
+
+    const monthIndex = parseInt(monthKey, 10) - 1; // Convert month number to index
+    if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) return;
+
+    Object.values(monthData).forEach(value => {
+      monthMap[monthIndex] += Number(value) || 0;
+    });
+  });
+
+  // Convert monthMap to chart format
+  transformedData.datasets.push({
+    label: "Total Emissions",
+    data: monthMap,
+    backgroundColor: "#4BA0B6",
+    borderColor: "#4BA0B6",
+    borderWidth: 1,
+  });
+
+  return transformedData;
+}
+
+function getRandomColor() {
+  return `#${Math.floor(Math.random()*16777215).toString(16)}`;
+}
+
+ const updateData=()=>{
+ setFilterList(null)
+ setMonthFilterList(null)
   switch(module){
     case "Entity":
-      console.log(entityTransform(fetchedData))
-    console.log(monthTransform(fetchedData))
-    var {labels,dataObj,entityTypes}=entityTransform(fetchedData)
-    filterList=entityTypes
-    if(dataObj){
-      console.log(dataObj[entityType])
-    }
-    yearWiseData={
-      labels:labels,
-      datasets:[
-        {
-          label: "Male",
-          data: dataObj[entityType]?.Male ?? [],
-          backgroundColor: "#2586d6",
-          borderColor: "#2586d6",
-          borderWidth: 1,
-        },
-        {
-          label: "Female",
-          data: dataObj[entityType]?.Female ?? [],
-          backgroundColor: "#d72528",
-          borderColor: "#d72528",
-          borderWidth: 1,
-        },
-        {
-          label: "Others",
-          data: dataObj[entityType]?.Others ?? [],
-          backgroundColor: "#8b24d7",
-          borderColor: "#8b24d7",
-          borderWidth: 1,
-        },
+    var { labels, dataObj, entityTypes } = entityTransform(fetchedData);
+    setFilterList(entityTypes);
 
-      ]
+    if (dataObj) {
+        console.log(dataObj[entityType]);
     }
-    if(year){
-    monthData=monthTransform(fetchedData,year)
+
+    // Year-wise data structure
+    yearWiseData = {
+        labels: labels,
+        datasets: [
+            {
+                label: "Male",
+                data: dataObj[entityType]?.Male ?? [],
+                backgroundColor: "#2586d6",
+                borderColor: "#2586d6",
+                borderWidth: 1,
+            },
+            {
+                label: "Female",
+                data: dataObj[entityType]?.Female ?? [],
+                backgroundColor: "#d72528",
+                borderColor: "#d72528",
+                borderWidth: 1,
+            },
+            {
+                label: "Others",
+                data: dataObj[entityType]?.Others ?? [],
+                backgroundColor: "#8b24d7",
+                borderColor: "#8b24d7",
+                borderWidth: 1,
+            },
+        ],
+    };
+
+    // Month-wise data handling
+    if (year) {
+        console.log("Processing month-wise data...");
+        let data= monthEntityTransform(fetchedData, year);
+        setFilterList(data.entityTypes)
+        monthData ={
+            labels: data.labels,
+            datasets: Object.keys(data.dataObj[entityType] || {}).map(gender => ({
+                label: gender,
+                data: data.dataObj[entityType]?.[gender] ?? [],
+                backgroundColor: getRandomColor(),
+                borderColor: getRandomColor(),
+                borderWidth: 1,
+            }))
+        }
+       
     }
-    console.log(monthData)
-    break
+    break;
     case "Employment":
+      var { labels, dataObj, entityTypes } = retentionTransform(fetchedData,"EmploymentType");
+      setFilterList(entityTypes);
+  
+      if (dataObj) {
+          console.log(dataObj[entityType]);
+      }
+  
+      // Year-wise data structure
+      yearWiseData = {
+          labels: labels,
+          datasets: [
+              {
+                  label: "Male",
+                  data: dataObj[entityType]?.Male ?? [],
+                  backgroundColor: "#2586d6",
+                  borderColor: "#2586d6",
+                  borderWidth: 1,
+              },
+              {
+                  label: "Female",
+                  data: dataObj[entityType]?.Female ?? [],
+                  backgroundColor: "#d72528",
+                  borderColor: "#d72528",
+                  borderWidth: 1,
+              },
+              {
+                  label: "Others",
+                  data: dataObj[entityType]?.Others ?? [],
+                  backgroundColor: "#8b24d7",
+                  borderColor: "#8b24d7",
+                  borderWidth: 1,
+              },
+          ],
+      };
+  
+      // Month-wise data handling
+      if (year) {
+          console.log("Processing month-wise data...");
+          let data= retentionTransformByMonth(fetchedData,"EmploymentType", year);
+          monthData ={
+              labels: data.labels,
+              datasets: Object.keys(data.dataObj[entityType] || {}).map(gender => ({
+                  label: gender,
+                  data: data.dataObj[entityType]?.[gender] ?? [],
+                  backgroundColor: getRandomColor(),
+                  borderColor: getRandomColor(),
+                  borderWidth: 1,
+              }))
+          }
+         
+      }
+      break;
     case "Retention":
-      var data=retentionTransform(fetchedData)
-      yearWiseData=data.transformedData
-      filterList=data.employeeTypes
-      console.log("hi",yearWiseData)
-      if(year)
-      {
-        // console.log(JSON.stringify(retentionByMonth(fetchedData,year).find(entry => entry.year === year).monthData))
-      monthData=convertMonthData(retentionByMonth(fetchedData,year)?.find(entry => entry.year === year)?.monthData)}
-      break
+      var { labels, dataObj, entityTypes } = retentionTransform(fetchedData,"EmployeeType");
+      setFilterList(entityTypes);
+  
+      if (dataObj) {
+          console.log(dataObj[entityType]);
+      }
+  
+      // Year-wise data structure
+      yearWiseData = {
+          labels: labels,
+          datasets: [
+              {
+                  label: "Male",
+                  data: dataObj[entityType]?.Male ?? [],
+                  backgroundColor: "#2586d6",
+                  borderColor: "#2586d6",
+                  borderWidth: 1,
+              },
+              {
+                  label: "Female",
+                  data: dataObj[entityType]?.Female ?? [],
+                  backgroundColor: "#d72528",
+                  borderColor: "#d72528",
+                  borderWidth: 1,
+              },
+              {
+                  label: "Others",
+                  data: dataObj[entityType]?.Others ?? [],
+                  backgroundColor: "#8b24d7",
+                  borderColor: "#8b24d7",
+                  borderWidth: 1,
+              },
+          ],
+      };
+  
+      // Month-wise data handling
+      if (year) {
+          console.log("Processing month-wise data...");
+          let data= retentionTransformByMonth(fetchedData,"EmployeeType", year);
+          monthData ={
+              labels: data.labels,
+              datasets: Object.keys(data.dataObj[entityType] || {}).map(gender => ({
+                  label: gender,
+                  data: data.dataObj[entityType]?.[gender] ?? [],
+                  backgroundColor: getRandomColor(),
+                  borderColor: getRandomColor(),
+                  borderWidth: 1,
+              }))
+          }
+         
+      }
+      break;
     case "Eco. Performance":
       yearWiseData=ecoPerformanceTransform(fetchedData)
       console.log("che",fetchedData)
@@ -850,7 +1589,7 @@ const groupByMonthBubble = (data) => {
       break
     case "Training and Edu":
       yearWiseData=transformBubbleChartData(fetchedData)
-      if(year)monthData=groupByMonthBubble(fetchedData)
+      if(year)monthData=transformBubbleChartDataByMonth(fetchedData,year)
       console.log("ey",yearWiseData)
       break
 
@@ -862,18 +1601,129 @@ const groupByMonthBubble = (data) => {
       yearWiseData=transformDataForGraphByYear(fetchedData)
       if(year)monthData=transformDataForGraph(fetchedData,year)
       break;
+    case "Bioenergy":
+    case "Fuel":
+    case "WTT- fuels":
+    case "Water":
+      yearWiseData=transformEnvDataForGraphByYear(fetchedData)
+      console.log("C",yearWiseData)
+      if(year)monthData=transformEnvDataForGraphByMonth(fetchedData,year)
+      break;
+    
+    case "Materials": 
+    case "Elec heat cooling":
+      yearWiseData=transformActivityDataForGraphByYear(fetchedData)
+      console.log("C",yearWiseData)
+      if(year)monthData=transformActivityDataForGraphByMonth(fetchedData,year)
+      break;  
+    case "Owned Vehicles":
+      yearWiseData=transformLevelDataForGraphByYear(fetchedData)
+      console.log("C",yearWiseData)
+      if(year)monthData=transformLevelDataForGraphByMonth(fetchedData,year)
+      break;
+
+    case "Freighting goods":
+    case "Employees commuting":
+    case "Business travel - land and sea":
+      yearWiseData=transformVehicleDataForGraphByYear(fetchedData)
+      console.log("C",yearWiseData)
+      if(year)monthData=transformVehicleDataForGraphByMonth(fetchedData,year)
+      break;
+
+    case "Food":
+    case "Refrigerant and other":
+    case "Accommodation":
+    case "Flight":
+    case "Home Office":
+      yearWiseData=transformUnfilteredDataForGraphByYear(fetchedData)
+      console.log("C",yearWiseData)
+      if(year)monthData=transformUnfilteredDataForGraphByMonth(fetchedData,year)
+      break;
+    case "OH and S":
+      yearWiseData=transformOHSChartData(fetchedData)
+      if(year)monthData=transformOHSChartDataByMonth(fetchedData,year)
+
+      console.log(monthData)
+      break;
+
+    case "Waste Disposal":
+      var { labels, dataObj, entityTypes } = wasteTransform(fetchedData);
+      setFilterList(entityTypes);
+  
+      if (dataObj) {
+          console.log(dataObj[entityType]);
+      }
+  
+      // Year-wise data structure
+      yearWiseData = {
+          labels: labels,
+          datasets: [
+              {
+                  label: "Recycled",
+                  data: dataObj[entityType]?.Recycled ?? [],
+                  backgroundColor: "#2586d6",
+                  borderColor: "#2586d6",
+                  borderWidth: 1,
+              },
+              {
+                  label: "Landfilled",
+                  data: dataObj[entityType]?.Landfilled ?? [],
+                  backgroundColor: "#d72528",
+                  borderColor: "#d72528",
+                  borderWidth: 1,
+              },
+              {
+                  label: "Combusted",
+                  data: dataObj[entityType]?.Combusted ?? [],
+                  backgroundColor: "#8b24d7",
+                  borderColor: "#8b24d7",
+                  borderWidth: 1,
+              },
+          ],
+      };
+  
+      // Month-wise data handling
+      if (year) {
+          console.log("Processing month-wise data...");
+          let data= wasteTransformByMonth(fetchedData, year);
+          monthData ={
+              labels: data.labels,
+              datasets: Object.keys(data.dataObj[entityType] || {}).map(gender => ({
+                  label: gender,
+                  data: data.dataObj[entityType]?.[gender] ?? [],
+                  backgroundColor: getRandomColor(),
+                  borderColor: getRandomColor(),
+                  borderWidth: 1,
+              }))
+          }
+        
+
+  console.log("A",wasteTransform(fetchedData));
+  
+  break;
+
+    
+  
     
 
   }
+  break;
 
-  console.log(fetchedData)
 
-  console.log("check",filterList)
 
-  console.log("mon",monthData)
+  // setLoading(false)
 
-  
-  console.log(transformMonthWiseData(fetchedData,"2024"));
+
+ }
+ setYearData(yearWiseData)
+ setMonthWiseData(monthData);
+}
+
+useEffect(()=>{
+  if(yearData){
+    setLoading(false)
+  }
+},[yearData])
 
 
   
@@ -887,7 +1737,7 @@ const groupByMonthBubble = (data) => {
               <div className="w-4 h-4 rounded-full bg-[#3d9f86]"></div>
               <div>Emission %</div>
             </div> */}
-            {filterList.length>0 && 
+            {filterList && 
             <select onChange={(e)=>{setEntityType(e.target.value)}} className="border rounded-xl border-[#29C472] px-3 py-2">
               {filterList.map((val,index)=>{
                 return(<option key={index} >{val}</option>)
@@ -896,33 +1746,57 @@ const groupByMonthBubble = (data) => {
             }
           </div>
         </div>
-        {/* Display charts based on fetched data */}
-        {module == "Fuel" && <SocialGraph data={monthWiseData} setYear={setYear} />}
-        {module == "Retention" && (
-          <LineChart data={yearWiseData} lines={linesConfig} xKey="year" yLabel="Number of People" setYear={setYear} />
+        {loading?(
+          <div className='flex items-center justify-center'>
+            <Spinner/>
+          </div>
+        ):(
+            <>
+            {module == "Fuel" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Bioenergy" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "WTT- fuels" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Water" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Food" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Accommodation" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Flight" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Home Office" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Refrigerant and other" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Owned Vehicles" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Materials" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Freighting goods" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Employees commuting" && <SocialGraph data={yearData} setYear={setYear} />}
+
+            {module == "Business travel - land and sea" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Retention" && (
+              <LineChart data={yearData} lines={linesConfig} xKey="year" yLabel="Number of People" setYear={setYear} />
+            )}
+            {module == "Employment" && (
+              <LineChart data={yearData} lines={linesConfig} xKey="year" yLabel="Number of People" setYear={setYear} />
+            )}
+            {module == "Entity" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Elec heat cooling" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Mktg and Labelling" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Customer Privacy" && <SocialGraph data={yearData} stacked={true} setYear={setYear} />}
+            {module == "Child Labor" && <SocialGraph data={yearData} stacked={true} setYear={setYear} />}
+            {module == "CHS" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Social Benefits" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Eco. Performance" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Waste Disposal" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Training and Edu" && <BubbleChart data={yearData} xLabel={"Years"} setYear={setYear} />}
+            {module == "OH and S" && <BubbleChart data={yearData} xLabel={"Years"} setYear={setYear} />}
+          </>
         )}
-        {module == "Employment" && (
-          <LineChart data={yearWiseData} lines={linesConfig} xKey="year" yLabel="Number of People" setYear={setYear} />
-        )}
-        {module == "Entity" && <SocialGraph data={yearWiseData} stacked={true} setYear={setYear} />}
-        {module == "Mktg and Labelling" && <SocialGraph data={yearWiseData} stacked={true} setYear={setYear} />}
-        {module == "Customer Privacy" && <SocialGraph data={yearWiseData} stacked={true} setYear={setYear} />}
-        {module == "Child Labor" && <SocialGraph data={yearWiseData} stacked={true} setYear={setYear} />}
-        {module == "CHS" && <SocialGraph data={yearWiseData} stacked={true} setYear={setYear} />}
-        {module == "Social Benefits" && <SocialGraph data={yearWiseData} stacked={true} setYear={setYear} />}
-        {module == "Eco. Performance" && <SocialGraph data={yearWiseData} setYear={setYear} />}
-        {module == "Training and Edu" && <BubbleChart data={yearWiseData} setYear={setYear} />}
       </div>
       {year && (
         <div className=" bg-white rounded-lg w-full p-3">
           <div className="flex justify-between px-3 mb-3">
-            <div className="font-bold text-lg text-slate-600">MonthWise</div>
+            <div className="font-bold text-lg text-slate-600">MONTH-WISE</div>
             <div className="flex gap-24 items-center">
               {/* <div className=" flex gap-3 items-center">
                 <div className="w-4 h-4 rounded-full bg-[#3d9f86]"></div>
                 <div>Emission %</div>
               </div> */}
-               {monthFilterList.length>0 && 
+               {monthFilterList&& 
                 <select onChange={(e)=>{setEntityType(e.target.value)}} className="border rounded-xl border-[#29C472] px-3 py-2">
                   {monthFilterList.map((val,index)=>{
                     return(<option key={index} >{val}</option>)
@@ -932,20 +1806,36 @@ const groupByMonthBubble = (data) => {
             </div>
           </div>
           {module == "Fuel" && <SocialGraph data={monthWiseData} />}
+          {module == "Bioenergy" && <SocialGraph data={monthWiseData} />}
+          {module == "WTT- fuels" && <SocialGraph data={monthWiseData} />}
+          {module == "Water" && <SocialGraph data={monthWiseData} />}
+          {module == "Materials" && <SocialGraph data={monthWiseData} />}
+          {module == "Freighting goods" && <SocialGraph data={monthWiseData} />}
+          {module == "Food" && <SocialGraph data={monthWiseData} />}
+          {module == "Accommodation" && <SocialGraph data={monthWiseData} />}
+          {module == "Flight" && <SocialGraph data={monthWiseData} />}
+          {module == "Home Office" && <SocialGraph data={monthWiseData} />}
+          {module == "Refrigerant and other" && <SocialGraph data={monthWiseData} />}
+          {module == "Employees commuting" && <SocialGraph data={monthWiseData} />}
+          {module == "Business travel - land and sea" && <SocialGraph data={monthWiseData} />}
+          {module == "Owned Vehicles" && <SocialGraph data={monthWiseData} />}
           {module == "Retention" && (
-            <LineChart data={monthData} lines={linesConfig} xKey="month" yLabel="Number of People" />
+            <LineChart data={monthWiseData} lines={linesConfig} xKey="month" yLabel="Number of People" />
           )}
           {module == "Employment" && (
-            <LineChart data={monthData} lines={linesConfig} xKey="month" yLabel="Number of People" />
+            <LineChart data={monthWiseData} lines={linesConfig} xKey="month" yLabel="Number of People" />
           )}
-          {module == "Entity" && <SocialGraph data={monthData} stacked={true} />}
-          {module == "Mktg and Labelling" && <SocialGraph data={monthData} stacked={true} />}
-          {module == "Customer Privacy" && <SocialGraph data={monthData} stacked={true} />}
-          {module == "Child Labor" && <SocialGraph data={monthData} stacked={true} />}
-          {module == "CHS" && <SocialGraph data={monthData} stacked={true} />}
-          {module == "Social Benefits" && <SocialGraph data={monthData} stacked={true} />}
-          {module == "Eco. Performance" && <SocialGraph data={monthData} />}
-          {module == "Training and Edu" && <BubbleChart data={monthData} />}
+          {module == "Entity" && <SocialGraph data={monthWiseData} stacked={false} />}
+          {module == "Waste Disposal" && <SocialGraph data={monthWiseData} stacked={false} />}
+           {module == "Elec heat cooling" && <SocialGraph data={monthWiseData} stacked={false} />}
+          {module == "Mktg and Labelling" && <SocialGraph data={monthWiseData} stacked={false} />}
+          {module == "Customer Privacy" && <SocialGraph data={monthWiseData} stacked={true} />}
+          {module == "Child Labor" && <SocialGraph data={monthWiseData} stacked={true} />}
+          {module == "CHS" && <SocialGraph data={monthWiseData} stacked={false} />}
+          {module == "Social Benefits" && <SocialGraph data={monthWiseData} stacked={false} />}
+          {module == "Eco. Performance" && <SocialGraph data={monthWiseData} />}
+          {module == "Training and Edu" && <BubbleChart data={monthWiseData} xLabel={"Months"} />}
+          {module == "OH and S" && <BubbleChart data={monthWiseData} xLabel={"Months"} />}
         </div>
       )}
     </div>

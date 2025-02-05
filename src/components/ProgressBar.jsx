@@ -18,7 +18,7 @@ const ProgressBar = ({ total }) => {
           <h4 className="text-lg text-gray-800">{master?.currentReportingCycle.status?"Current ":"Last "}
              Reporting Cycle
         </h4>
-          <p className="text-[1.5rem] font-semibold text-orange-500">10-2024</p>
+          <p className="text-[1.5rem] font-semibold text-orange-500">{master.currentReportingCycle.month+"-"+master.currentReportingCycle.year}</p>
         </div>
         <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
           {master?.currentReportingCycle.status?"In Progress":"Closed"}

@@ -5,14 +5,24 @@ import tower from "../assets/tower.png"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import PieChart from "../components/PieChart";
+import PyramidChart from "../components/PyramidChart";
+import { firestore } from "../firebase";
+import { getDoc,doc } from "firebase/firestore";
+import { useSidebar } from "../context/SidebarContext";
+import { useEffect, useState } from "react";
+
+
 
 
 const EnvOverview = () => {
-  const levels = 5
+  const {userData,master}=useSidebar()
+  const [overviewObj,setOverviewObj]=useState()
+  const levels = 3
+  const wasteData=["Combusted","Recycled","Landfilled"]
   const scopeData = [
-    { label: "Scope 1", percentage: 68, color: "#2979F2", emission: 2356 },
-    { label: "Scope 2", percentage: 70, color: "#29C472", emission: 2356 },
-    { label: "Scope 3", percentage: 90, color: "#FF3D3D", emission: 2356 },
+    { label: "Scope 1", percentage: 96, color: "#2979F2", emission: 2356392 },
+    { label: "Scope 2", percentage: 2, color: "#29C472", emission: 53289 },
+    { label: "Scope 3", percentage: 2, color: "#FF3D3D", emission: 33982 },
   ];
   const pieChartData = {
     labels: ["Red", "Blue", "Green", "Yellow"], // Labels for pie chart sections
@@ -25,6 +35,41 @@ const EnvOverview = () => {
     { label: "Scope 2", value: 70, color: "text-green-500", stroke: "stroke-green-500" },
     { label: "Scope 3", value: 90, color: "text-red-500", stroke: "stroke-red-500" },
   ];
+
+  const Data = [100, 80, 60, 40, 20]; // Values for each level of the pyramid
+  const labels = ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5"];
+  const colors = ["#FF4560", "#FEB019", "#00E396", "#008FFB", "#775DD0"];
+
+  console.log(master.currentReportingCycle.year)
+  const fetchAnalyticsData = async () => {
+    try {
+      const docRef = doc(
+        firestore,
+        userData.domain,
+        "AnalyticsData",
+        "Reporting Data",
+        `Environment-Overview-${master.currentReportingCycle.year}` 
+      );
+  
+      const docSnap = await getDoc(docRef);
+  
+      if (docSnap.exists()) {
+        console.log("Document Data:", docSnap.data());
+        setOverviewObj( docSnap.data())
+        return docSnap.data(); // Return data for further processing
+      } else {
+        console.log("No document found!");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return null;
+    }
+  };
+
+  useEffect(()=>{
+    fetchAnalyticsData()
+  },[])
 
   return (
     <div className='flex flex-col px-3 py-2 gap-2 overflow-x-hidden'>
@@ -58,8 +103,9 @@ const EnvOverview = () => {
           
               {/* Labels */}
               <p className="text-sm font-medium mt-2">{scope.label}</p>
-              <p className="text-xs text-gray-500">Emission</p>
+              {/* <p className="text-xs text-gray-500">Emission</p> */}
               <p className="text-sm font-semibold text-gray-700">{scope.emission}</p>
+              <p className="text-sm font-semibold text-gray-700">kgCO2e</p>
             </div>
           ))}
         </div>
@@ -75,21 +121,24 @@ const EnvOverview = () => {
                 <img src={flight} alt="flight-img"></img>
               </div>
               <div>Flight</div>
-              <div>Emission x%</div>
+              <div>52344 </div>
+              <div>kgCO2e</div>
             </div>
             <div className="flex flex-col justify-center items-center">
               <div className="w-24 h-24">
                 <img src={road} alt="flight-img"></img>
               </div>
-              <div>Flight</div>
-              <div>Emission x%</div>
+              <div>Road</div>
+              <div>1408</div>
+              <div>kgCO2e</div>
             </div>
             <div className="flex flex-col justify-center items-center">
               <div className="w-24 h-24">
                 <img src={ship} alt="flight-img"></img>
               </div>
-              <div>Flight</div>
-              <div>Emission x%</div>
+              <div>Sea</div>
+              <div>750</div>
+              <div>kgCO2e</div>
             </div>
           </div>
         </div>
@@ -210,18 +259,18 @@ const EnvOverview = () => {
     
           </div>
         </div>
-        <div className="bg-white w-[11rem] h-[19rem] p-2 border rounded-xl flex flex-col">
-            <div className="font-semibold text-xl text-[#343C6A]">
+        <div className="bg-white w-[12rem] h-[19rem] overflow-y-hidden p-2 border rounded-xl flex flex-col">
+            <div className="font-semibold text-lg text-[#343C6A]">
               EMISSION FROM ELECTRICITY CONSUMPTION
             </div>
-            <div className="flex mt-3 items-center">
+            <div className="flex mt-1 items-center">
               <div className=" text-slate-600">
                 <div className="">
-                  EMISSION <br/> value
+                  EMISSION <br/> 88919 kWh
                 </div>
-                <div className="">
+                {/* <div className="">
                   CONSUMPTION<br/> value
-                </div>
+                </div> */}
               </div>
               <div className="">
                 <img src={tower} alt="tower"/>
@@ -239,20 +288,22 @@ const EnvOverview = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white flex flex-col w-[26rem] h-[15rem] p-2 border rounded-xl ">
-          <div className="font-semibold text-xl text-[#343C6A] mb-1"> WASTE DISPOSAL</div>
-          <div className=" mt-1 flex flex-col items-center justify-between p-3 gap-[0.1rem]">
-              {Array.from({ length: levels }, (_, i) => (
+        <div className="bg-white flex flex-col w-[26rem] p-2 border rounded-xl ">
+          <div className="font-semibold text-xl text-[#343C6A] mb-6"> WASTE DISPOSAL</div>
+          <div className=" mt-1 flex flex-col items-center justify- p-3 gap-[0.1rem]">
+              {/* {Array.from({ length: levels }, (_, i) => (
           <div
             key={i}
             className="bg-gradient-to-r from-[#feae54] to-[#fedebb] rounded-lg text-center py-[0.3rem]"
             style={{
-              width: `${(i + 1) * 80}px`, // Increase width progressively
+              width: `${(i + 1) * 100}px`, // Increase width progressively
             }}
           >
-            Level {i + 1}
+            {wasteData[i]}
           </div>
-        ))}
+        ))} */}
+
+<PyramidChart data={Data} categories={labels} colors={colors} title="Custom Pyramid Chart" />
               
           </div>
         </div>

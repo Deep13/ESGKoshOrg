@@ -18,9 +18,9 @@ const MapComponent = () => {
     <div className="bg-white rounded-xl border w-full h-[12rem]">
       <MapContainer
         center={[20, 0]} // Centering on the world
-        zoom={0} // Set zoom level
-        scrollWheelZoom={false} // Disable scroll zoom
-        zoomControl={false} // Remove + - controls
+        zoom={2} // Set zoom level
+        scrollWheelZoom={true} // Disable scroll zoom
+        zoomControl={true} // Remove + - controls
         attributionControl={false} // Remove attribution control
         style={{ height: "100%", width: "100%" }}
       >

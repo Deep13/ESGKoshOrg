@@ -1,5 +1,5 @@
 import DoughnutChart from '../components/DoughnutChart';
-import LineChart from '../components/LineChart'
+import LineChart from '../components/AreaChart'
 import MapComponent from '../components/Map'
 
 const sampleData = [
@@ -22,12 +22,12 @@ const sampleData = [
       ];
 
     const data = {
-        labels: ["Red", "Blue", "Yellow", "Green"], // Labels for the doughnut segments
+        labels: ["BOD", "CFO", "CEO"], // Labels for the doughnut segments
         datasets: [
           {
-            data: [300, 50, 100, 200], // Values for the doughnut segments
-            backgroundColor: ["#FF5733", "#33AFFF", "#FFEB33", "#33FF57"], // Segment colors
-            hoverBackgroundColor: ["#FF5733", "#33AFFF", "#FFEB33", "#33FF57"],
+            data: [300, 50, 100], // Values for the doughnut segments
+            backgroundColor: ["#FF5733", "#33AFFF", "#FFEB33"], // Segment colors
+            hoverBackgroundColor: ["#FF5733", "#33AFFF", "#FFEB33"],
           },
         ],
       };
@@ -56,11 +56,11 @@ const GovOverview = () => {
             <div className='font-semibold text-xl text-[#343C6A]'>ECONOMIC PERFORMANCE</div>            
             <div className='flex justify-between mt-5'>
             <div className=' w-[30rem] '>
-                <div className='flex items-center gap-2 ml-10'>
+                {/* <div className='flex items-center gap-2 ml-10'>
                     <div className="w-4 h-4 rounded-full bg-[#3d9f86]">
                     </div>
                     <div>Emission %</div>
-                </div>
+                </div> */}
                 <LineChart
                     data={sampleData}
                     lines={linesConfig}
@@ -70,11 +70,11 @@ const GovOverview = () => {
                 />
             </div>
             <div className='w-[30rem]'>
-                <div className='flex items-center gap-2 ml-10'>
+                {/* <div className='flex items-center gap-2 ml-10'>
                     <div className="w-4 h-4 rounded-full bg-[#3d9f86]">
                     </div>
                     <div>Emission %</div>
-                </div>
+                </div> */}
                 <LineChart
                     data={sampleData}
                     lines={linesConfig}

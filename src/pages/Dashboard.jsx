@@ -13,12 +13,12 @@ import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const navigate =useNavigate();
-  const { expanded,userData,master,sheets,setPage} = useSidebar();
-  const [fullTotalPercentage, setFullTotalPercentage] = useState("");
+  const { expanded,userData,master,sheets,fullTotalPercentage,setFullTotalPercentage} = useSidebar();
+  
   const [avgEmissionsPercentage, setAvgEmissionsPercentage] = useState("");
   const [avgSocialPercentage, setAvgSocialPercentage] = useState("");
   const [avgGovernancePercentage, setAvgGovernancePercentage] = useState("");
-  
+ 
 
   const calculateCompletion = (statistics, reports, branches)=> {
     console.log("stats here", statistics, "and branch", branches)

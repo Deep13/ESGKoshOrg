@@ -1,9 +1,9 @@
-import { Bar } from "react-chartjs-2";
+import { Bar,Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const SocialGraph = ({ data, stacked = false, setYear=null }) => {
+const SocialGraph = ({ data={labels:[],datasets:[]}, stacked = false, setYear=null }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -36,6 +36,7 @@ const SocialGraph = ({ data, stacked = false, setYear=null }) => {
 
   return (
     <div className="w-full h-[200px]">
+      {/* <Bar data={data} options={options} /> */}
       <Bar data={data} options={options} />
     </div>
   );

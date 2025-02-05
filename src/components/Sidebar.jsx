@@ -22,9 +22,12 @@ export default function Sidebar({ onRaiseIncident }) {
 
   
   const analyticsDataList={
-    "Environment":["Fuel"],
-    "Government":["Entity","Eco. Performance"],
-    "Social":["Retention","Training and Edu","Mktg and Labelling","Social Benefits","Employment","CHS","Child Labor","Customer Privacy"]   
+    "Environment":["Fuel","Bioenergy","Water","WTT- fuels","Freighting goods",
+      "Business travel - land and sea","Employees commuting","Materials","Owned Vehicles",
+      "Refrigerant and other","Food","Accommodation","Flight","Home Office","Elec heat cooling","Waste Disposal"],
+    "Governance":["Entity","Eco. Performance"],
+    "Social":["Retention","Training and Edu","Mktg and Labelling","Social Benefits",
+      "Employment","CHS","Child Labor","Customer Privacy","OH and S"]   
   }
   console.log("Sheet data",sheets)
 
@@ -119,12 +122,7 @@ export default function Sidebar({ onRaiseIncident }) {
         break;
       case "fuels":
         setExpanded(true);
-        if(item=="Accomodation" || item=="Flight" || item=="Home Office" || item=="Market Presence"){
-          navigate('/fuels');
-        }
-        else{
-          navigate("/fuels");
-        }
+        navigate('/reporting')
         
         break;
       case "logout":

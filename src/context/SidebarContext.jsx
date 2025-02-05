@@ -13,8 +13,9 @@ export const SidebarProvider = ({ children }) => {
   const [sheets,setSheets] = useState();
   const [activeSubmenu,setActiveSubmenu] = useState("");
   const [analyticsData, setAnalyticsData] = useState();
+  const [fullTotalPercentage, setFullTotalPercentage] = useState("");
   return (
-    <SidebarContext.Provider value={{ expanded, setExpanded,page,setPage,module,setModule,master, sheets,setSheets, setMaster,userData, setUserData, activeSubmenu,setActiveSubmenu,analyticsData,setAnalyticsData}}>
+    <SidebarContext.Provider value={{fullTotalPercentage,setFullTotalPercentage, expanded, setExpanded,page,setPage,module,setModule,master, sheets,setSheets, setMaster,userData, setUserData, activeSubmenu,setActiveSubmenu,analyticsData,setAnalyticsData}}>
       {children}
     </SidebarContext.Provider>
   );

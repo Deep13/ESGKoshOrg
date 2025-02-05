@@ -6,14 +6,14 @@ import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 
 const Admin = () => {
-  const [action, setAction] = useState("Terminate");
   const [tableInfo, setTableInfo] = useState();
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const [terminateModal, setTerminateModal] = useState(false);
   const [loading,setLoading] = useState(false);
   const [year, setYear] = useState("");
   const [month, setMonth] = useState("");
-  const { master, userData, sheets,module } = useSidebar();
+  const { master, userData, sheets,module,fullTotalPercentage,setMaster } = useSidebar();
+  const [action, setAction] = useState(master?.currentReportingCycle?.status);
 
   const getData = async (domain) => {
     setLoading(true)
@@ -886,24 +886,87 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
   const handleInitiate = async() => {
     console.log("Initiating cycle with:", { year, month });
     // Add your logic for initiating a new cycle here
+    if (year && month) {
+        setDoc(doc(firestore,userData.domain,"Master Data"),{
+            currentReportingCycle: {
+                month: month,
+                year: year,
+                status: true,
+                startedAt: new Date()
+            }
+        }, { merge: true })
+            .then(() => {
+                setMaster(prev=>({...prev,currentReportingCycle:{
+                    month: month,
+                    year: year,
+                    status: true,
+                    startedAt: new Date()
+                }
+
+            }))
+            setAction(true)
+            //add success msg here
+                
+            })
+            .catch((error) => {
+                console.log("Error writing document: " + error);
+            });
+
+    } else {
+        //show pop Up
+       console.log("Please enter both month and year.");
+    }
     
-    setAction("Initiate")
+    setAction(true)
     setShowModal(false); // Close the modal after submitting
   };
 
   const handleTerminate = async() => {
-    setAction("Terminate");
+    
     const calcData= await groupSubmittedModulesByBranch()
-    const monthYear=master?.currentReportingCycle
+    // const monthYear=master?.currentReportingCycle
     console.log(calcData)
-    const docRef = doc(
-      firestore,
-      userData?.domain,  // Assuming userData.domain contains the Firestore collection path
-      "AnalyticsData",  // Collection name
-      "Reporting Cycle", // Sub-collection name
-      `${monthYear.month}-${monthYear.year}` // Document ID based on the month and year
-    );
+    // const docRef = doc(
+    //   firestore,
+    //   userData?.domain,  // Assuming userData.domain contains the Firestore collection path
+    //   "AnalyticsData",  // Collection name
+    //   "Reporting Cycle", // Sub-collection name
+    //   `${monthYear.month}-${monthYear.year}` // Document ID based on the month and year
+    // );
+    var closedData = { ...master.currentReportingCycle }
+        closedData.status = false;
+        closedData.closedAt = new Date();
+        closedData.progress = fullTotalPercentage;
+    setDoc(doc(firestore,userData.domain,"Master Data","Reporting Cycle","All Cycle"),{ [closedData.month + "-" + closedData.year]: closedData }, { merge: true })
+                                            .then(() => {
 
+                                                master.currentReportingCycle.status = false;
+                                                setMaster(prev=>({...prev,currentReportingCycle:{...prev.currentReportingCycle,status:false}}))
+                                                setAction(false);
+                                                // that.updateCycle();
+                                                // that.updateAnalytics(closedData);
+                                            })
+                                            .catch((error) => {
+                                                // MessageBox.error("Error writing document: " + error);
+                                                console.log("error writing doc ",error)
+                                            });
+                                        setDoc(doc(firestore,userData.domain,"Master Data"),{
+                                            currentReportingCycle: {
+                                                status: false,
+                                                closedAt: new Date()
+                                            }
+                                        }, { merge: true })
+                                            .then(() => {
+                                                //show popUp
+                                                console.log("Success")
+                                                // MessageBox.success(`Reporting Cycle for ${data.currentReportingCycle.month}/${data.currentReportingCycle.year} is closed.`);
+ 
+                                            })
+                                            .catch((error) => {
+                                                // MessageBox.error("Error writing document: " + error);
+                                                console.log(error)
+                                            });
+ 
     // try {
     //   // Save the document with the required data
     //   await setDoc(docRef, {
@@ -920,6 +983,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     setTerminateModal(false);
   }
 
+  console.log(action)
   return (
     <div className="bg-slate-100 flex flex-col w-full h-screen p-2">
       <div className="mb-3 flex justify-between items-center">
@@ -932,22 +996,28 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
           </div>
         </div>
         <div className="flex gap-3">
-          <button
-            onClick={() => setShowModal(true)} // Show modal on click
-            className={`px-7 py-2 bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl ${
-              action === "Initiate" ? "opacity-50" : ""
-            } text-white`}
-          >
-            Initiate
-          </button>
-          <button
-            onClick={() => setTerminateModal(true)}
-            className={`px-7 py-2 bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl ${
-              action === "Terminate" ? "opacity-50" : ""
-            } text-white`}
-          >
-            Terminate
-          </button>
+          {action?
+          (
+           <button
+           onClick={() => setTerminateModal(true)}
+           className={`px-7 py-2 bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl ${
+             action === "Terminate" ? "opacity-50" : ""
+           } text-white`}
+         >
+           Terminate
+         </button>):(
+           <button
+           onClick={() => setShowModal(true)} // Show modal on click
+           className={`px-7 py-2 bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl ${
+             action === "Initiate" ? "opacity-50" : ""
+           } text-white`}
+         >
+           Initiate
+         </button>
+
+          )
+          }
+          
         </div>
       </div>
 

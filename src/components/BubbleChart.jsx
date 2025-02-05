@@ -11,12 +11,12 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
 
-const BubbleChart = ({ data, setYear }) => {
+const BubbleChart = ({ data={labels:[],datasets:[]},xLabel, setYear=null }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false, position: "top" },
+      legend: { display: true, position: "top" },
     },
     scales: {
       y: {
@@ -29,11 +29,11 @@ const BubbleChart = ({ data, setYear }) => {
       x: {
         type: 'category', // Ensure that x-axis is treated as categorical
         offset:0.5,
-        labels: Array.from(new Set(data.datasets.flatMap(dataset => dataset.data.map(item => item.x)))), // Dynamically fetch the years
+        labels: Array.from(new Set(data?.datasets?.flatMap(dataset => dataset.data.map(item => item.x)))), // Dynamically fetch the years
         beginAtZero:false,
         title: {
           display: true,
-          text: 'Years',
+          text: xLabel,
         },
         ticks: {
           autoSkip: false, // Disable auto skip to ensure all years are displayed

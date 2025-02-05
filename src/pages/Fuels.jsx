@@ -23,7 +23,7 @@ const Fuels = () => {
   const selectedIndexes2=useRef([]);
 
   // Data configurations based on the fuel type (fuel, bioenergy)
-  const {module, master,userData, activeSubmenu,sheet } = useSidebar();
+  const {module, master,userData, activeSubmenu,sheets } = useSidebar();
   // useEffect(() => {
   //   const fetchData = async () => {
   //     // Get Firestore instance
@@ -107,28 +107,36 @@ const deleteRow=()=>{
 }
 
 const checkKey=(moduleValue)=>{
-  for (let key in sheet) {
-    if (sheet[key].includes(moduleValue)) {
+  // let arr=Object.keys(sheets)
+  console.log(sheets['Environment']);
+  for(let key in sheets ){
+    console.log(key)
+  }
+  for (let key in sheets) {
+    if (sheets[key].includes(moduleValue)) {
+      console.log("hi hi hi",key)
         return key;  // Return the module name (key)
     }
 
-  return null;
+ 
 }
+return null;
 }
 
 
 const calculateEmissions = () => {
     let totalEmissions = 0;
+    let fullEmissions=0;
     let bifurcatedEmissions = { Type: {} }; // For modules grouped by Type
     let activityEmissions = { Activity: {} }; // For modules grouped by Activity
-    let disposalMethodEmissions = { DisposalMethod: {}, Activity: {} }; // For Waste Disposal (grouped by Disposal Method)
+    let disposalMethodEmissions = { }; // For Waste Disposal (grouped by Disposal Method)
     let level2Emissions = { Level2: {} }; // For Owned Vehicles (grouped by Level 2)
     let vehiclesEmissions = { Vehicles: {} }; // For Freighting goods, Business travel land and sea, Employee commuting
-    let entityEmissions = { EntityType: {}, Gender: {} };
-    let employmentEmissions = { EmploymentType: {}, Gender: {} };
-    let retentionData = { EmployeeType: {}, Gender: {} };
+    let entityEmissions = { EntityType: {All:{"Male":0,"Female":0,"Others":0}}};
+    let employmentEmissions = { EmploymentType: {All:{"Male":0,"Female":0,"Others":0}} };
+    let retentionData = { EmployeeType: {All:{"Male":0,"Female":0,"Others":0}}};
     let ohsData = { InjuryType: {} }; // For OH and S module
-
+//extra in waste disposal and buisness travel
     const checkValue = (value) => {
         return (value === undefined || value === "--") ? "Unknown" : value;
     };
@@ -150,47 +158,38 @@ const calculateEmissions = () => {
 
                 bifurcatedEmissions.Type[type] += emission;
             });
+            selectedVariant.forEach(item => {
+              fullEmissions += (parseFloat(item.Amount) || 0) * (parseFloat(item.Factor) || 0);
+          })
 
-            return bifurcatedEmissions;
+            return {totalEmissions:bifurcatedEmissions,fullEmissions:fullEmissions};
 
        
-            case "Elec heat cooling":
-              selectedVariant.forEach(item => {
-                  const countryType = item["Country-Type"] || "Unknown"; // Using Country-Type
-                  const activity = item.Activity || "Unknown"; // Activity filter
-                  const amount = parseFloat(item.Amount || 0);
-                  const gefFactor = parseFloat(item["GEF Factors"] || 0);
-                  const tdFactor = parseFloat(item["T&D Factors"] || 0);
-                  const emission = amount * gefFactor + amount * tdFactor;
-          
-                  // Group by Country-Type
-                  if (!bifurcatedEmissions["Country-Type"]) {
-                      bifurcatedEmissions["Country-Type"] = {};
-                  }
-                  if (!bifurcatedEmissions["Country-Type"][countryType]) {
-                      bifurcatedEmissions["Country-Type"][countryType] = 0;
-                  }
-                  bifurcatedEmissions["Country-Type"][countryType] += emission;
-          
-                  // Group by Activity (directly using Activity as key)
-                  if (!activityEmissions.Activity[activity]) {
-                      activityEmissions.Activity[activity] = 0;
-                  }
-                  activityEmissions.Activity[activity] += emission;
-              });
-          
-              return {
-                  "Country-Type": bifurcatedEmissions["Country-Type"],
-                  Activity: activityEmissions.Activity
-              };
-          
+        case "Elec heat cooling":
+          selectedVariant.forEach(item => {
+            const activity = checkValue(item.Activity);
+            const amount = parseFloat(item["Amount"]) || 0;
+            const factor1 = parseFloat(item["GEF Factors"]) || 0;
+            const factor2 = parseFloat(item["T&D Factors"]) || 0;
+            const emission = amount * (factor1+factor2);
+            fullEmissions+=emission
+            if (!activityEmissions.Activity[activity]) {
+                activityEmissions.Activity[activity] = 0;
+            }
 
+            activityEmissions.Activity[activity] += emission;
+        });
+
+
+        return {totalEmissions:activityEmissions,fullEmissions};
+          
         case "Materials":
             selectedVariant.forEach(item => {
                 const activity = checkValue(item.Activity);
                 const amount = parseFloat(item["Amount (tonnes)"]) || 0;
                 const factor = parseFloat(item.Factor) || 0;
                 const emission = amount * factor;
+                fullEmissions+=emission
 
                 if (!activityEmissions.Activity[activity]) {
                     activityEmissions.Activity[activity] = 0;
@@ -199,38 +198,54 @@ const calculateEmissions = () => {
                 activityEmissions.Activity[activity] += emission;
             });
 
-            return activityEmissions;
+            return{ totalEmissions:activityEmissions,fullEmissions};
 
         case "Waste Disposal":
-            selectedVariant.forEach(item => {
-                const disposalMethod = checkValue(item["Disposal Method"]);
-                const weight = parseFloat(item.Weight) || 0;
-                const factor = parseFloat(item.Factor) || 0;
-                const emission = weight * factor;
+          disposalMethodEmissions = { Activity:{All:{"Recycled":0,"Landfilled":0,"Combusted":0}} }; // Initialize structure
 
-                // Ensure DisposalMethod is defined
-                if (!disposalMethodEmissions.DisposalMethod[disposalMethod]) {
-                    disposalMethodEmissions.DisposalMethod[disposalMethod] = 0;
-                }
-                disposalMethodEmissions.DisposalMethod[disposalMethod] += emission;
-                
-                // Ensure Activity is defined
-                const activity = checkValue(item.Activity);
-                if (!disposalMethodEmissions.Activity[activity]) {
-                    disposalMethodEmissions.Activity[activity] = 0;
-                }
+          selectedVariant.forEach(item => {
+              const disposalMethod = checkValue(item["Disposal Method"]);
+              const activity = checkValue(item.Activity);
+              const weight = parseFloat(item.Weight) || 0;
+              const factor = parseFloat(item.Factor) || 0;
+              const emission = weight * factor;
+              fullEmissions+=emission
 
-                disposalMethodEmissions.Activity[activity] += emission;
-            });
-
-            return disposalMethodEmissions;
-
+              
+              // Ensure disposal method exists
+              if (!disposalMethodEmissions.Activity[activity]) {
+                  disposalMethodEmissions.Activity[activity] = {};
+              }
+              
+          
+              // Ensure activity inside disposal method exists
+              if (!disposalMethodEmissions.Activity[activity][disposalMethod]) {
+                  disposalMethodEmissions.Activity[activity][disposalMethod] = 0;
+              }
+          
+              // Accumulate emissions for the activity under the disposal method
+              disposalMethodEmissions.Activity[activity][disposalMethod] += emission;
+              disposalMethodEmissions.Activity["All"][disposalMethod] += emission;
+          });
+          
+          console.log(disposalMethodEmissions);
+          return {totalEmissions:disposalMethodEmissions,fullEmissions};
+          
         case "Owned Vehicles":
+          var scopeWiseEmission={};
+
             selectedVariant.forEach(item => {
                 const level2 = checkValue(item["Level 2"]);
                 const distance = parseFloat(item["Distance (km)"]) || 0;
                 const factor = parseFloat(item.Factor) || 0;
                 const emission = distance * factor;
+                fullEmissions+=emission
+
+                if (!scopeWiseEmission[item.Scope]) {
+                  scopeWiseEmission[item.Scope] = 0;
+              }
+
+              scopeWiseEmission[item.Scope] += emission;
 
                 if (!level2Emissions.Level2[level2]) {
                     level2Emissions.Level2[level2] = 0;
@@ -239,16 +254,17 @@ const calculateEmissions = () => {
                 level2Emissions.Level2[level2] += emission;
             });
 
-            return level2Emissions;
+            return {totalEmissions:level2Emissions,fullEmissions,scopeWiseEmission};
 
         case "Freighting goods":
         case "Business travel - land and sea":
         case "Employees commuting":
             selectedVariant.forEach(item => {
                 const vehicle = checkValue(item.Vehicle);
-                const distance = parseFloat(item["Distance (km)"]) || 0;
+                const distance = parseFloat(item["Distance (km)"]) || parseFloat(item["Total distance"]) || 0;
                 const factor = parseFloat(item.Factor) || 0;
                 const emission = distance * factor;
+                fullEmissions+=emission
 
                 if (!vehiclesEmissions.Vehicles[vehicle]) {
                     vehiclesEmissions.Vehicles[vehicle] = 0;
@@ -257,24 +273,33 @@ const calculateEmissions = () => {
                 vehiclesEmissions.Vehicles[vehicle] += emission;
             });
 
-            return vehiclesEmissions;
+            return{totalEmissions: vehiclesEmissions,fullEmissions};
 
         case "Flight":
             selectedVariant.forEach(item => {
                 totalEmissions += parseFloat(item.co2e) || 0;
+               fullEmissions += parseFloat(item.co2e) || 0;
             });
-            break;
+            return {totalEmissions,fullEmissions}
+        case "Accommodation":
+          selectedVariant.forEach(item => {
+             totalEmissions += (parseFloat(item["Number of occupied rooms"]) || 0)*
+             (parseFloat(item["Number of nights per room"]) || 0)*
+             (parseFloat(item["Factor"]) || 0);
+             fullEmissions += (parseFloat(item["Number of occupied rooms"]) || 0)*
+             (parseFloat(item["Number of nights per room"]) || 0)*
+             (parseFloat(item["Factor"]) || 0);
+          });
+          return {totalEmissions,fullEmissions}
 
         case "Home Office":
             selectedVariant.forEach(item => {
-                totalEmissions += (parseFloat(item["Working regime (For full-time)"]) || 0) * 
-                                   (parseFloat(item["Number of months"]) || 0) * 
-                                   (parseFloat(item.Factor) || 0) + 
-                                  ((parseFloat(item["Working from home"]) || 0) / 2) * 
-                                   (parseFloat(item["Number of months"]) || 0) * 
+                totalEmissions +=(parseFloat(item["Number of employees"]) || 0) * 
                                    (parseFloat(item.Factor) || 0);
+                fullEmissions +=(parseFloat(item["Number of employees"]) || 0) * 
+                               (parseFloat(item.Factor) || 0);
             });
-            break;
+            return {totalEmissions,fullEmissions}
         
         case "Entity":
           {
@@ -282,64 +307,79 @@ const calculateEmissions = () => {
                 const entityType = checkValue(item["Entity Type"]);
                 const gender = checkValue(item["Gender"]);
                 const headCount = parseInt(item["Head Count"]) || 0;
-    
+                fullEmissions+=headCount;
                 // Group by Entity Type
                 if (!entityEmissions.EntityType[entityType]) {
-                    entityEmissions.EntityType[entityType] = 0;
+                    entityEmissions.EntityType[entityType] = {"Male":0,"Female":0,"Others":0};
+                    entityEmissions.EntityType[entityType][gender]=headCount
                 }
-                entityEmissions.EntityType[entityType] += headCount;
+               else{
+                entityEmissions.EntityType[entityType][gender] += headCount;
+               }
+               entityEmissions.EntityType["All"][gender] += headCount;
     
                 // Group by Gender
-                if (!entityEmissions.Gender[gender]) {
-                    entityEmissions.Gender[gender] = 0;
-                }
-                entityEmissions.Gender[gender] += headCount;
+                // if (!entityEmissions.Gender[gender]) {
+                //     entityEmissions.Gender[gender] = 0;
+                // }
+                // entityEmissions.Gender[gender] += headCount;
             });
     
-            return entityEmissions;
+            return {totalEmissions:entityEmissions,fullEmissions};
         }
         case "Retention":{
+          retentionData = { EmployeeType: { All: { Male: 0, Female: 0, Others: 0 } } }; // Initialize structure
+
           selectedVariant.forEach(item => {
-              const employeeType = checkValue(item["Employee Type"]);
+              const entityType = checkValue(item["Employee Type"]);
               const gender = checkValue(item["Gender"]);
               const headCount = parseInt(item["Head Count"]) || 0;
-  
-              // Group by Employee Type
-              if (!retentionData.EmployeeType[employeeType]) {
-                  retentionData.EmployeeType[employeeType] = 0;
+              fullEmissions+=headCount;
+          
+              // Ensure Employee Type is initialized
+              if (!retentionData.EmployeeType[entityType]) {
+                  retentionData.EmployeeType[entityType] = { Male: 0, Female: 0, Others: 0 };
               }
-              retentionData.EmployeeType[employeeType] += headCount;
-  
-              // Group by Gender
-              if (!retentionData.Gender[gender]) {
-                  retentionData.Gender[gender] = 0;
-              }
-              retentionData.Gender[gender] += headCount;
+          
+              // Accumulate headcount for the specific Employee Type and Gender
+              retentionData.EmployeeType[entityType][gender] += headCount;
+          
+              // Accumulate headcount in "All" category
+              retentionData.EmployeeType["All"][gender] += headCount;
           });
-  
-          return retentionData;
-      }
+          
+          console.log(retentionData);
+          return {totalEmissions:retentionData,fullEmissions};
+        }
+          
         case "Employment":{
-          selectedVariant.forEach(item => {
-              const employmentType = checkValue(item["Employment Type"]);
-              const gender = checkValue(item["Gender"]);
-              const headCount = parseInt(item["Head Count"]) || 0;
-  
-              // Group by Employment Type
-              if (!employmentEmissions.EmploymentType[employmentType]) {
-                  employmentEmissions.EmploymentType[employmentType] = 0;
-              }
-              employmentEmissions.EmploymentType[employmentType] += headCount;
-  
-              // Group by Gender
-              if (!employmentEmissions.Gender[gender]) {
-                  employmentEmissions.Gender[gender] = 0;
-              }
-              employmentEmissions.Gender[gender] += headCount;
-          });
-  
-          return employmentEmissions;
-      }
+            selectedVariant.forEach(item => {
+                const entityType = checkValue(item["Employment Type"]);
+                const gender = checkValue(item["Gender"]);
+                const headCount = parseInt(item["Head Count"]) || 0;
+                fullEmissions+=headCount
+    
+                // Group by Entity Type
+                if (!employmentEmissions.EmploymentType[entityType]) {
+                    employmentEmissions.EmploymentType[entityType] = {"Male":0,"Female":0,"Others":0};
+                    employmentEmissions.EmploymentType[entityType][gender]=headCount
+                }
+               else{
+                employmentEmissions.EmploymentType[entityType][gender] += headCount;
+               }
+               employmentEmissions.EmploymentType["All"][gender] += headCount;
+    
+                // Group by Gender
+                // if (!entityEmissions.Gender[gender]) {
+                //     entityEmissions.Gender[gender] = 0;
+                // }
+                // entityEmissions.Gender[gender] += headCount;
+            });
+    
+            return {totalEmissions:employmentEmissions,fullEmissions};
+        }
+          
+      
 
       case "OH and S":{
         selectedVariant.forEach(item => {
@@ -383,6 +423,22 @@ const calculateEmissions = () => {
   
       return bifurcatedEmissions;
   }
+  case "Eco. Performance":{
+    let saveValues={
+      "Total turnover":0,
+      "Total Revenue":0,
+    }
+    selectedVariant.forEach((item)=>{
+      if(item.Data=="Total turnover"){
+        saveValues["Total turnover"]=item.Values
+      }
+      if(item.Data=="Total Revenue"){
+        saveValues["Total Revenue"]=item.Values
+      }
+    })
+
+    return saveValues;
+  }
   
                 
 
@@ -390,7 +446,9 @@ const calculateEmissions = () => {
             break;
     }
 
+    
     if(checkKey(module)!="Environment"){
+        console.log("Case 1")
       return selectedVariant.reduce((acc, obj) => {
         Object.keys(obj).forEach(key => {
           if (!isNaN(obj[key])) {  // Only sum up numeric values
@@ -403,10 +461,11 @@ const calculateEmissions = () => {
     else{
       selectedVariant.forEach(item => {
         totalEmissions += (parseFloat(item.Amount) || 0) * (parseFloat(item.Factor) || 0);
+        fullEmissions += (parseFloat(item.Amount) || 0) * (parseFloat(item.Factor) || 0);
     })
     }
 
-    return totalEmissions
+    return {totalEmissions,fullEmissions}
 };
 
 
@@ -14773,9 +14832,10 @@ const ignoreFields=()=>{
     //do u want to save this data conformation msg after branch check
     var domain = userData?.username.split("@");
     var monthYear = master?.currentReportingCycle;
-    var totalEmission = calculateEmissions();
+    var {totalEmissions,fullEmissions,scopeWiseEmission} = calculateEmissions();
+    
     ignoreFields();
-
+    console.log("fix",totalEmissions)
     setDoc(doc(firestore,domain[1],"TransactionData",monthYear.month+"-"+monthYear.year,module),{
       [branch]: {
           data: selectedVariant,
@@ -14789,7 +14849,7 @@ const ignoreFields=()=>{
       .then(() => {
         setDoc(doc(firestore,domain[1],"TransactionData",monthYear.month+"-"+monthYear.year,"Statistics"),{
           [branch]: {
-             [activeSubmenu]:arrayUnion(module)
+             [checkKey(module)]:arrayUnion(module)
               // dataType: that.custom ? "Custom" : "Variant"
           }
     
@@ -14807,7 +14867,7 @@ const ignoreFields=()=>{
 
           setDoc(doc(firestore,domain[1],"AnalyticsData","Reporting Data",module+"-"+monthYear.year),{
             [monthYear.month]: {
-               [branch]:totalEmission,
+               [branch]:totalEmissions,
               
                 // dataType: that.custom ? "Custom" : "Variant"
             },
@@ -14831,6 +14891,73 @@ const ignoreFields=()=>{
 
       });
 
+      var overviewObj={
+        [module]: fullEmissions,
+
+    }
+    if(module=="Owned Vehicles" && scopeWiseEmission){
+      overviewObj["Owned Vehicles ScopeWise"]=scopeWiseEmission
+    }
+    if(module=="Waste Disposal"){
+      var disposalMethodsObj={}
+      var disposalActivityObj={}
+      Object.entries(totalEmissions.Activity).map((type)=>{
+
+        Object.keys(type[1]).map((emission)=>{
+          if (!disposalActivityObj[type[0]]) {
+            disposalActivityObj[type[0]] = type[1][emission];
+        }
+        else{
+          disposalActivityObj[type[0]]+=type[1][emission];
+        }
+        if (!disposalMethodsObj[emission]) {
+            disposalMethodsObj[emission] =type[1][emission];
+        }
+        else{
+          disposalMethodsObj[emission]+=type[1][emission];
+        }
+        })
+      })
+
+      overviewObj['Waste Method']=disposalMethodsObj
+      overviewObj['Waste Activity']=disposalActivityObj
+      
+    }
+      if(module=="Business travel - land and sea"){
+        var land=0;
+        var sea=0;
+  
+        Object.keys(totalEmissions.Vehicles).map((vehicleType)=>{
+          if(vehicleType=="Ferry"){
+            sea+=totalEmissions.Vehicles[vehicleType];
+          }
+          else{
+            land+=totalEmissions.Vehicles[vehicleType]
+          }
+        })
+
+        overviewObj["land"]=land;
+        overviewObj["sea"]=sea;  
+      }
+
+      setDoc(doc(firestore,domain[1],"AnalyticsData","Reporting Data",checkKey(module)+"-Overview-"+monthYear.year),{
+        [monthYear.month]: {
+          [branch]: overviewObj
+          
+            // dataType: that.custom ? "Custom" : "Variant"
+        },
+        type:checkKey(module)+"-Overview",
+        year:monthYear.year,
+  
+    }, { merge: true })
+        .then(() => {
+          console.log("Data saved successfully for analytics")
+            
+        })
+        .catch((error) => {
+           console.log("Data saved unsuccessfully for analytics",error)
+  
+        });
 
   }
   const saveDraft = async () =>{
@@ -14926,7 +15053,7 @@ const ignoreFields=()=>{
           >
             Variants
           </div>
-          {master?.currentReportingCycle.status&&
+          {!(master?.currentReportingCycle.status)&&
           <div
           onClick={() => setTab("createVariant")}
           className={` cursor-pointer border-b-[3px] ${
@@ -14936,7 +15063,7 @@ const ignoreFields=()=>{
           Create Variants
         </div>}
         </div>
-        {tab=='recorded'?
+        {(tab=='recorded' && master?.currentReportingCycle?.status)?
         <div className="flex gap-10">
           <div onClick={()=>saveDraft()} className="border-2 rounded-xl px-3 py-2 cursor-pointer">
             Save as Draft
@@ -14975,7 +15102,7 @@ const ignoreFields=()=>{
           branchChange(e.target.value);
         }}
       >
-        <option value={""} selected disabled>Select a Value</option>
+        <option value={""} selected disabled>Select Branch</option>
         {userData?.branches?.map((branch,index)=>(
           <option           
             key={index} value={JSON.stringify(branch)}>
@@ -14988,12 +15115,12 @@ const ignoreFields=()=>{
       </div>
       
 
-      <div className="flex mt-3">
+      {/* <div className="flex mt-3">
         <div className='flex'>
           <input type='file' accept=".xls, .xlsx" placeholder="Upload Excel"  onChange={(event) => handleUpload(event)}></input>
         </div>
         <div className="flex border-2 rounded-xl cursor-pointer px-4 py-2" onClick={()=>downloadTableAsExcel()}>Download Excel</div>
-      </div>
+      </div> */}
 
     </div>
 
@@ -15016,7 +15143,7 @@ const ignoreFields=()=>{
     </>
       }
       {tab=='variant'&&
-      <div className={`flex flex-col `}>
+      <div className={`flex flex-col w-52 `}>
       {formattedOfficeTypes&&formattedOfficeTypes.length>0&&
       <select
       placeholder="All"
@@ -15028,7 +15155,7 @@ const ignoreFields=()=>{
         // e.target.style.width='auto'
       }}
     >
-       <option value={""} selected disabled>Select a Value</option>
+       <option value={""} selected disabled>Select Office</option>
       {formattedOfficeTypes?.map((offices,index)=>(
         <option key={index} value={offices.officeType}>
           {offices.officeType}
@@ -15136,7 +15263,7 @@ const ignoreFields=()=>{
     </>
     :
     <div>
-      <div className={`flex flex-col `}>
+      <div className={`flex flex-col w-52 `}>
             {formattedOfficeTypes&&formattedOfficeTypes.length>0&&
             <select
             placeholder="All"
@@ -15147,7 +15274,7 @@ const ignoreFields=()=>{
               // e.target.style.width='auto'
             }}
           >
-            <option value={""} selected disabled>Select a Value</option>
+            <option value={""} selected disabled>Select Office</option>
             {formattedOfficeTypes?.map((offices,index)=>(
               <option key={index} value={offices.officeType}>
                 {offices.officeType}

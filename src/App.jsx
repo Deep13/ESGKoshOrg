@@ -51,11 +51,11 @@ function App() {
           <Route path='/support' element={<Support />} />
           <Route path='/branchwise' element={<BranchWise />} />
           <Route path='/admin' element={<Admin />} />
-          <Route path='/fuels' element={<Fuels/>}/>
+          <Route path='/reporting' element={<Fuels/>}/>
           <Route path='/analytics' element={<Analytics/>} />
           <Route path='/social' element={<SocialOverview/>} />
           <Route path='/environment' element={<EnvOverview/>}/>
-          <Route path='/government' element={<GovOverview/>}/>
+          <Route path='/governance' element={<GovOverview/>}/>
         </Route>
       </Routes>
     </>

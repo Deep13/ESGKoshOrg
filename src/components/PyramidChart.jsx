@@ -1,7 +1,7 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-const PyramidChart = ({ data, categories, title }) => {
+const PyramidChart = ({ data=[], categories=[] }) => {
   const reversedData = [...data].reverse();
   const reversedCategories = [...categories].reverse();
 
@@ -32,15 +32,15 @@ const PyramidChart = ({ data, categories, title }) => {
     ],
     dataLabels: {
       enabled: true,
-      formatter: function (val, opt) {
-        return opt.w.globals.labels[opt.dataPointIndex];
-      },
+      // formatter: function (val, opt) {
+      //   return opt.w.globals.labels[opt.dataPointIndex];
+      // },
       dropShadow: { enabled: true },
-    },
-    title: {
-    display:false,
-      text: title || "Pyramid Chart",
-      align: "center",
+      chart: {
+        toolbar: {
+          show: false
+        }
+      },
     },
     xaxis: {
       categories: reversedCategories,

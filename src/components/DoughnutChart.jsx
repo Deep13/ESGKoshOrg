@@ -14,8 +14,8 @@ const options = {
   responsive: true,
   plugins: {
     legend: {
-      display: true,
-      position: "bottom",
+      display: false,
+      position: "left",
     },
     title: {
       display: false,
@@ -24,7 +24,7 @@ const options = {
   },
 };
 
-const DoughnutChart = ({ data }) => {
+const DoughnutChart = ({ data={labels:[],datasets:[]}}) => {
   return (
     <div className="flex justify-center items-center">
       <div className="w-[12rem] h-[12rem]">

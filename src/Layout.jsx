@@ -167,9 +167,9 @@ const Layout = () => {
                         Low
                       </div>
                       <div
-                        onClick={() => setPriority("Mid")}
+                        onClick={() => setPriority("Medium")}
                         className={`cursor-pointer rounded-2xl px-10 py-2 ${
-                          priority === "Mid" ? "bg-gradient-to-r from-[#3d9f86] to-[#29C472]" : ""
+                          priority === "Medium" ? "bg-gradient-to-r from-[#3d9f86] to-[#29C472]" : ""
                         }`}
                       >
                         Mid

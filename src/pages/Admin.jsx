@@ -4,10 +4,13 @@ import { firestore } from "../firebase";
 import { getDoc, doc, collection,getDocs,setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
+import modalIcon from "../assets/modalIcon.png"
 
 const Admin = () => {
   const [tableInfo, setTableInfo] = useState();
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
+  const [noticeModal,setNoticeModal] = useState(false);
+  const [noticeModalText,setNoticeModalText] = useState("");
   const [terminateModal, setTerminateModal] = useState(false);
   const [loading,setLoading] = useState(false);
   const [year, setYear] = useState("");
@@ -906,14 +909,20 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
             }))
             setAction(true)
             //add success msg here
+            setNoticeModal(true);
+            setNoticeModalText("Cycle has been successfully Initiated")
                 
             })
             .catch((error) => {
+                setNoticeModal(true);
+                setNoticeModalText("Error writing document: "+error)
                 console.log("Error writing document: " + error);
             });
 
     } else {
         //show pop Up
+        setNoticeModal(true);
+        setNoticeModalText("Please enter both month and year.")
        console.log("Please enter both month and year.");
     }
     
@@ -958,11 +967,15 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
                                         }, { merge: true })
                                             .then(() => {
                                                 //show popUp
+                                                setNoticeModal(true)
+                                                setNoticeModalText("Cycle has been successfully terminated.")
                                                 console.log("Success")
                                                 // MessageBox.success(`Reporting Cycle for ${data.currentReportingCycle.month}/${data.currentReportingCycle.year} is closed.`);
  
                                             })
                                             .catch((error) => {
+                                                setNoticeModal(true)
+                                                setNoticeModalText("Error writing document: " + error)
                                                 // MessageBox.error("Error writing document: " + error);
                                                 console.log(error)
                                             });
@@ -1104,26 +1117,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-lg p-6 w-96">
             <h2 className="text-lg font-semibold mb-2">Terminate Existing Cycle</h2>
-            {/* <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-              <input
-                type="text"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                className="w-full border rounded px-3 py-2"
-                placeholder="Enter Year (e.g., 2025)"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Month</label>
-              <input
-                type="text"
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-                className="w-full border rounded px-3 py-2"
-                placeholder="Enter Month (e.g., 01)"
-              />
-            </div> */}
+            
             <div className="mb-4">
               Are you sure you wan to close the existing cycle ?
             </div>
@@ -1144,6 +1138,24 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
           </div>
         </div>
       )}
+
+      {noticeModal && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white rounded-lg shadow-lg p-6 w-96 flex flex-col items-center justify-center">
+                  
+                  <div className="mb-5 flex gap-5 jusify-center items-center">
+                    <img src={modalIcon} alt="modal Icon" className="h-10"/>
+                    {noticeModalText}
+                  </div>
+      
+                  
+                    <button onClick={()=>{setNoticeModal(false)}} className="px-3 py-2 rounded-lg mx-auto bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
+                      Ok
+                    </button>
+                  
+                </div>
+              </div>
+            )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // Import eye icons
 import logo from "../assets/logo.png";
+import modalIcon from '../assets/modalIcon.png'
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useState } from "react";
@@ -11,12 +12,11 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   const onLogin = (e) => {
     e.preventDefault();
-    setError(""); // Reset error before attempting login
-
+    
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -24,7 +24,7 @@ const Login = () => {
         console.log(user);
       })
       .catch((error) => {
-        setError("Invalid email or password. Please try again.");
+        setShowModal(true)
         console.log(error.code, error.message);
       });
   };
@@ -46,12 +46,7 @@ const Login = () => {
             Sustrack Dashboard
           </h3>
 
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-md text-center mb-4">
-              {error}
-            </div>
-          )}
+          
 
           {/* Login Form */}
           <form onSubmit={onLogin}>
@@ -83,7 +78,7 @@ const Login = () => {
                 className="absolute right-3 cursor-pointer text-gray-500"
                 onClick={() => setPasswordVisible(!passwordVisible)}
               >
-                {passwordVisible ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+                {passwordVisible ? <AiOutlineEye size={20} />:<AiOutlineEyeInvisible size={20} /> }
               </span>
             </div>
 
@@ -104,6 +99,24 @@ const Login = () => {
           </p>
         </div>
       </div>
+
+      {showModal && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="bg-white rounded-lg shadow-lg p-6 w-96 flex flex-col items-center justify-center">
+                  
+                  <div className="mb-5 flex gap-5 jusify-center items-center">
+                    <img src={modalIcon} alt="modal Icon" className="h-10"/>
+                    Invalid Credentials !
+                  </div>
+      
+                  
+                    <button onClick={()=>{setShowModal(false)}} className="px-3 py-2 rounded-lg mx-auto bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
+                      Ok
+                    </button>
+                  
+                </div>
+              </div>
+            )}
     </div>
   );
 };

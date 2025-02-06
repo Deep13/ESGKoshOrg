@@ -24,37 +24,13 @@ const Fuels = () => {
 
   // Data configurations based on the fuel type (fuel, bioenergy)
   const {module, master,userData, activeSubmenu,sheets } = useSidebar();
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     // Get Firestore instance
-  //     // const db = getFirestore();
-  //     console.log("userData",userData)
-  //     var domain = userData?.domain;
-  //     // Define the path to the collection
-  //     var closedData=master?.currentReportingCycle;
-  //     const docRef = collection(
-  //       firestore,
-  //       domain,
-  //       "TransactionData",
-  //       `${closedData.month}-${closedData.year}`
-  //     );
-
-  //     try {
-  //       const snapShot = await getDocs(docRef); // Fetch documents from Firestore
-  //       const fetchedData = snapShot.docs.map(doc => ({
-  //         [doc.id]: doc.data() // Map documents to an array of objects with document ID as key
-  //       }));
-
-  //       console.log("test1",fetchedData); // Update state with fetched data
-  //     } catch (error) {
-  //       console.error("Error fetching data: ", error); // Handle any errors during the fetch
-  //     }
-  //   };
-
-  //   fetchData(); // Call the function to fetch data
-
-  // }, [userData, master]); // Dependencies to trigger re-fetch
   
+  useEffect(()=>{
+    setSelectedVariant(null);
+    setBranch("");
+    setVariantOffice("")
+  },[module])
+
   const fuelData = {
     Fuel: [
       { title: "Fuels", editable: false, key: "fuels" },
@@ -277,8 +253,8 @@ const calculateEmissions = () => {
 
         case "Flight":
             selectedVariant.forEach(item => {
-                totalEmissions += parseFloat(item.co2e) || 0;
-               fullEmissions += parseFloat(item.co2e) || 0;
+                totalEmissions += parseFloat(item["kg CO2e"]) || 0;
+               fullEmissions += parseFloat(item["kg CO2e"]) || 0;
             });
             return {totalEmissions,fullEmissions}
         case "Accommodation":
@@ -303,18 +279,21 @@ const calculateEmissions = () => {
         
         case "Entity":
           {
+            fullEmissions={"BOD":0,"CFO":0,"CEO":0,"Independent Directors":0,"Executives":0,"CFO/CEO":0}
             selectedVariant.forEach(item => {
                 const entityType = checkValue(item["Entity Type"]);
                 const gender = checkValue(item["Gender"]);
                 const headCount = parseInt(item["Head Count"]) || 0;
-                fullEmissions+=headCount;
+                
                 // Group by Entity Type
                 if (!entityEmissions.EntityType[entityType]) {
                     entityEmissions.EntityType[entityType] = {"Male":0,"Female":0,"Others":0};
                     entityEmissions.EntityType[entityType][gender]=headCount
+                    fullEmissions[entityType]+=headCount;
                 }
                else{
                 entityEmissions.EntityType[entityType][gender] += headCount;
+                fullEmissions[entityType]+=headCount;
                }
                entityEmissions.EntityType["All"][gender] += headCount;
     
@@ -353,11 +332,13 @@ const calculateEmissions = () => {
         }
           
         case "Employment":{
+          fullEmissions={"50+":0,"35 to 50":0,"22 to 35":0,"Less than 22":0,"Overall":0}
             selectedVariant.forEach(item => {
                 const entityType = checkValue(item["Employment Type"]);
                 const gender = checkValue(item["Gender"]);
                 const headCount = parseInt(item["Head Count"]) || 0;
-                fullEmissions+=headCount
+                const age = item["Age"] || "0";
+                fullEmissions[age]+=headCount
     
                 // Group by Entity Type
                 if (!employmentEmissions.EmploymentType[entityType]) {
@@ -428,16 +409,31 @@ const calculateEmissions = () => {
       "Total turnover":0,
       "Total Revenue":0,
     }
+    fullEmissions={
+      "Total turnover":0,
+      "Total Revenue":0,
+      "Direct economic value generated":0,
+      "Direct economic value Distributed":0,
+
+    }
     selectedVariant.forEach((item)=>{
       if(item.Data=="Total turnover"){
         saveValues["Total turnover"]=item.Values
+        fullEmissions["Total turnover"]=item.Values
       }
       if(item.Data=="Total Revenue"){
         saveValues["Total Revenue"]=item.Values
+        fullEmissions["Total Revenue"]=item.Values
+      }
+      if(item.Data=="Direct economic value Distributed"){
+        fullEmissions["Direct economic value Distributed"]=item.Values
+      }
+      if(item.Data=="Direct economic value generated"){
+        fullEmissions["Direct economic value generated"]=item.Values
       }
     })
 
-    return saveValues;
+    return {totalEmissions:saveValues,fullEmissions};
   }
   
                 
@@ -14555,7 +14551,7 @@ const deleteVariant = async() => {
     var domain = userData?.username.split("@");
     var monthYear = master?.currentReportingCycle;
   
-    setBranch(parsedValue.branch); // Update the branch state
+    // setBranch(parsedValue.branch); // Update the branch state
     console.log("check", officeType);
   
     // Update the selected variant based on the office type
@@ -15099,7 +15095,9 @@ const ignoreFields=()=>{
         className={`text-[#718EBF] p-3 min-w-[200px] rounded-xl mt-2`}
         // value={branch}
         onChange={(e)=>{
+          setBranch(JSON.parse(e.target.value).branch)
           branchChange(e.target.value);
+          
         }}
       >
         <option value={""} selected disabled>Select Branch</option>

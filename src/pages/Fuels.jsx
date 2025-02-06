@@ -332,13 +332,13 @@ const calculateEmissions = () => {
         }
           
         case "Employment":{
-          fullEmissions={"50+":0,"35 to 50":0,"22 to 35":0,"Less than 22":0,"Overall":0}
+          fullEmissions={"50+":{"Male":0,"Female":0},"35 to 50":{"Male":0,"Female":0},"22 to 35":{"Male":0,"Female":0},"Less than 22":{"Male":0,"Female":0},"Overall":{"Male":0,"Female":0}}
             selectedVariant.forEach(item => {
                 const entityType = checkValue(item["Employment Type"]);
                 const gender = checkValue(item["Gender"]);
                 const headCount = parseInt(item["Head Count"]) || 0;
                 const age = item["Age"] || "0";
-                fullEmissions[age]+=headCount
+                fullEmissions[age][gender]+=headCount
     
                 // Group by Entity Type
                 if (!employmentEmissions.EmploymentType[entityType]) {
@@ -379,8 +379,57 @@ const calculateEmissions = () => {
         return ohsData;
     }
     case "Training and Edu": {
+      fullEmissions={"BOD":{"Employee health & safety training":0,
+        "Employee Skill Upgradation Training":0,"Onboarding and orientation":0,"Technical Training":0,
+        "Other":0,"Anti-corruption Training":0,"POSH training":0,"Strategy Implementation":0,"Business operation":0,
+        "Organisation structure":0,"Risk Management training":0,"Regulatory framework":0,"Cyber security":0,
+        "Future outlook training":0,"Leadership connect program":0,"Corporate governance training":0,
+        "Emerging compliance landscape":0,"AML (Anti-money laundering)":0,"KYC":0,"Whistle-blower Policy Training":0,
+        "NRI Product & KYC Documentation":0,"Prohibition of Insider Trading":0,"Cash Management System":0,
+        "Code of Conduct & Ethics":0,"CERSAI":0,"Grievance Redressal Mechanism":0
+      }
+      ,"Employees":{"Employee health & safety training":0,
+        "Employee Skill Upgradation Training":0,"Onboarding and orientation":0,"Technical Training":0,
+        "Other":0,"Anti-corruption Training":0,"POSH training":0,"Strategy Implementation":0,"Business operation":0,
+        "Organisation structure":0,"Risk Management training":0,"Regulatory framework":0,"Cyber security":0,
+        "Future outlook training":0,"Leadership connect program":0,"Corporate governance training":0,
+        "Emerging compliance landscape":0,"AML (Anti-money laundering)":0,"KYC":0,"Whistle-blower Policy Training":0,
+        "NRI Product & KYC Documentation":0,"Prohibition of Insider Trading":0,"Cash Management System":0,
+        "Code of Conduct & Ethics":0,"CERSAI":0,"Grievance Redressal Mechanism":0
+      },
+      "Key management personnel":{"Employee health & safety training":0,
+        "Employee Skill Upgradation Training":0,"Onboarding and orientation":0,"Technical Training":0,
+        "Other":0,"Anti-corruption Training":0,"POSH training":0,"Strategy Implementation":0,"Business operation":0,
+        "Organisation structure":0,"Risk Management training":0,"Regulatory framework":0,"Cyber security":0,
+        "Future outlook training":0,"Leadership connect program":0,"Corporate governance training":0,
+        "Emerging compliance landscape":0,"AML (Anti-money laundering)":0,"KYC":0,"Whistle-blower Policy Training":0,
+        "NRI Product & KYC Documentation":0,"Prohibition of Insider Trading":0,"Cash Management System":0,
+        "Code of Conduct & Ethics":0,"CERSAI":0,"Grievance Redressal Mechanism":0
+      },
+      "Workers":{"Employee health & safety training":0,
+        "Employee Skill Upgradation Training":0,"Onboarding and orientation":0,"Technical Training":0,
+        "Other":0,"Anti-corruption Training":0,"POSH training":0,"Strategy Implementation":0,"Business operation":0,
+        "Organisation structure":0,"Risk Management training":0,"Regulatory framework":0,"Cyber security":0,
+        "Future outlook training":0,"Leadership connect program":0,"Corporate governance training":0,
+        "Emerging compliance landscape":0,"AML (Anti-money laundering)":0,"KYC":0,"Whistle-blower Policy Training":0,
+        "NRI Product & KYC Documentation":0,"Prohibition of Insider Trading":0,"Cash Management System":0,
+        "Code of Conduct & Ethics":0,"CERSAI":0,"Grievance Redressal Mechanism":0
+      },
+      "others":{"Employee health & safety training":0,
+        "Employee Skill Upgradation Training":0,"Onboarding and orientation":0,"Technical Training":0,
+        "Other":0,"Anti-corruption Training":0,"POSH training":0,"Strategy Implementation":0,"Business operation":0,
+        "Organisation structure":0,"Risk Management training":0,"Regulatory framework":0,"Cyber security":0,
+        "Future outlook training":0,"Leadership connect program":0,"Corporate governance training":0,
+        "Emerging compliance landscape":0,"AML (Anti-money laundering)":0,"KYC":0,"Whistle-blower Policy Training":0,
+        "NRI Product & KYC Documentation":0,"Prohibition of Insider Trading":0,"Cash Management System":0,
+        "Code of Conduct & Ethics":0,"CERSAI":0,"Grievance Redressal Mechanism":0
+      }
+    }
       selectedVariant.forEach(item => {
           const segment = checkValue(item.Segment); // Group by Segment
+          const training=checkValue(item["Types of training"]);
+          const headCount=parseInt(checkValue(item["Head Count"]))
+          fullEmissions[segment][training]+=headCount
   
           // Initialize the segment object if not present
           if (!bifurcatedEmissions.Segment) {
@@ -401,8 +450,10 @@ const calculateEmissions = () => {
               }
           });
       });
+
+      console.log("a",JSON.stringify(fullEmissions))
   
-      return bifurcatedEmissions;
+      return {totalEmissions:bifurcatedEmissions,fullEmissions};
   }
   case "Eco. Performance":{
     let saveValues={

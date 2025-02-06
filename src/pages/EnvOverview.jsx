@@ -11,6 +11,7 @@ import { getDocs, doc, collection, query, where } from "firebase/firestore";
 import { useSidebar } from "../context/SidebarContext";
 import { useEffect, useState, useMemo } from "react";
 import TreemapChart from '../components/TreemapChart'
+import PieApex from "../components/PieApex";
 
 //code by Deepak start////
 const monthNames = {
@@ -74,6 +75,7 @@ const EnvOverview = () => {
   const [filteredOverview, setFilteredOverview] = useState([]);
   const [lowestlevelData, setlowestlevelData] = useState(null)
   const [treeMapData,setTreeMapData] = useState();
+  const [pieChartData,setPieChartData]  = useState();
   //code by Deepak end////
 
 
@@ -82,11 +84,11 @@ const EnvOverview = () => {
     { label: "Scope 2", percentage: 2, color: "#29C472", emission: 53289 },
     { label: "Scope 3", percentage: 2, color: "#FF3D3D", emission: 33982 },
   ];
-  const pieChartData = {
-    labels: ["Red", "Blue", "Green", "Yellow"], // Labels for pie chart sections
-    values: [300, 50, 100, 75], // Data values corresponding to each label
-    colors: ["#FF5733", "#33FF57", "#3357FF", "#FFFF33"], // Colors for each slice
-  };
+  // const pieChartData = {
+  //   labels: ["Red", "Blue", "Green", "Yellow"], // Labels for pie chart sections
+  //   values: [300, 50, 100, 75], // Data values corresponding to each label
+  //   colors: ["#FF5733", "#33FF57", "#3357FF", "#FFFF33"], // Colors for each slice
+  // };
 
   const transformDataForTreemap = (data) => {
     let formattedData = [];
@@ -110,7 +112,7 @@ const EnvOverview = () => {
 
   const colors = ["#FF4560", "#FEB019", "#00E396", "#008FFB", "#775DD0"];
 
-
+//waste emission pie chart gov eco performance social
 
   //code by Deepak start////
 
@@ -264,10 +266,32 @@ const EnvOverview = () => {
         }
       )
     }
-
+    setPieChartData(transformWasteDataForPieChart(filteredOverview))
     setTreeMapData(transformDataForTreemap(filteredOverview))
 
   },[filteredOverview])
+
+
+  const transformWasteDataForPieChart = (backendData) => {
+    const wasteActivity = backendData["Waste Activity"];
+  
+    if (!wasteActivity) return { labels: [], series: [] };
+  
+    // Extract individual waste categories (excluding "All")
+    const transformedData = Object.entries(wasteActivity)
+      .filter(([key]) => key !== "All") // Exclude "All"
+      .map(([key, value]) => ({
+        label: key,
+        value: value
+      }));
+
+      console.log("transformation",transformedData)
+  
+    return {
+      labels: transformedData.map(item => item.label),
+      series: transformedData.map(item => item.value)
+    };
+  };
 
   console.log("data transform",treeMapData)
   // Extract unique filter options
@@ -305,7 +329,7 @@ const EnvOverview = () => {
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState, selectedDistrict]);
   //code by Deepak end////
 
-console.log("test", overviewObj)
+console.log("test", pieChartData)
 
 
 console.log("does it work?",filteredOverview)
@@ -605,8 +629,9 @@ console.log("does it work?",filteredOverview)
             <div className="font-semibold text-xl text-[#343C6A] mb-1"> WASTE EMISSION SOURCES</div>
             <div className="flex justify-between items-center px-2">
               <div className=""></div>
-              <div className="">
-                <PieChart data={pieChartData} />
+              <div className=" flex items-center justify-center">
+                {/* <PieChart data={pieChartData} /> */}
+                <PieApex data={pieChartData}/>
               </div>
             </div>
           </div>

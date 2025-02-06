@@ -23,7 +23,7 @@ ChartJS.register(
   Filler // Register the Filler plugin
 );
 
-const LineChart = ({ data={labels:[],datasets:[]}, lines, xKey, yLabel, fillVal = false,setYear }) => {
+const LineChart = ({ data={labels:[],datasets:[]}, lines, xKey, yLabel="", fillVal = false,setYear }) => {
   // Prepare datasets for Chart.js
   // const datasets = lines.map((line) => ({
   //   label: line.label,

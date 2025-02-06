@@ -1,5 +1,5 @@
 import DoughnutChart from '../components/DoughnutChart';
-import LineChart from '../components/AreaChart'
+import LineChart from '../components/LineChart'
 import MapComponent from '../components/Map'
 import { firestore } from "../firebase";
 import { getDocs, doc, collection, query, where } from "firebase/firestore";
@@ -222,6 +222,8 @@ const GovOverview = () => {
   };
  
 
+
+
   useEffect(() => {
     fetchAnalyticsData()
   }, [])
@@ -243,34 +245,75 @@ const GovOverview = () => {
       });
     }
 
-  //    const monthWiseData = {
-  //   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    if(filteredOverview && filteredOverview["Eco. Performance"]){
+      const ecoData=filteredOverview["Eco. Performance"];
+      setAreaChart1({
+          labels: [""],
+          datasets: [
+            {
+              label: "Total Revenue",
+              data: ecoData["Total Revenue"].map(Number),
+              backgroundColor: "#304dff",
+              borderColor: "#304dff",
+              borderWidth: 1,
+            },
+            {
+              label: "Total turnover",
+              data: ecoData["Total turnover"].map(Number),
+              backgroundColor: "#fe7f5c",
+              borderColor: "#fe7f5c",
+              borderWidth: 1,
+            }
+          ],
+        })
+        setAreaChart2({
+          labels: [""],
+          datasets: [
+            {
+              label: "Direct economic value Distributed",
+              data: ecoData["Direct economic value Distributed"].map(Number),
+              backgroundColor: "#4ba9dd",
+              borderColor: "#4ba9dd",
+              borderWidth: 1,
+            },
+            {
+              label: "Direct economic value generated",
+              data: ecoData["Direct economic value generated"].map(Number),
+              backgroundColor: "#d72528",
+              borderColor: "#d72528",
+              borderWidth: 1,
+            }
+          ],
+        })
+    }
+      // const monthWiseData = {
+  //   labels: [""],
   //   datasets: [
   //     {
-  //       label: "Emission %",
-  //       data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
+  //       label: "Total Revenue",
+  //       data: ecoData["Total Revenue"].map(Number),
   //       backgroundColor: "#4BA0B6",
   //       borderColor: "#4BA0B6",
   //       borderWidth: 1,
   //     },
   //     {
-  //       label: "Emission %",
-  //       data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
+  //       label: "Total turnover",
+  //       data: ecoData["Total turnover"].map(Number),
   //       backgroundColor: "#4BA0B6",
   //       borderColor: "#4BA0B6",
   //       borderWidth: 1,
-  //     },
-  //     {
-  //       label: "Emission %",
-  //       data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
-  //       backgroundColor: "#4BA0B6",
-  //       borderColor: "#4BA0B6",
-  //       borderWidth: 1,
-  //     },
+  //     }
   //   ],
   // };
 
+ 
+
   }, [filteredOverview]); // Runs only when `filteredOverview` changes
+  useEffect(()=>{
+    if(lowestlevelData){
+      total()
+    }
+  },[lowestlevelData])
 
   console.log(JSON.stringify(chartData))
   
@@ -389,19 +432,7 @@ const GovOverview = () => {
           })}
         </select>
       </div>
-        {/* Month Filter */}
-        <div className="flex flex-col">
-          <label className="text-gray-600 font-medium">Select Month</label>
-          <select
-            className="border rounded-md px-3 py-2 focus:ring focus:ring-blue-300"
-            onChange={(e) => setSelectedMonth(Number(e.target.value))}
-            value={selectedMonth}
-          >
-            {months.map((month) => (
-              <option key={month.value} value={month.value}>{month.name}</option>
-            ))}
-          </select>
-        </div>
+        
       </div>
         <div className=" flex items-center gap-2 w-ful">
             <div className="flex flex-col justify-between rounded-xl p-3 w-[23rem] bg-white">
@@ -423,10 +454,10 @@ const GovOverview = () => {
                     <div>Emission %</div>
                 </div> */}
                 <LineChart
-                    data={sampleData}
+                    data={areaChart1}
                     lines={linesConfig}
-                    xKey="year"
-                    yLabel="Number of People"
+                    xKey=""
+                    yLabel=""
                     fillVal={true}
                 />
             </div>
@@ -437,10 +468,10 @@ const GovOverview = () => {
                     <div>Emission %</div>
                 </div> */}
                 <LineChart
-                    data={sampleData}
+                    data={areaChart2}
                     lines={linesConfig}
-                    xKey="year"
-                    yLabel="Number of People"
+                    xKey=""
+                    yLabel=""
                     fillVal={true}
                 />
             </div>

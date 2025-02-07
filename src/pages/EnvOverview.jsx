@@ -12,7 +12,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { useEffect, useState, useMemo } from "react";
 import TreemapChart from '../components/TreemapChart'
 import PieApex from "../components/PieApex";
-
+ 
 //code by Deepak start////
 const monthNames = {
   "01": "Jan",
@@ -29,7 +29,7 @@ const monthNames = {
   "12": "Dec",
 };
 //code by Deepak end////
-
+ 
 const data = [
   {
     x: 'India',
@@ -58,13 +58,13 @@ const data = [
   },
   // Add more entries here...
 ];
-
+ 
 const EnvOverview = () => {
   const { userData, master } = useSidebar()
   const [overviewObj, setOverviewObj] = useState([])
-  const [wasteData,setWasteData] = useState({"data":[],"labels":[]});
+  const [wasteData, setWasteData] = useState({ "data": [], "labels": [] });
   //code by Deepak start////
-
+ 
   const [selectedYear, setSelectedYear] = useState("All");
   const [selectedMonth, setSelectedMonth] = useState("All");
   const [selectedCountry, setSelectedCountry] = useState("All");
@@ -74,22 +74,19 @@ const EnvOverview = () => {
   const [filterlist, setfilterlist] = useState([]);
   const [filteredOverview, setFilteredOverview] = useState([]);
   const [lowestlevelData, setlowestlevelData] = useState(null)
-  const [treeMapData,setTreeMapData] = useState();
-  const [pieChartData,setPieChartData]  = useState();
+  const [treeMapData, setTreeMapData] = useState();
+  const [pieChartData, setPieChartData] = useState();
+  const [scopeData, setscopeData] = useState([]);
   //code by Deepak end////
-
-
-  const scopeData = [
-    { label: "Scope 1", percentage: 96, color: "#2979F2", emission: 2356392 },
-    { label: "Scope 2", percentage: 2, color: "#29C472", emission: 53289 },
-    { label: "Scope 3", percentage: 2, color: "#FF3D3D", emission: 33982 },
-  ];
+ 
+ 
+ 
   // const pieChartData = {
   //   labels: ["Red", "Blue", "Green", "Yellow"], // Labels for pie chart sections
   //   values: [300, 50, 100, 75], // Data values corresponding to each label
   //   colors: ["#FF5733", "#33FF57", "#3357FF", "#FFFF33"], // Colors for each slice
   // };
-
+ 
   const transformDataForTreemap = (data) => {
     let formattedData = [{ x: 0, y: 0 }];
     if (data && Object.keys(data).length > 0) {
@@ -125,14 +122,58 @@ const EnvOverview = () => {
  
     return formattedData;
   };
-
-
+ 
+ 
   const colors = ["#FF4560", "#FEB019", "#00E396", "#008FFB", "#775DD0"];
-
-//waste emission pie chart gov eco performance social
-
+ 
+  //waste emission pie chart gov eco performance social
+ 
   //code by Deepak start////
-
+  // Function to sum values based on scope category
+  const sumScopeValues = (data, mapping) => {
+    const scopeColors = {
+      "Scope 1": "#2979F2",
+      "Scope 2": "#29C472",
+      "Scope 3": "#FF3D3D"
+    };
+    // Initialize Scope categories
+    const scopeTotals = {
+      "Scope 1": 0,
+      "Scope 2": 0,
+      "Scope 3": 0
+    };
+    for (const key in data) {
+      if (typeof data[key] === "object" && data[key] !== null) {
+        // If "Owned Vehicles ScopeWise", process directly (ignore "Owned Vehicles")
+        if (key === "Owned Vehicles ScopeWise") {
+          scopeTotals["Scope 1"] += data["Scope 1"] || 0;
+          scopeTotals["Scope 2"] += data["Scope 2"] || 0;
+        } else {
+          sumScopeValues(data[key], mapping); // Recursive call for other nested objects
+        }
+      } else {
+        if (key !== "Owned Vehicles") { // Ignore direct "Owned Vehicles"
+          const scopeCategory = mapping[key]; // Get scope category
+          if (scopeCategory) {
+            scopeTotals[scopeCategory] += data[key];
+          }
+        }
+      }
+    }
+ 
+    const totalEmissions = scopeTotals["Scope 1"] + scopeTotals["Scope 2"] + scopeTotals["Scope 3"];
+ 
+    // Convert to required format
+    const scopeDataObj = Object.keys(scopeTotals).map(scope => ({
+      label: scope,
+      percentage: totalEmissions ? ((scopeTotals[scope] / totalEmissions) * 100).toFixed(2) : 0,
+      color: scopeColors[scope],
+      emission: Math.round(scopeTotals[scope]) // Rounding emissions for cleaner output
+    }))
+ 
+    return scopeDataObj;
+ 
+  };
   const total = (selection) => {
     var obj = {};
     if (lowestlevelData) {
@@ -147,9 +188,36 @@ const EnvOverview = () => {
         }
       })
     }
+ 
+    const scopeData = {
+      "Fuel": "Scope 1",
+      "Bioenergy": "Scope 1",
+      "Refrigerant and other": "Scope 1",
+      "Elec heat cooling": "Scope 2",
+      // "Owned Vehicles": "Scope 1", // REMOVE THIS (We ignore direct "Owned Vehicles" value)
+      "Materials": "Scope 3",
+      "WTT- fuels": "Scope 3",
+      "Waste Disposal": "Scope 3",
+      "Flight": "Scope 3",
+      "Business travel - land and sea": "Scope 3",
+      "Freighting goods": "Scope 3",
+      "Employees commuting": "Scope 3",
+      "Water": "Scope 3",
+      "Accommodation": "Scope 3",
+      "Food": "Scope 3",
+      "Home Office": "Scope 3"
+    };
+ 
+ 
+ 
+ 
+ 
+    // Sum values into their respective scopes
+    var scopeWiseData = sumScopeValues(obj, scopeData);
+    setscopeData(scopeWiseData)
     setFilteredOverview(obj)
     console.log(obj)
-
+ 
     if (obj && obj["Waste Method"]) {
       const sortedData = Object.fromEntries(
         Object.entries(obj["Waste Method"]).sort((a, b) => a[1] - b[1])
@@ -171,12 +239,14 @@ const EnvOverview = () => {
     }
  
     if (obj && Object.keys(obj).length > 0) {
+      setPieChartData(transformWasteDataForPieChart(obj))
       setTreeMapData(transformDataForTreemap(obj))
     }
  
  
+ 
   }
-
+ 
   const mergeAndSumObjects = (obj1, obj2) => {
     const result = { ...obj1 }; // Clone obj1 to avoid modifying it
  
@@ -194,7 +264,7 @@ const EnvOverview = () => {
  
     return result;
   }
-
+ 
   const fetchAnalyticsData = async () => {
     try {
       // Reference to the Firestore collection
@@ -258,48 +328,48 @@ const EnvOverview = () => {
  
   };
  
-//   const sumData = (data, accumulator = {}) => {
-//     // Iterate through all the keys in the current data
-//     for (let key in data) {
-//       // Check if the current key's value is an object, and recursively call sumData on it
-//       if (typeof data[key] === 'object' && data[key] !== null) {
-//         // If it's an object, we recurse into it
-//         accumulator[key] = sumData(data[key], accumulator[key] || {});
-//       } else {
-//         // If it's a number, we sum it up
-//         accumulator[key] = (accumulator[key] || 0) + data[key];
-//       }
-//     }
-  
-//     return accumulator;
-//   };
-//   let finalResult = {};
-
-// // Iterate through the array and sum up all data
-// data.forEach(item => {
-//   for (let year in item) {
-//     if (year !== 'year' && year !== 'type') {
-//       for (let location in item[year]) {
-//         finalResult = sumData(item[year][location], finalResult);
-//       }
-//     }
-//   }
-// });
-
-// console.log(JSON.stringify(finalResult));
-
+  //   const sumData = (data, accumulator = {}) => {
+  //     // Iterate through all the keys in the current data
+  //     for (let key in data) {
+  //       // Check if the current key's value is an object, and recursively call sumData on it
+  //       if (typeof data[key] === 'object' && data[key] !== null) {
+  //         // If it's an object, we recurse into it
+  //         accumulator[key] = sumData(data[key], accumulator[key] || {});
+  //       } else {
+  //         // If it's a number, we sum it up
+  //         accumulator[key] = (accumulator[key] || 0) + data[key];
+  //       }
+  //     }
+ 
+  //     return accumulator;
+  //   };
+  //   let finalResult = {};
+ 
+  // // Iterate through the array and sum up all data
+  // data.forEach(item => {
+  //   for (let year in item) {
+  //     if (year !== 'year' && year !== 'type') {
+  //       for (let location in item[year]) {
+  //         finalResult = sumData(item[year][location], finalResult);
+  //       }
+  //     }
+  //   }
+  // });
+ 
+  // console.log(JSON.stringify(finalResult));
+ 
   useEffect(() => {
     fetchAnalyticsData()
-
-
+ 
+ 
   }, [])
-
-  useEffect(()=>{
-    if(lowestlevelData){
+ 
+  useEffect(() => {
+    if (lowestlevelData) {
       total()
     }
-  },[lowestlevelData])
-
+  }, [lowestlevelData])
+ 
   // useEffect(()=>{
   //   if(filteredOverview && filteredOverview["Waste Method"]){
   //     setWasteData(
@@ -310,17 +380,17 @@ const EnvOverview = () => {
   //   }
   //   setPieChartData(transformWasteDataForPieChart(filteredOverview))
   //   setTreeMapData(transformDataForTreemap(filteredOverview))
-
+ 
   // },[filteredOverview])
-
-  
-
-
+ 
+ 
+ 
+ 
   const transformWasteDataForPieChart = (backendData) => {
     const wasteActivity = backendData["Waste Activity"];
-  
+ 
     if (!wasteActivity) return { labels: [], series: [] };
-  
+ 
     // Extract individual waste categories (excluding "All")
     const transformedData = Object.entries(wasteActivity)
       .filter(([key]) => key !== "All") // Exclude "All"
@@ -328,63 +398,63 @@ const EnvOverview = () => {
         label: key,
         value: value
       }));
-
-      console.log("transformation",transformedData)
-  
+ 
+    console.log("transformation", transformedData)
+    const sortedData = transformedData.sort((a, b) => a.label.localeCompare(b.label));
     return {
-      labels: transformedData.map(item => item.label),
-      series: transformedData.map(item => item.value)
+      labels: sortedData.map(item => item.label),
+      series: sortedData.map(item => item.value)
     };
   };
-
-  console.log("data transform",treeMapData)
+ 
+  console.log("data transform", treeMapData)
   // Extract unique filter options
   const years = useMemo(() => ["All", ...new Set(filterlist.map(entry => entry.year))], [filterlist]);
-
+ 
   const months = useMemo(() => {
     if (selectedYear === "All") return ["All"];
     const yearData = filterlist.find(entry => entry.year === selectedYear);
     if (!yearData) return ["All"];
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear).map(entry => entry.month))];
   }, [filterlist, selectedYear]);
-
+ 
   const countries = useMemo(() => {
     if (selectedYear === "All" || selectedMonth === "All") return ["All"];
-
+ 
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear && entry.month === selectedMonth).map(entry => entry.country))];
   }, [filterlist, selectedYear, selectedMonth]);
-
+ 
   const states = useMemo(() => {
     if (selectedYear === "All" || selectedMonth === "All" || selectedCountry === "All") return ["All"];
-
+ 
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear && entry.month === selectedMonth && entry.country === selectedCountry).map(entry => entry.state))];
   }, [filterlist, selectedYear, selectedMonth, selectedCountry]);
-
+ 
   const districts = useMemo(() => {
     if (selectedYear === "All" || selectedMonth === "All" || selectedCountry === "All" || selectedState === "All") return ["All"];
-
+ 
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear && entry.month === selectedMonth && entry.country === selectedCountry && entry.state === selectedState).map(entry => entry.district))];
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState]);
-
+ 
   const blocks = useMemo(() => {
     if (selectedYear === "All" || selectedMonth === "All" || selectedCountry === "All" || selectedState === "All" || selectedDistrict === "All") return ["All"];
-
+ 
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear && entry.month === selectedMonth && entry.country === selectedCountry && entry.state === selectedState && entry.district === selectedDistrict).map(entry => entry.block))];
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState, selectedDistrict]);
   //code by Deepak end////
-
-console.log("test", pieChartData)
-
-
-console.log("does it work?",filteredOverview)
-// const [treeData,setTreeData]=useState(data);
-// setTreeData(data);
-
+ 
+  console.log("test", pieChartData)
+ 
+ 
+  console.log("does it work?", filteredOverview)
+  // const [treeData,setTreeData]=useState(data);
+  // setTreeData(data);
+ 
   return (
     <div className='flex flex-col px-3 py-2 gap-2 overflow-x-hidden'>
-
+ 
       {/* //code by Deepak start//// */}
-
+ 
       <div className="flex justify-end mb-[20px]" >
         <select value={selectedYear} onChange={(event) => {
           setSelectedYear(event.target.value);
@@ -461,10 +531,10 @@ console.log("does it work?",filteredOverview)
       </div>
  
       {/* //code by Deepak end//// */}
-
+ 
       {overviewObj && <>
         <div className="flex items-center gap-5">
-
+ 
           <div className="bg-white rounded-xl flex-1 p-3 w-full h-[15rem]">
             <h2 className="text-lg font-semibold text-gray-700 mb-4">SCOPE-WISE EMISSION</h2>
             <div className="flex justify-between">
@@ -488,8 +558,8 @@ console.log("does it work?",filteredOverview)
                       })}
                     />
                   </div>
-
-
+ 
+ 
                   {/* Labels */}
                   <p className="text-sm font-medium mt-2">{scope.label}</p>
                   {/* <p className="text-xs text-gray-500">Emission</p> */}
@@ -499,7 +569,7 @@ console.log("does it work?",filteredOverview)
               ))}
             </div>
           </div>
-
+ 
           <div className="bg-white flex flex-col w-[26rem] h-[15rem] p-2 border rounded-xl bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
             <div className="">
               EMISSION FROM BUISNESS TRAVEL
@@ -510,7 +580,7 @@ console.log("does it work?",filteredOverview)
                   <img src={flight} alt="flight-img"></img>
                 </div>
                 <div>Flight</div>
-                <div>{filteredOverview?.Flight?.toFixed(2)||"NA"}</div>
+                <div>{filteredOverview?.Flight?.toFixed(2) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>
               <div className="flex flex-col justify-center items-center">
@@ -518,7 +588,7 @@ console.log("does it work?",filteredOverview)
                   <img src={road} alt="flight-img"></img>
                 </div>
                 <div>Road</div>
-                <div>{filteredOverview?.land?.toFixed(2)||"NA"}</div>
+                <div>{filteredOverview?.land?.toFixed(2) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>
               <div className="flex flex-col justify-center items-center">
@@ -526,7 +596,7 @@ console.log("does it work?",filteredOverview)
                   <img src={ship} alt="flight-img"></img>
                 </div>
                 <div>Sea</div>
-                <div>{filteredOverview?.sea?.toFixed(2) ||"NA"}</div>
+                <div>{filteredOverview?.sea?.toFixed(2) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>
             </div>
@@ -577,8 +647,8 @@ console.log("does it work?",filteredOverview)
                         <div>80%</div>
                       </div>
                     </div>
-
-
+ 
+ 
                   </div>
                   <div className="w-1/3 flex flex-col gap-[0.1rem]">
                     <div className='flex gap-[0.1rem]'>
@@ -601,8 +671,8 @@ console.log("does it work?",filteredOverview)
                         <div>80%</div>
                       </div>
                     </div>
-
-
+ 
+ 
                   </div>
                   <div className="w-1/3 flex flex-col gap-[0.1rem]">
                     <div className='flex gap-[0.1rem]'>
@@ -625,8 +695,8 @@ console.log("does it work?",filteredOverview)
                         <div>80%</div>
                       </div>
                     </div>
-
-
+ 
+ 
                   </div>
                 </div>
                 <div className=" flex">
@@ -644,11 +714,14 @@ console.log("does it work?",filteredOverview)
                   </div>
                 </div>
               </div>
-
-
+ 
+ 
             </div> */}
-            <TreemapChart data={treeMapData}/>
+            <TreemapChart data={treeMapData} />
           </div>
+ 
+        </div>
+        <div className="flex items-center gap-5">
           <div className="bg-white w-[12rem] h-[19rem] overflow-y-hidden p-2 border rounded-xl flex flex-col">
             <div className="font-semibold text-lg text-[#343C6A]">
               EMISSION FROM ELECTRICITY CONSUMPTION
@@ -656,7 +729,7 @@ console.log("does it work?",filteredOverview)
             <div className="flex mt-1 items-center">
               <div className=" text-slate-600">
                 <div className="">
-                  EMISSION <br /> {filteredOverview?.["Elec heat cooling"]?.toFixed(2) ||"NA"} kWh
+                  EMISSION <br /> {filteredOverview?.["Elec heat cooling"]?.toFixed(2) || "NA"} kWh
                 </div>
                 {/* <div className="">
                   CONSUMPTION<br/> value
@@ -667,19 +740,17 @@ console.log("does it work?",filteredOverview)
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex items-center gap-5">
-          <div className="bg-white flex-1 flex flex-col h-[15rem] p-2 border rounded-xl">
+          <div className="bg-white flex-1 flex flex-col p-2 border rounded-xl">
             <div className="font-semibold text-xl text-[#343C6A] mb-1"> WASTE EMISSION SOURCES</div>
             <div className="flex justify-between items-center px-2">
               <div className=""></div>
               <div className=" flex items-center justify-center">
                 {/* <PieChart data={pieChartData} /> */}
-                <PieApex data={pieChartData}/>
+                <PieApex data={pieChartData} />
               </div>
             </div>
           </div>
-          <div className="bg-white flex flex-col w-[26rem] p-2 border rounded-xl ">
+          <div className=" flex-1 bg-white flex flex-col w-[26rem] p-2 border rounded-xl ">
             <div className="font-semibold text-xl text-[#343C6A] mb-6"> WASTE DISPOSAL</div>
             <div className=" mt-1 flex flex-col items-center justify- p-3 gap-[0.1rem]">
               {/* {Array.from({ length: levels }, (_, i) => (
@@ -693,9 +764,9 @@ console.log("does it work?",filteredOverview)
             {wasteData[i]}
           </div>
         ))} */}
-
+ 
               <PyramidChart data={wasteData.data} categories={wasteData.labels} colors={colors} title="Custom Pyramid Chart" />
-
+ 
             </div>
           </div>
         </div>
@@ -703,5 +774,6 @@ console.log("does it work?",filteredOverview)
     </div>
   )
 }
-
+ 
 export default EnvOverview
+ 

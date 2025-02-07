@@ -106,7 +106,12 @@ const GovOverview = () => {
 
   const [areaChart1,setAreaChart1] = useState();
   const [areaChart2,setAreaChart2] = useState();
+  const [labelList,setLabelList] = useState([]);
+  const [fullLabelList,setFullLabelList] = useState();
 
+  // const {master} = useSidebar();
+
+  // console.log("d",master)
   //code by Deepak start////
 
   const total = (selection) => {
@@ -220,15 +225,70 @@ const GovOverview = () => {
  
  
   };
+
+  function getFormattedDates(data) {
+    const dates = [];
+
+    // Loop through each item in the data array
+    data.forEach(item => {
+        // Extract the year from the item
+        const year = item.year;
+
+        // Check the 'type' key to identify the months
+        Object.keys(item).forEach(key => {
+            if (key !== 'type' && key !== 'year') {
+                const month = parseInt(key, 10);  // Get the month number (e.g., 1 for January, 10 for October)
+
+                if (month >= 1 && month <= 12) {
+                    // Create the month name and append it to the year
+                    const date = new Date(year, month - 1); // month is 0-indexed in JavaScript Date
+                    const options = { month: 'short', year: 'numeric' };
+                    const formattedDate = date.toLocaleDateString('en-US', options);  // Format to "Mon-YYYY"
+                    dates.push(formattedDate);
+                }
+            }
+        });
+    });
+
+    return [...new Set(dates)]; // Return unique values (avoiding duplicates)
+}
  
+
 
 
 
   useEffect(() => {
     fetchAnalyticsData()
+   
   }, [])
 
+  useEffect(()=>{
+    if(selectedYear!="All"){
+      setLabelList(fullLabelList.filter((items)=>{
+        return items.includes(selectedYear)
+      }))
+    }
+    else{
+      if(overviewObj)setLabelList(getFormattedDates(overviewObj))
+    }
+    if(selectedMonth!="All"){
+      setLabelList(fullLabelList.filter((items)=>{
+        return items.includes(selectedMonth)
+      }))
+    }
+    // else{
+    //   if(overviewObj)setLabelList(getFormattedDates(overviewObj))
+    // }
+  },[selectedYear,selectedMonth])
+
+
+  useEffect(()=>{
+    if(overviewObj)setFullLabelList(getFormattedDates(overviewObj))
+    if(overviewObj)setLabelList(getFormattedDates(overviewObj))
+  },[overviewObj])
+
   useEffect(() => {
+   
     if (filteredOverview && filteredOverview["Entity"]) {
       const labels = Object.keys(filteredOverview["Entity"]);
       const data = Object.values(filteredOverview["Entity"]);
@@ -245,43 +305,50 @@ const GovOverview = () => {
       });
     }
 
+    
     if(filteredOverview && filteredOverview["Eco. Performance"]){
+      console.log("labelist",labelList);
       const ecoData=filteredOverview["Eco. Performance"];
+      console.log("e",ecoData["Total Revenue"])
       setAreaChart1({
-          labels: [""],
+          labels: labelList,
           datasets: [
             {
               label: "Total Revenue",
-              data: ecoData["Total Revenue"].map(Number),
-              backgroundColor: "#304dff",
-              borderColor: "#304dff",
+              data: ecoData["Total Revenue"],
+              backgroundColor: "rgba(48,77,255,0.7)",
+              borderColor: "rgba(48,77,255,0.3)",
               borderWidth: 1,
+              fill: 'origin'
             },
             {
               label: "Total turnover",
-              data: ecoData["Total turnover"].map(Number),
+              data: ecoData["Total turnover"],
               backgroundColor: "#fe7f5c",
               borderColor: "#fe7f5c",
               borderWidth: 1,
+              fill: 'origin'
             }
           ],
         })
         setAreaChart2({
-          labels: [""],
+          labels: labelList,
           datasets: [
             {
               label: "Direct economic value Distributed",
-              data: ecoData["Direct economic value Distributed"].map(Number),
+              data: ecoData["Direct economic value Distributed"],
               backgroundColor: "#4ba9dd",
               borderColor: "#4ba9dd",
               borderWidth: 1,
+              fill: 'origin'
             },
             {
               label: "Direct economic value generated",
-              data: ecoData["Direct economic value generated"].map(Number),
+              data: ecoData["Direct economic value generated"],
               backgroundColor: "#d72528",
               borderColor: "#d72528",
               borderWidth: 1,
+              fill: 'origin'
             }
           ],
         })
@@ -308,7 +375,7 @@ const GovOverview = () => {
 
  
 
-  }, [filteredOverview]); // Runs only when `filteredOverview` changes
+  }, [filteredOverview,labelList]); // Runs only when `filteredOverview` changes
   useEffect(()=>{
     if(lowestlevelData){
       total()
@@ -354,6 +421,7 @@ const GovOverview = () => {
 
   
   console.log("f",filteredOverview)
+  console.log("v",overviewObj)
   return (
     <div className='flex flex-col gap-2'>
       <div className="bg-white px-4 py-3 rounded-xl flex gap-4 items-center">

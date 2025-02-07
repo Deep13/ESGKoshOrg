@@ -376,7 +376,7 @@ const calculateEmissions = () => {
             ohsData.InjuryType[injuryType].Incidents += incidents;
         });
 
-        return ohsData;
+        return {totalEmissions:ohsData};
     }
     case "Training and Edu": {
       fullEmissions={"BOD":{"Employee health & safety training":0,
@@ -502,7 +502,7 @@ const calculateEmissions = () => {
             acc[key] = (acc[key] || 0) + Number(obj[key]);
           }
         });
-        return acc;
+        return {totalEmissions:acc};
       }, {});
     }
     else{
@@ -15087,7 +15087,7 @@ const ignoreFields=()=>{
           <div
             onClick={() => setTab("recorded")}
             className={` cursor-pointer border-b-[3px] ${
-              tab === "recorded" ? "border-[#29C472] text-[#29C472]" : "text-[#718EBF] border-[#718EBF]"
+              tab === "recorded" ? "border-[#29C472] text-[#29C472]" : "text-black border-[#718EBF]"
             }`}
           >
             Records
@@ -15095,7 +15095,7 @@ const ignoreFields=()=>{
           <div
             onClick={() => setTab("variant")}
             className={` cursor-pointer border-b-[3px] ${
-              tab === "variant" ? "border-[#29C472] text-[#29C472]" : "text-[#718EBF] border-[#718EBF]"
+              tab === "variant" ? "border-[#29C472] text-[#29C472]" : "text-black border-[#718EBF]"
             }`}
           >
             Variants
@@ -15143,7 +15143,7 @@ const ignoreFields=()=>{
         {userData?.branches&&userData?.branches.length>0&&
         <select
         placeholder="All"
-        className={`text-[#718EBF] p-3 min-w-[200px] rounded-xl mt-2`}
+        className={` p-3 min-w-[200px] rounded-xl mt-2`}
         // value={branch}
         onChange={(e)=>{
           setBranch(JSON.parse(e.target.value).branch)
@@ -15196,7 +15196,7 @@ const ignoreFields=()=>{
       {formattedOfficeTypes&&formattedOfficeTypes.length>0&&
       <select
       placeholder="All"
-      className={`text-[#718EBF] p-3 min-w-[200px] rounded-xl mt-2`}
+      className={` p-3 min-w-[200px] rounded-xl mt-2`}
       value={variantOffice}
       onChange={(e)=>{
         setVariantOffice(e.target.value)
@@ -15215,7 +15215,7 @@ const ignoreFields=()=>{
      
 </div>
       }
-      <div className="rounded-[1rem] flex justify-center mt-5 pb-3 px-5 bg-white shadow-lg overflow-y-auto">
+      <div className="rounded-[1rem] flex justify-center mt-5 pb-3 px-5 border-2 border-[#f26c35] bg-white shadow-lg overflow-y-auto">
   {loading ? (
     // Show the spinner while loading
     <div className="flex justify-center items-center py-10">
@@ -15225,7 +15225,7 @@ const ignoreFields=()=>{
     // Show the table once data is loaded
     <table className="w-full border-collapse rounded-[1rem]">
       <thead>
-        <tr className="text-left text-[#718EBF] text-md rounded-lg border-b">
+        <tr className="text-left text-md rounded-lg border-b">
           <th></th>
           {getColumns(module)?.map((column, index) => (
             <th

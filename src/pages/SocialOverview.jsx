@@ -128,29 +128,45 @@ const SocialOverview = () => {
   
   console.log("does it work?",filteredOverview)
 
-  function transformTrainingData(data) {
-    const transformCategory = (categoryData) => {
-        const initialsMapping = Object.keys(categoryData).reduce((acc, key) => {
-            acc[key.split(" ").map(word => word[0]).join("")] = categoryData[key];
-            return acc;
-        }, {});
-
-        return [
-            initialsMapping,
-            "color",
-            Object.keys(categoryData)
-        ];
-    };
-
-    let transformedData = {};
-
-    Object.keys(data["Training and Edu"]).forEach(category => {
-        transformedData[category] = [transformCategory(data["Training and Edu"][category])];
-    });
-
-    return transformedData;
-}
-
+  // function calculateRetention(data, country, state, district, branch) {
+  //     // Find data for the current year and selected month
+  //     const currentYearData = data.find(entry => entry.year === selectedYear);
+  //     if (!currentYearData) {
+  //         console.log("No data for selected year:", selectedYear);
+  //         return;
+  //     }
+  
+  //     const currentMonthData = currentYearData[selectedMonth];
+  //     if (!currentMonthData || !currentMonthData[country] || !currentMonthData[country][state] || !currentMonthData[country][state][district] || !currentMonthData[country][state][district][branch]) {
+  //         console.log("No data for selected country, state, district, or branch");
+  //         return;
+  //     }
+  
+  //     const currentBranchData = currentMonthData[country][state][district][branch];
+  //     const currentRetention = currentBranchData.Retention;
+  
+  //     // Find data for the previous year and selected month
+  //     const previousYearData = data.find(entry => entry.year === (selectedYear - 1));
+  //     if (!previousYearData) {
+  //         console.log("No data for previous year:", selectedYear - 1);
+  //         return 100;  // If no previous year data exists, set retention to 100%
+  //     }
+  
+  //     const previousMonthData = previousYearData[selectedMonth];
+  //     if (!previousMonthData || !previousMonthData[country] || !previousMonthData[country][state] || !previousMonthData[country][state][district] || !previousMonthData[country][state][district][branch]) {
+  //         console.log("No data for previous year, selected country, state, district, or branch");
+  //         return 100;  // If no data for the previous year or month, set retention to 100%
+  //     }
+  
+  //     const previousBranchData = previousMonthData[country][state][district][branch];
+  //     const previousRetention = previousBranchData.Retention;
+  
+  //     // Calculate Retention Percentage
+  //     const retentionPercentage = ((currentRetention - previousRetention) / previousRetention) * 100;
+  //     console.log(`Retention Percentage for ${branch} in ${district}, ${state}, ${country}, ${selectedMonth} ${selectedYear}: ${retentionPercentage}%`);
+  //     return retentionPercentage;
+  // }
+  
   
   // Generate random colors
   const getRandomColor = () => {
@@ -311,6 +327,10 @@ const SocialOverview = () => {
 
 
   }, [])
+
+  // useEffect(()=>{
+
+  // },[overviewObj,selectedYear])
 
   console.log("a",filteredOverview)
 

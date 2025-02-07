@@ -21,7 +21,8 @@ const Fuels = () => {
   const fetchVariantRef=useRef([]);
   const selectedIndexes=useRef([])
   const selectedIndexes2=useRef([]);
-
+  const [filterList,setFilterList] = useState({});
+  const [tempSelectedVariant,setTempSelectedVariant] = useState([]);
   // Data configurations based on the fuel type (fuel, bioenergy)
   const {module, master,userData, activeSubmenu,sheets } = useSidebar();
   
@@ -29,6 +30,7 @@ const Fuels = () => {
     setSelectedVariant(null);
     setBranch("");
     setVariantOffice("")
+    setFilterList({})
   },[module])
 
   const fuelData = {
@@ -14594,6 +14596,22 @@ const deleteVariant = async() => {
   },[fetchedVariant])
 
 
+useEffect(()=>{
+  if(selectedVariant && selectedVariant.length>0){
+    var getBranchFilters=filterForColumns[module]
+    var filterValues={};
+    getBranchFilters.forEach(val => {
+      filterValues[val] = [...new Set(selectedVariant.map(item => item[val]))]
+  })
+
+  console.log("filter Values",filterValues)
+  setFilterList(filterValues)
+  if(tempSelectedVariant.length==0)setTempSelectedVariant(selectedVariant)
+}
+else{
+  setTempSelectedVariant([])
+}
+},[selectedVariant])
 
  const branchChange = async (value) => {
   console.log("Module",module)
@@ -14605,6 +14623,7 @@ const deleteVariant = async() => {
     var domain = userData?.username.split("@");
     var monthYear = master?.currentReportingCycle;
   
+
     // setBranch(parsedValue.branch); // Update the branch state
     console.log("check", officeType);
   
@@ -14628,6 +14647,7 @@ const deleteVariant = async() => {
               if(tableData[branch] && tableData[branch].data){
                 console.log("Data exists for the branch:", tableData[branch].data);
                 setSelectedVariant(tableData[branch].data)
+                setTempSelectedVariant(tableData[branch].data)
                 setDataStatus(tableData[branch].status);
                 setLoading(false)
               }
@@ -14635,6 +14655,7 @@ const deleteVariant = async() => {
                 if (fetchedVariant[officeType]) {
                   console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
                   setSelectedVariant(fetchedVariant[officeType])
+                  setTempSelectedVariant(fetchedVariant[officeType])
                   console.log("selected Variant",selectedVariant)
                   setLoading(false)
                   
@@ -14645,6 +14666,7 @@ const deleteVariant = async() => {
                   console.log("selected Variant",selectedVariant)
                   // console.log("data from func",getVariantData(module))
                   setSelectedVariant(getVariantData(module))
+                  setTempSelectedVariant(getVariantData(module))
                   // Create the whole table (example logic)
                   // const newTableData = {
                   //     branch: branch,
@@ -14665,6 +14687,7 @@ const deleteVariant = async() => {
               if (fetchedVariant&&fetchedVariant[officeType]) {
                   console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
                   setSelectedVariant(fetchedVariant[officeType])
+                  setTempSelectedVariant(fetchedVariant[officeType])
                   console.log("selected Variant",selectedVariant)
                   setLoading(false)
                   
@@ -14676,6 +14699,7 @@ const deleteVariant = async() => {
                   // console.log("data from func",getVariantData(module))
                   setLoading(false)
                   setSelectedVariant(getVariantData(module))
+                  setTempSelectedVariant(getVariantData(module))
                   // Create the whole table (example logic)
                   // const newTableData = {
                   //     branch: branch,
@@ -15080,7 +15104,73 @@ const ignoreFields=()=>{
       reader.readAsBinaryString(file);
     }
   };
+
+  const filterForColumns = {
+    "Fuel": ["Type", "Fuel", "Unit"],
+    "Bioenergy": ["Type", "Fuel", "Unit"],
+    "Refrigerant and other": ["Type", "Fuel", "Unit"],
+    "Elec heat cooling": ["Activity", "Country-Type", "Unit"],
+    "Owned Vehicles": ["Scope", "Level 1", "Level 2", "Level 3", "Fuel", "Unit"],
+    "Materials": ["Activity", "Waste type", "Unit"],
+    "WTT- fuels": ["Type", "Fuel", "Unit"],
+    "Waste Disposal": ["Activity", "Waste Material", "Unit", "Disposal Method"],
+    "Flight": ["Origin (city or IATA code)", "Destination (city or IATA code)", "Direct / Indirect", "Class", "Single way / return"],
+    "Accommodation": ["Country"],
+    "Business travel - land and sea": ["Vehicle", "Type", "Fuel", "Unit"],
+    "Freighting goods": ["Vehicle", "Type", "Fuel", "Unit"],
+    "Employees commuting": ["Vehicle", "Type", "Fuel", "Unit"],
+    "Food": ["Meal Type", "Unit"],
+    "Home Office": [],
+    "Water": ["Type", "Unit"],
+    "Employment": ["Employment Type", "Category", "Gender", "Age"],
+    "Leave": ["Type of Leave"],
+    "Retention": ["Employee Type", "Gender", "Tenure", "Age"],
+    "OH and S": ["Injury Type", "Gender"],
+    "Training and Edu": ["Types of training", "Segment"],
+    "Child Labor": ["Risk Level"],
+    "Customer Privacy": ["Nature of Complaints"],
+    "Mktg and Labelling": ["Incident"],
+    "CHS": ["Type of Incident"],
+    "Social Benefits": ["Domain"],
+    "Entity": ["Entity Type", "Gender", "Age", "Tenure"],
+    "Eco. Performance": ["Data"],
+    "Market Presence": ["Data"]
+    };
   
+
+  const handleFilter=()=>{
+    var container=document.getElementById("filterContainer")
+    var filters = Array.from(container.children);
+
+    // // Check if all filters are set to "All"
+    const allFiltersAreAll = filters.every(val => val.value === "All");
+  
+    if (allFiltersAreAll) {
+      setTempSelectedVariant([...selectedVariant]); // Reset to original data
+      return;
+    }
+    var a=[];
+    selectedVariant.map((item)=>{
+     var flag=false;
+     for (const val of container.children) {
+        if(val.value!=="All"){
+          if(item[val.dataset.title]==val.value){
+            flag=true
+          }
+          else{
+            flag=false;
+            return;
+          }
+        }
+      }
+
+      if(flag){
+        a.push(item)
+      }
+    })
+
+    setTempSelectedVariant(a);
+  }
 
   console.log("Branches",userData?.branches)
   return (
@@ -15165,6 +15255,28 @@ const ignoreFields=()=>{
         }
         
       </div>
+
+      <div className=" flex gap-2" id="filterContainer">
+        {Object.keys(filterList).map((item,index)=>(
+         <select
+         key={index}
+         data-title={item}
+         placeholder="All"
+         className={` p-3 w-[100px] rounded-xl mt-2`}
+         onChange={()=>handleFilter()}
+       >
+
+        <option selected>
+          All
+        </option>
+        {filterList[item].map((val,idx)=>(
+          <option key={idx} value={val}>
+            {val}
+          </option>
+        ))}
+        </select>
+        ))}
+      </div>
       
 
       {/* <div className="flex mt-3">
@@ -15242,15 +15354,13 @@ const ignoreFields=()=>{
       </thead>
   
       <tbody>
-        {selectedVariant?.map((ticket, index) => (
+        {tempSelectedVariant?.map((ticket, index) => (
           <tr key={index} className="text-gray-700 text-sm border-b">
             <td>
               {(tab !== "recorded" || module == "Flight" || module == "Accommodation") && (
                 <input
                   type="checkbox"
                   onChange={(e) => {
-                    console.log(selectedVariant);
-                    console.log(fetchedVariant);
                     if (e.target.checked) {
                       selectedIndexes2.current.push(index);
                     } else {
@@ -15286,6 +15396,14 @@ const ignoreFields=()=>{
                         [column.title]: updatedValue,
                       };
                       setSelectedVariant(updatedVariant);
+                      const updatedTempVariant = tempSelectedVariant.map((item, tempIndex) => {
+                        if (item === ticket) {  // Ensure we update only the filtered item
+                          return { ...item, [column.title]: updatedValue };
+                        }
+                        return item;
+                      });
+                    
+                      setTempSelectedVariant(updatedTempVariant);
                     }}
                   />
                 ) : (

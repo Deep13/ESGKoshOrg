@@ -15,6 +15,7 @@ import SocialGraph from "../components/SocialGraph";
 import { firestore } from "../firebase";
 import { getDocs, doc, collection, query, where } from "firebase/firestore";
 import { useSidebar } from "../context/SidebarContext";
+import BarApex from "../components/BarApex";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -32,7 +33,8 @@ const SocialOverview = () => {
   const [selectedBlock, setSelectedBlock] = useState("All");
   const [filterlist, setfilterlist] = useState([]);
   const [filteredOverview, setFilteredOverview] = useState([]);
-  const [lowestlevelData, setlowestlevelData] = useState(null)
+  const [lowestlevelData, setlowestlevelData] = useState(null);
+  const [barData,setBarData] = useState();
 
    useEffect(() => {
       fetchAnalyticsData()
@@ -79,7 +81,7 @@ const SocialOverview = () => {
       }
 
       if(filteredOverview && filteredOverview["Training and Edu"]){
-        console.log("j",transformTrainingData(filteredOverview))
+        setBarData(filteredOverview["Training and Edu"])
       }
       
     },[filteredOverview])
@@ -429,15 +431,15 @@ const SocialOverview = () => {
 
             <div className="w-full flex flex-col px-3 py-2">
               
-            {Object.entries(filteredOverview["Training and Edu"]).map(([key, values], index) => {
+            {/* {Object.entries(filteredOverview["Training and Edu"]).map(([key, values], index) => {
   const bgColor = getRandomColor(); // Default background color, modify if needed
 
   return (
     <div key={index} className="flex items-center gap-[5rem] p-3 my-2 rounded">
-      {/* First key (Category like Employees, Workers, etc.) */}
+      First key (Category like Employees, Workers, etc.)
       <div className="text-slate-500 font-medium mb-2">{key}</div>
 
-      {/* Key-value pairs */}
+      
       <div className="flex flex-wrap gap-4">
         {Object.entries(values)
           .filter(([_, v]) => v !== 0 && v !== null) // Skip 0 and null values
@@ -463,7 +465,9 @@ const SocialOverview = () => {
       </div>
     </div>
   );
-})}
+})} */}
+
+                  <BarApex trainingData={barData}/>
 
 
             </div>

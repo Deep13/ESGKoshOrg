@@ -91,21 +91,38 @@ const EnvOverview = () => {
   // };
 
   const transformDataForTreemap = (data) => {
-    let formattedData = [];
-  
-    // Iterate through the main object keys
-    for (const key in data) {
-      if (typeof data[key] === "number") {
-        // Push if it's a simple key-value pair
-        formattedData.push({ x: key, y: data[key] });
-      } else if (typeof data[key] === "object") {
-        // Iterate through nested objects
-        for (const subKey in data[key]) {
-          formattedData.push({ x: `${key} - ${subKey}`, y: data[key][subKey] });
-        }
-      }
+    let formattedData = [{ x: 0, y: 0 }];
+    if (data && Object.keys(data).length > 0) {
+      // Iterate through the main object keys
+      delete data["Owned Vehicles ScopeWise"];
+      delete data["Waste Activity"];
+      delete data["Waste Method"];
+      delete data["land"];
+      delete data["sea"];
+      console.log(JSON.stringify(data));
+      const total = Object.values(data).reduce((sum, value) => sum + value, 0);
+ 
+      // Convert to required format with percentage calculation
+      formattedData = Object.entries(data).map(([key, value]) => ({
+        x: key,
+        y: parseFloat(((value / total) * 100).toFixed(2)) // Percentage calculation
+      }));
+      // formattedData = [];
+ 
+      // for (const key in data) {
+      //   if (typeof data[key] === "number") {
+      //     // Push if it's a simple key-value pair
+      //     formattedData.push({ x: key, y: data[key] });
+      //   } else if (typeof data[key] === "object") {
+      //     // Iterate through nested objects
+      //     for (const subKey in data[key]) {
+      //       formattedData.push({ x: `${key} - ${subKey}`, y: data[key][subKey] });
+      //     }
+      //   }
+      // }
     }
-  
+ 
+ 
     return formattedData;
   };
 
@@ -132,6 +149,31 @@ const EnvOverview = () => {
     }
     setFilteredOverview(obj)
     console.log(obj)
+
+    if (obj && obj["Waste Method"]) {
+      const sortedData = Object.fromEntries(
+        Object.entries(obj["Waste Method"]).sort((a, b) => a[1] - b[1])
+      );
+      setWasteData(
+        {
+          "data": Object.values(sortedData),
+          "labels": Object.keys(sortedData)
+        }
+      )
+    }
+    else {
+      setWasteData(
+        {
+          "data": [],
+          "labels": ['N/A']
+        }
+      )
+    }
+ 
+    if (obj && Object.keys(obj).length > 0) {
+      setTreeMapData(transformDataForTreemap(obj))
+    }
+ 
  
   }
 
@@ -258,18 +300,20 @@ const EnvOverview = () => {
     }
   },[lowestlevelData])
 
-  useEffect(()=>{
-    if(filteredOverview && filteredOverview["Waste Method"]){
-      setWasteData(
-        {"data":Object.values(filteredOverview["Waste Method"]),
-          "labels":Object.keys(filteredOverview["Waste Method"])
-        }
-      )
-    }
-    setPieChartData(transformWasteDataForPieChart(filteredOverview))
-    setTreeMapData(transformDataForTreemap(filteredOverview))
+  // useEffect(()=>{
+  //   if(filteredOverview && filteredOverview["Waste Method"]){
+  //     setWasteData(
+  //       {"data":Object.values(filteredOverview["Waste Method"]),
+  //         "labels":Object.keys(filteredOverview["Waste Method"])
+  //       }
+  //     )
+  //   }
+  //   setPieChartData(transformWasteDataForPieChart(filteredOverview))
+  //   setTreeMapData(transformDataForTreemap(filteredOverview))
 
-  },[filteredOverview])
+  // },[filteredOverview])
+
+  
 
 
   const transformWasteDataForPieChart = (backendData) => {

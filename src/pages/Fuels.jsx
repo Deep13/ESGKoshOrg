@@ -496,14 +496,17 @@ const calculateEmissions = () => {
     
     if(checkKey(module)!="Environment"){
         console.log("Case 1")
-      return selectedVariant.reduce((acc, obj) => {
+      
+      totalEmissions=selectedVariant.reduce((acc, obj) => {
         Object.keys(obj).forEach(key => {
           if (!isNaN(obj[key])) {  // Only sum up numeric values
             acc[key] = (acc[key] || 0) + Number(obj[key]);
           }
         });
-        return {totalEmissions:acc};
+        return acc;
       }, {});
+
+      return {totalEmissions}
     }
     else{
       selectedVariant.forEach(item => {

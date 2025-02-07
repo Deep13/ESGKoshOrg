@@ -5,32 +5,18 @@ const TreemapChart = (data = []) => {
   const chartData = {
     options: {
       legend: {
-        show: false
+        show: true
       },
       chart: {
         height: 350,
         type: 'treemap'
       },
       colors: [
-        '#3B93A5',
-        '#F7B844',
-        '#ADD8C7',
-        '#EC3C65',
-        '#CDD7B6',
-        '#C1F666',
-        '#D43F97',
-        '#1E5D8C',
-        '#421243',
-        '#7F94B0',
-        '#EF6537',
-        '#C1F666',
-        '#D43F97',
-        '#1E5D8C',
-        '#421243',
-        '#7F94B0',
-        '#EF6537',
-        '#C0ADDB'
-      ],
+        "#F2A900", "#F22E63", "#7D3CFF", "#00C3FF", "#FF7A00",
+        "#00E676", "#D500F9", "#FF1744", "#FF9100", "#651FFF",
+        "#1DE9B6", "#FFD600", "#00E5FF", "#FF4081", "#3D5AFE",
+        "#8E24AA", "#AA00FF", "#76FF03", "#C51162", "#6200EA"
+        ],
       plotOptions: {
         treemap: {
           distributed: true,

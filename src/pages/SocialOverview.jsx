@@ -35,6 +35,7 @@ const SocialOverview = () => {
   const [filteredOverview, setFilteredOverview] = useState([]);
   const [lowestlevelData, setlowestlevelData] = useState(null);
   const [barData,setBarData] = useState();
+  const [ret,setRet] = useState("NA");
 
    useEffect(() => {
       fetchAnalyticsData()
@@ -238,6 +239,55 @@ const SocialOverview = () => {
     }
     setFilteredOverview(obj)
     console.log(obj)
+
+    
+    if(selection){
+      let currentSelection=selection?.split("-")
+      const prevYear=(parseInt(currentSelection[0]) - 1).toString();
+      currentSelection[0]=prevYear
+      let prevData=total2(currentSelection.join('-'))
+      // console.log("testing",total2(currentSelection.join('-')))
+
+      if(obj.Retention){
+        if(prevData && prevData.Retention){
+          const retRate=Math.ceil(((obj.Retention-prevData.Retention)/prevData.Retention)*100)
+          setRet(retRate)
+        }
+        else{
+          setRet("100")
+        }
+      }
+      else{
+        setRet("NA")
+      }
+
+    }
+
+    else{
+      setRet("NA")
+    }
+    
+
+    
+  }
+
+  const total2 = (selection) => {
+    var obj = {};
+    if (lowestlevelData) {
+      Object.keys(lowestlevelData).map(item => {
+        if (selection) {
+          if (item.includes(selection)) {
+            obj = mergeAndSumObjects(obj, lowestlevelData[item])
+          }
+        }
+        else {
+          obj = mergeAndSumObjects(obj, lowestlevelData[item])
+        }
+      })
+    }
+    console.log(obj)
+    return obj
+   
  
   }
 
@@ -330,9 +380,89 @@ const SocialOverview = () => {
 
   // useEffect(()=>{
 
+
   // },[overviewObj,selectedYear])
 
+  useEffect(()=>{
+    console.log("c",calculateRetentionTotal({selectYear:selectedYear,selectMonth:selectedMonth,selectedCountry,selectedDistrict}))
+
+  },[overviewObj,selectedYear,selectedMonth])
+  const calculateRetentionTotal = (filters) => {
+    const { selectYear, selectMonth, selectDistrict } = filters;
+    let result = {};
+
+    if (lowestlevelData) {
+        Object.keys(lowestlevelData).forEach((key) => {
+            const data = lowestlevelData[key];
+
+            // Apply filters: Check if the data matches the selected criteria
+            const matchesYear = selectYear ? key.includes(selectYear) : true;
+            const matchesMonth = selectMonth ? key.includes(selectMonth) : true;
+            const matchesDistrict = selectDistrict ? key.includes(selectDistrict) : true;
+
+            if (matchesYear && matchesMonth && matchesDistrict) {
+                result = mergeAndSumObjects(result, data);
+            }
+        });
+    }
+
+    console.log(result);
+};
+
   console.log("a",filteredOverview)
+  console.log("b",overviewObj)
+  // console.log("d",total("2024"))
+
+  // useEffect(()=>{
+  //   console.log('c',total2(selectedYear))
+  //   const prevYear=(parseInt(selectedYear) - 1).toString();
+  //   setCurrRet(total2(selectedYear));
+  //   setPrevRet(total2(prevYear))
+  // },[selectedYear])
+
+  
+
+  // console.log("prev",prevRet);
+  // console.log("curr",currRet)
+
+  const transformData = (data) => {
+    // Map for converting numerical month numbers to month names
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  
+    // Result object for holding the final transformed data
+    const result = {};
+  
+    // Iterate through each year data
+    data.forEach(yearData => {
+      const year = yearData.year;
+      result[year] = [];
+  
+      // Iterate through each month (represented by numbers like 10, 11, etc.)
+      for (const month in yearData) {
+        if (month !== "year") { // Skip the "year" property
+          const monthNumber = parseInt(month); // Convert string month to number
+          const monthName = monthNames[monthNumber - 1]; // Get the name of the month from the array
+  
+          // Initialize an object for this month's data
+          const monthData = {};
+  
+          // Iterate through each branch for this month and get retention values
+          for (const branch in yearData[month]) {
+            monthData[branch] = yearData[month][branch].retention;
+          }
+  
+          // Add the formatted data to the result
+          result[year].push({
+            [monthName]: monthData
+          });
+        }
+      }
+    });
+  
+    return result;
+  };
+  
+  console.log("ah",transformData(overviewObj))
 
   return (
     <div className="p-2 flex flex-col gap-3 items-center">
@@ -428,7 +558,7 @@ const SocialOverview = () => {
                 <div className=" flex justify-center items-center gap-5">
                     <div className=" flex flex-col justify-between items-center gap-[3rem]">
                         <div className="font-bold text-2xl">Retention</div>
-                        <di className="text-4xl">80%</di>
+                        <di className="text-4xl">{ret=="NA"?ret:ret+"%"}</di>
                     </div>
                     <div className="ml-3">
                         <img src={retention} alt="retention Icon"/>

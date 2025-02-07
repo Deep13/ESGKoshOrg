@@ -217,10 +217,11 @@ const EnvOverview = () => {
     setscopeData(scopeWiseData)
     setFilteredOverview(obj)
     console.log(obj)
+    var tempObj={...obj}
  
-    if (obj && obj["Waste Method"]) {
+    if (tempObj && tempObj["Waste Method"]) {
       const sortedData = Object.fromEntries(
-        Object.entries(obj["Waste Method"]).sort((a, b) => a[1] - b[1])
+        Object.entries(tempObj["Waste Method"]).sort((a, b) => a[1] - b[1])
       );
       setWasteData(
         {
@@ -238,9 +239,9 @@ const EnvOverview = () => {
       )
     }
  
-    if (obj && Object.keys(obj).length > 0) {
-      setPieChartData(transformWasteDataForPieChart(obj))
-      setTreeMapData(transformDataForTreemap(obj))
+    if (tempObj && Object.keys(tempObj).length > 0) {
+      setPieChartData(transformWasteDataForPieChart(tempObj))
+      setTreeMapData(transformDataForTreemap(tempObj))
     }
  
  
@@ -328,36 +329,7 @@ const EnvOverview = () => {
  
   };
  
-  //   const sumData = (data, accumulator = {}) => {
-  //     // Iterate through all the keys in the current data
-  //     for (let key in data) {
-  //       // Check if the current key's value is an object, and recursively call sumData on it
-  //       if (typeof data[key] === 'object' && data[key] !== null) {
-  //         // If it's an object, we recurse into it
-  //         accumulator[key] = sumData(data[key], accumulator[key] || {});
-  //       } else {
-  //         // If it's a number, we sum it up
-  //         accumulator[key] = (accumulator[key] || 0) + data[key];
-  //       }
-  //     }
- 
-  //     return accumulator;
-  //   };
-  //   let finalResult = {};
- 
-  // // Iterate through the array and sum up all data
-  // data.forEach(item => {
-  //   for (let year in item) {
-  //     if (year !== 'year' && year !== 'type') {
-  //       for (let location in item[year]) {
-  //         finalResult = sumData(item[year][location], finalResult);
-  //       }
-  //     }
-  //   }
-  // });
- 
-  // console.log(JSON.stringify(finalResult));
- 
+
   useEffect(() => {
     fetchAnalyticsData()
  
@@ -369,20 +341,6 @@ const EnvOverview = () => {
       total()
     }
   }, [lowestlevelData])
- 
-  // useEffect(()=>{
-  //   if(filteredOverview && filteredOverview["Waste Method"]){
-  //     setWasteData(
-  //       {"data":Object.values(filteredOverview["Waste Method"]),
-  //         "labels":Object.keys(filteredOverview["Waste Method"])
-  //       }
-  //     )
-  //   }
-  //   setPieChartData(transformWasteDataForPieChart(filteredOverview))
-  //   setTreeMapData(transformDataForTreemap(filteredOverview))
- 
-  // },[filteredOverview])
- 
  
  
  
@@ -407,7 +365,7 @@ const EnvOverview = () => {
     };
   };
  
-  console.log("data transform", treeMapData)
+
   // Extract unique filter options
   const years = useMemo(() => ["All", ...new Set(filterlist.map(entry => entry.year))], [filterlist]);
  
@@ -443,13 +401,12 @@ const EnvOverview = () => {
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState, selectedDistrict]);
   //code by Deepak end////
  
-  console.log("test", pieChartData)
- 
+
  
   console.log("does it work?", filteredOverview)
   // const [treeData,setTreeData]=useState(data);
   // setTreeData(data);
- 
+ console.log("test2",filteredOverview)
   return (
     <div className='flex flex-col px-3 py-2 gap-2 overflow-x-hidden'>
  
@@ -603,120 +560,9 @@ const EnvOverview = () => {
           </div>
         </div>
         <div className=" flex gap-3 items-center">
-          <div className="bg-white flex-1 h-[19rem] p-2 border rounded-xl">
+          <div className="bg-white flex-1 p-2 border rounded-xl">
             <div className="font-semibold text-xl text-[#343C6A] mb-1">EMISSION BY CATEGORIES</div>
-            {/* <div className="flex">
-              <div className=" w-1/3">
-                <div className="flex">
-                  <div className="bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white flex flex-col px-5 py-10 rounded-md w-[10rem] items-center justify-center">
-                    <div>Household</div>
-                    <div>70%</div>
-                  </div>
-                  <div className="bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white flex flex-col px-5 py-10 rounded-md w-[10rem] items-center justify-center">
-                    <div>Agriculture</div>
-                    <div>70%</div>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-5 py-[2.85rem] rounded-md">
-                  <div className="text-3xl font-semibod">
-                    90%
-                  </div>
-                  <div>Industries</div>
-                </div>
-              </div>
-              <div className="w-2/3 flex flex-col gap-[0.1rem]">
-                <div className="flex ">
-                  <div className="w-1/3 flex flex-col gap-[0.1rem]">
-                    <div className='flex gap-[0.1rem]'>
-                      <div className="rounded-md bg-[#E34444] text-white w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                      <div className="rounded-md bg-[#E34444] text-white w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                    </div>
-                    <div className='flex gap-[0.1rem]'>
-                      <div className="rounded-md bg-[#E34444] text-white w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                      <div className="rounded-md bg-[#E34444] text-white w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                    </div>
- 
- 
-                  </div>
-                  <div className="w-1/3 flex flex-col gap-[0.1rem]">
-                    <div className='flex gap-[0.1rem]'>
-                      <div className="rounded-md bg-[#ffdeba]  w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                      <div className="rounded-md bg-[#ffdeba]  w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                    </div>
-                    <div className='flex gap-[0.1rem]'>
-                      <div className="rounded-md bg-[#ffdeba]  w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                      <div className="rounded-md bg-[#ffdeba]  w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                    </div>
- 
- 
-                  </div>
-                  <div className="w-1/3 flex flex-col gap-[0.1rem]">
-                    <div className='flex gap-[0.1rem]'>
-                      <div className="rounded-md bg-[#fef2bb]  w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                      <div className="rounded-md bg-[#fef2bb]  w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                    </div>
-                    <div className='flex gap-[0.1rem]'>
-                      <div className="rounded-md bg-[#fef2bb]  w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                      <div className="rounded-md bg-[#fef2bb] w-1/2 flex flex-col justify-center items-center py-[1.1rem]">
-                        <div>Agriculture</div>
-                        <div>80%</div>
-                      </div>
-                    </div>
- 
- 
-                  </div>
-                </div>
-                <div className=" flex">
-                  <div className=" flex-1 bg-[#4AA9DC] text-white rounded-md p-5 flex flex-col items-center justify-center">
-                    <div>Household</div>
-                    <div>90%</div>
-                  </div>
-                  <div className="flex-1 bg-[#4AA9DC] text-white rounded-md p-5 flex flex-col items-center justify-center">
-                    <div>Household</div>
-                    <div>90%</div>
-                  </div>
-                  <div className="flex-1 bg-[#4AA9DC] text-white rounded-md p-5 flex flex-col items-center justify-center">
-                    <div>Household</div>
-                    <div>90%</div>
-                  </div>
-                </div>
-              </div>
- 
- 
-            </div> */}
+           
             <TreemapChart data={treeMapData} />
           </div>
  

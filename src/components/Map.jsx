@@ -38,7 +38,10 @@ const MapComponent = () => {
   return (
     <div className="bg-white rounded-xl border w-full h-[12rem]">
       <MapContainer
-        center={[branchData?.[0]?.latitude, branchData?.[0]?.longitude]} // Centering on the world
+        center={[
+          branchData?.[0]?.latitude ?? 0, 
+          branchData?.[0]?.longitude ?? 0
+        ]} // Centering on the world
         zoom={4} // Set zoom level
         scrollWheelZoom={true} // Disable scroll zoom
         zoomControl={true} // Remove + - controls
@@ -48,21 +51,13 @@ const MapComponent = () => {
        <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {branchData?.map((branch,index)=>(
-          <Marker key={index} position={[branch.latitude, branch.longitude]} icon={markerIcon}>
-          <Popup>{branch.branch}</Popup>
-        </Marker>
-        // <Circle
-        // key={index}
-        //   center={[branch.latitude, branch.longitude]}
-        //   radius={20 * 10000}
-        //   fillColor="blue"
-        //   color="blue"
-        //   fillOpacity={0.5}
-        // >
-        //   <Popup>{branch.branch}</Popup>
-        // </Circle>
-        ))}
+        {branchData?.map((branch, index) =>
+          branch.latitude && branch.longitude ? (
+            <Marker key={index} position={[branch.latitude, branch.longitude]} icon={markerIcon}>
+              <Popup>{branch.branch}</Popup>
+            </Marker>
+          ) : null
+        )}
       </MapContainer>
     </div>
   );

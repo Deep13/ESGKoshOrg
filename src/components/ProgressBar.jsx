@@ -11,18 +11,44 @@ const ProgressBar = ({ total }) => {
 
   const navigate = useNavigate();
   const {setPage,master} = useSidebar();
+
+  console.log(typeof(total),"%")
   return (
     <div className="bg-white h-[15rem] w-full rounded-lg p-5 flex flex-col justify-between">
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h4 className="text-lg text-gray-800">{master?.currentReportingCycle.status?"Current ":"Last "}
-             Reporting Cycle
+          <h4 className="text-lg text-gray-800">
+            {/* {master?.currentReportingCycle.status?"Current ":"Last "} */}
+            {
+                master && master.currentReportingCycle ? (
+                    master.currentReportingCycle.status ? "In Progress" : "Closed"
+                )+" Reporting Cycle": (
+                    "No reporting cycle initiated yet"
+                )
+            }
+            
         </h4>
-          <p className="text-[1.5rem] font-semibold text-orange-500">{master?.currentReportingCycle?.month+"-"+master?.currentReportingCycle?.year}</p>
+          <p className="text-[1.5rem] font-semibold text-orange-500">
+            {/* {master?.currentReportingCycle?.month+"-"+master?.currentReportingCycle?.year} */}
+            {
+                master && master.currentReportingCycle ? (
+                  master?.currentReportingCycle?.month+"-"+master?.currentReportingCycle?.year
+                ): (
+                    ""
+                )
+            }
+          </p>
         </div>
-        <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
+        {(master && master.currentReportingCycle) && <span className="bg-blue-500 text-white text-sm px-2 py-1 rounded-full">
           {master?.currentReportingCycle?.status?"In Progress":"Closed"}
-        </span>
+          {/* {
+                master && master.currentReportingCycle ? (
+                    
+                ): (
+                    ""
+                )
+            } */}
+        </span>}
       </div>
       <div className="flex flex-col gap-4 items-center justify-center w-full">
         {/* Semi-Circular Progress Bar */}
@@ -56,7 +82,16 @@ const ProgressBar = ({ total }) => {
           />}
         </svg>
         {/* Percentage Text */}
-        <p className="text-2xl font-bold mt-[-3rem]">{percentage}%</p>
+        <p className="text-2xl font-bold mt-[-3rem]">
+        {
+                master && master.currentReportingCycle && total ? (
+                  // {total}
+                  total
+                ): (
+                    "_"
+                )
+            }
+        </p>
         <p className="text-sm text-blue-400">
           {total=="100.00%"?"Completed":"Incomplete"}
         </p>

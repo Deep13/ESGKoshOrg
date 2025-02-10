@@ -15,7 +15,7 @@ const Fuels = () => {
   const [selectedVariant,setSelectedVariant]=useState();
   const [dataStatus, setDataStatus] = useState();
   const [loading, setLoading] = useState(false);
-  const [branch,setBranch] = useState();
+  const [branch,setBranch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalText, setModalText] = useState("");
   const fetchVariantRef=useRef([]);
@@ -28,7 +28,10 @@ const Fuels = () => {
   
   useEffect(()=>{
     setSelectedVariant(null);
-    setBranch("");
+    setOffice("")
+    let ele=document.getElementById("branchSelect")
+    if(ele)ele.value="Select branch";
+    
     setVariantOffice("")
     setFilterList({})
   },[module])
@@ -14516,7 +14519,7 @@ const deleteVariant = async() => {
       // );
       var domain = userData?.username.split("@");
       updateDoc(doc(firestore,domain[1],"Master Data","Reporting Variant",module),{
-        [variantData]:selectData
+        [variantOffice]:selectData
       })
         .then(() => {
           setShowModal(true)
@@ -14636,7 +14639,7 @@ else{
         firestore,
         domain[1],
         "TransactionData",
-        `${monthYear.month}-${monthYear.year}`,
+        `${monthYear?.month}-${monthYear?.year}`,
           module
         );
         const docSnapshot = await getDoc(docRef);
@@ -15099,7 +15102,9 @@ const ignoreFields=()=>{
         const data = XLSX.utils.sheet_to_json(worksheet);
   
         // Set the data to your table
+        console.log("func is running",data)
         setSelectedVariant(data);
+        setTempSelectedVariant([...data]);
       };
       reader.readAsBinaryString(file);
     }
@@ -15172,7 +15177,14 @@ const ignoreFields=()=>{
     setTempSelectedVariant(a);
   }
 
-  console.log("Branches",userData?.branches)
+  const handleInputChange = (index, columnTitle, value) => {
+    setVariantData(prevData =>
+      prevData.map((item, i) =>
+        i === index ? { ...item, [columnTitle]: value } : item
+      )
+    );
+  };
+  console.log("Branches",typeof(branch),branch)
   return (
     <div className="px-5">
       <div className="flex justify-between items-center">
@@ -15193,11 +15205,11 @@ const ignoreFields=()=>{
           >
             Variants
           </div>
-          {!(master?.currentReportingCycle.status)&&
+          {!(master?.currentReportingCycle?.status)&&
           <div
-          onClick={() => setTab("createVariant")}
+          onClick={() => setTab("create")}
           className={` cursor-pointer border-b-[3px] ${
-            tab === "createVariant" ? "border-[#29C472] text-[#29C472]" : "text-[#718EBF] border-[#718EBF]"
+            tab === "create" ? "border-[#29C472] text-[#29C472]" : "text-[#718EBF] border-[#718EBF]"
           }`}
         >
           Create Variants
@@ -15226,32 +15238,34 @@ const ignoreFields=()=>{
         }
       </div>
       
-      {tab!="createVariant"?
+      {tab!="create"?
       <>
       {tab=='recorded'&&
     
     <>
     <div className={`flex justify-between items-center`}>
       <div className="w-32">
-        {userData?.branches&&userData?.branches.length>0&&
+        {userData?.branches&&userData?.branches.length>0&&        
         <select
-        placeholder="All"
-        className={` p-3 min-w-[200px] rounded-xl mt-2`}
-        // value={branch}
-        onChange={(e)=>{
-          setBranch(JSON.parse(e.target.value).branch)
-          branchChange(e.target.value);
-          
-        }}
-      >
-        <option value={""} selected disabled>Select Branch</option>
-        {userData?.branches?.map((branch,index)=>(
-          <option           
-            key={index} value={JSON.stringify(branch)}>
-            {branch.branch}
-          </option>
-        ))}
-      </select>
+          placeholder="All"
+          className={`p-3 min-w-[200px] rounded-xl mt-2`}
+          // value={branch}
+          id="branchSelect"
+          onChange={(e) => {
+            const selectedBranch = JSON.parse(e.target.value);
+            console.log("Selected Branch:", selectedBranch.branch);
+            setBranch(selectedBranch.branch);
+            branchChange(e.target.value);
+          }}
+        >
+          <option value={"Select branch"} disabled>Select Branch</option>
+          {userData?.branches?.map((branch, index) => (
+            <option key={index} value={JSON.stringify(branch)}>
+              {branch.branch}
+            </option>
+          ))}
+        </select>
+        
         }
         
       </div>
@@ -15453,18 +15467,7 @@ const ignoreFields=()=>{
           </select>
             }
       </div>
-      {/* {(module=="Flight"||module=="Accommodation")&&
-    <div className=" flex items-center justify-between mt-3 px-3">
-      <div className="font-semibold text-xl text-[#343C6A]">Editable Table</div>
-      <div className="flex gap-3">
-        <div onClick={()=>addRow()} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
-          <FaPlus/>
-          Add row
-        </div>
-      </div>
-    </div>
-    } */}
-
+     
 
       <table className="w-full border-collapse rounded-[1rem]">
         <thead>
@@ -15501,8 +15504,11 @@ const ignoreFields=()=>{
                       placeholder={column.title}
                       className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
                       type={column.type === "Number" ? "number" : "text"}
-                      disabled={tab==='variant'}
+                      // disabled={tab !== 'recorded' && tab !== 'create'}
                       value={ticket[column.title]}
+                      onChange={(e) =>
+                        handleInputChange(index, column.title, e.target.value)
+                      }
                     />
                   ) : (
                     ticket[column.title] || "--"

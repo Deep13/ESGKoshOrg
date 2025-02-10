@@ -6,6 +6,7 @@ import SocialGraph from "../components/SocialGraph";
 import BubbleChart from "../components/BubbleChart";
 import { useSidebar } from "../context/SidebarContext";
 import Spinner from '../components/Spinner';
+import modalIcon from "../assets/modalIcon.png"
 
 const Analytics = () => {
   const { module, userData, master } = useSidebar();
@@ -17,6 +18,7 @@ const Analytics = () => {
   const [monthWiseData,setMonthWiseData] = useState();
   const [filterList,setFilterList] = useState(null);
   const [monthFilterList,setMonthFilterList] = useState(null);
+  const [showModal,setShowModal] = useState(false); 
   // let monthFilterList=[]
   let yearWiseData;
   let monthData;
@@ -156,34 +158,6 @@ function transformDataForGraphByYear(backendData) {
 
   return yearWiseData;
 }
-
-
-  // const monthWiseData = {
-  //   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-  //   datasets: [
-  //     {
-  //       label: "Emission %",
-  //       data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
-  //       backgroundColor: "#4BA0B6",
-  //       borderColor: "#4BA0B6",
-  //       borderWidth: 1,
-  //     },
-  //     {
-  //       label: "Emission %",
-  //       data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
-  //       backgroundColor: "#4BA0B6",
-  //       borderColor: "#4BA0B6",
-  //       borderWidth: 1,
-  //     },
-  //     {
-  //       label: "Emission %",
-  //       data: [25, 90, 60, 70, 60, 80, 85, 60, 70, 95, 75, 30],
-  //       backgroundColor: "#4BA0B6",
-  //       borderColor: "#4BA0B6",
-  //       borderWidth: 1,
-  //     },
-  //   ],
-  // };
 
   function entityTransform(inputData) {
     const transformedData = {};
@@ -515,28 +489,6 @@ function retentionTransformByMonth(inputData, filterType, selectedYear) {
     { dataKey: "others", color: "#800080" },
   ];
 
-  // const bubbleData = {
-  //   datasets: [
-  //     {
-  //       label: "Dataset 1",
-  //       data: [
-  //         { x: 10, y: 20, r: 15 },
-  //         { x: 30, y: 10, r: 10 },
-  //         { x: 15, y: 25, r: 20 },
-  //       ],
-  //       backgroundColor: "rgba(54, 162, 235, 0.6)",
-  //     },
-  //     {
-  //       label: "Dataset 2",
-  //       data: [
-  //         { x: 5, y: 15, r: 10 },
-  //         { x: 25, y: 5, r: 15 },
-  //         { x: 20, y: 30, r: 18 },
-  //       ],
-  //       backgroundColor: "rgba(255, 99, 132, 0.6)",
-  //     },
-  //   ],
-  // };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -551,7 +503,7 @@ function retentionTransformByMonth(inputData, filterType, selectedYear) {
 
       try {
         var monthYear = master?.currentReportingCycle;
-        setYear(monthYear.year);
+        setYear(monthYear?.year);
         // Reference to the Firestore collection
         const collectionRef = collection(firestore, userData?.domain, "AnalyticsData", "Reporting Data");
 
@@ -900,70 +852,6 @@ const processDataForGraph= (data)=> {
   return graphData;
 }
 
-const groupByMonthBubble = (data) => {
-  const monthlyData = {};
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  // Initialize empty datasets for all months
-  monthNames.forEach(month => {
-    monthlyData[month] = [];
-  });
-
-  // Iterate through the data to process each entry for the given year
-  data.forEach(item => {
-    if (item.year === year.toString()) {
-      Object.keys(item).forEach(key => {
-        const locationData = item[key];
-
-        // Iterate over the locations and check if 'Segment' exists
-        Object.keys(locationData).forEach(location => {
-          const segmentData = locationData[location].Segment;
-
-          if (!segmentData) return; // Skip if no segment data
-
-          // Now iterate over each segment and group by month
-          Object.keys(segmentData).forEach(segment => {
-            const segmentInfo = segmentData[segment];
-
-            const avgHours = segmentInfo["Avg Hours per batch"];
-            const headCount = segmentInfo["Head Count"];
-
-            const month = key; // This should now directly be the month number (e.g., '10' for October)
-            const monthName = monthNames[parseInt(month) - 1];
-
-            if (!monthName) return;
-
-            // Add data for the month, if available, else keep default (0)
-            monthlyData[monthName].push({
-              x: monthName, // Month name as x-axis value (e.g., "October")
-              y: avgHours || 0,   // Avg Hours per batch as y-axis value
-              r: headCount || 0   // Head Count as radius value
-            });
-          });
-        });
-      });
-    }
-  });
-
-  // Format the data for Bubble Chart
-  const bubbleData = {
-    datasets: []
-  };
-
-  // Convert monthlyData to dataset for bubble chart (group by month)
-  Object.keys(monthlyData).forEach(month => {
-    bubbleData.datasets.push({
-      label: month, // Use the full month name as the label
-      data: monthlyData[month],
-      backgroundColor: "rgba(97, 234, 227, 0.6)", // Example color
-    });
-  });
-
-  return bubbleData;
-};
 
 function transformEnvDataForGraphByYear(backendData) {
   const transformedData = {
@@ -1417,8 +1305,16 @@ function getRandomColor() {
 }
 
  const updateData=()=>{
+
  setFilterList(null)
  setMonthFilterList(null)
+
+ if(!fetchedData){
+  console.log("No fetched Data skipping update");
+  setShowModal(true);
+  // setLoading(false)
+  return;
+ }
   switch(module){
     case "Entity":
     var { labels, dataObj, entityTypes } = entityTransform(fetchedData);
@@ -1725,6 +1621,9 @@ useEffect(()=>{
   }
 },[yearData])
 
+useEffect(()=>{
+  updateData()
+},[year])
 
   
   return (
@@ -1747,9 +1646,15 @@ useEffect(()=>{
           </div>
         </div>
         {loading?(
-          <div className='flex items-center justify-center'>
+          showModal?(
+            <div className='flex items-center justify-center'>
+              No Data available for analytics.
+          </div>
+          ):(
+            <div className='flex items-center justify-center'>
             <Spinner/>
           </div>
+          )
         ):(
             <>
             {module == "Fuel" && <SocialGraph data={yearData} setYear={setYear} />}
@@ -1838,6 +1743,27 @@ useEffect(()=>{
           {module == "OH and S" && <BubbleChart data={monthWiseData} xLabel={"Months"} />}
         </div>
       )}
+
+      {/* {showModal&&(
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-96 flex flex-col items-center justify-center">
+                          
+            <div className="mb-5 flex gap-5 jusify-center items-center">
+              <img src={modalIcon} alt="modal Icon" className="h-10"/>
+              Their is no data to display for analytics.
+            </div>
+              
+                          
+            <button onClick={()=>{
+              setShowModal(false)}
+              } className="px-3 py-2 rounded-lg mx-auto bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
+              Ok
+            </button>
+                          
+          </div>
+        </div>
+      )
+      } */}
     </div>
   );
 };

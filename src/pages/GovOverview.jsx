@@ -353,25 +353,6 @@ const GovOverview = () => {
           ],
         })
     }
-      // const monthWiseData = {
-  //   labels: [""],
-  //   datasets: [
-  //     {
-  //       label: "Total Revenue",
-  //       data: ecoData["Total Revenue"].map(Number),
-  //       backgroundColor: "#4BA0B6",
-  //       borderColor: "#4BA0B6",
-  //       borderWidth: 1,
-  //     },
-  //     {
-  //       label: "Total turnover",
-  //       data: ecoData["Total turnover"].map(Number),
-  //       backgroundColor: "#4BA0B6",
-  //       borderColor: "#4BA0B6",
-  //       borderWidth: 1,
-  //     }
-  //   ],
-  // };
 
  
 
@@ -515,7 +496,7 @@ const GovOverview = () => {
         <div className='bg-white rounded-xl border w-full px-3 py-2 '>
             <div className='font-semibold text-xl text-[#343C6A]'>ECONOMIC PERFORMANCE</div>            
             <div className='flex justify-between mt-5'>
-            <div className=' w-[30rem] '>
+            <div className='flex-1 '>
                 {/* <div className='flex items-center gap-2 ml-10'>
                     <div className="w-4 h-4 rounded-full bg-[#3d9f86]">
                     </div>
@@ -529,7 +510,7 @@ const GovOverview = () => {
                     fillVal={true}
                 />
             </div>
-            <div className='w-[30rem]'>
+            <div className='flex-1'>
                 {/* <div className='flex items-center gap-2 ml-10'>
                     <div className="w-4 h-4 rounded-full bg-[#3d9f86]">
                     </div>

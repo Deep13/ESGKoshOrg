@@ -20,7 +20,13 @@ const Header = () => {
         </div>
         <div className="flex gap-2">
             <div>
-                {master?.currentReportingCycle.status?"Current":"Last"} Reporting Cycle:
+            {
+                master && master.currentReportingCycle ? (
+                    master.currentReportingCycle.status ? "Current" : "Last"
+                ) + " Reporting Cycle:" : (
+                    "No reporting cycle initiated yet"
+                )
+            }
             </div>
             
             <div className="font-semibold">

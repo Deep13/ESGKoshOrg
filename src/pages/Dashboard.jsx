@@ -173,7 +173,12 @@ const Dashboard = () => {
                 <img src={seeding} alt="seeding icon" />
               </div>
             </div>
-            <div className="mt-2 text-[2.5rem]">{avgEmissionsPercentage.split('.')[0]}%</div>
+            <div className="mt-2 text-[2.5rem]">
+              {avgEmissionsPercentage?
+              (avgEmissionsPercentage.split('.')[0]+"%"):
+              ("_")
+              }
+            </div>
             {/* <div
               className={`${
               expanded ? 'w-full sm:w-[18rem]' : 'w-full sm:w-[20rem]'
@@ -196,7 +201,12 @@ const Dashboard = () => {
                 <img src={social} alt="social icon" />
               </div>
             </div>
-            <div className="mt-2 text-[2.5rem]">{avgSocialPercentage.split('.')[0]}%</div>
+            <div className="mt-2 text-[2.5rem]">
+              {avgSocialPercentage?(
+                avgSocialPercentage.split('.')[0]+"%"):
+                ("_")
+              }
+            </div>
             {/* <div
               className={` flex justify-between items-center rounded-b-[1rem] border-t text-[#718EBF] p-3 ml-[-1.25rem]`}
             >
@@ -217,7 +227,14 @@ const Dashboard = () => {
                 <img src={governance} alt="governance icon" />
               </div>
             </div>
-            <div className="mt-2 text-[2.5rem]">{avgGovernancePercentage.split('.')[0]}%</div>
+            <div className="mt-2 text-[2.5rem]">
+              {avgGovernancePercentage?(
+                avgGovernancePercentage.split('.')[0]+"%"
+              ):(
+                "_"
+              )
+            }
+            </div>
             {/* <div
               className={`flex justify-between items-center rounded-b-[1rem] border-t text-[#718EBF] p-3 ml-[-1.25rem]`}
             >

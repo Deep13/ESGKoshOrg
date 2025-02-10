@@ -1,7 +1,7 @@
 import { useEffect, useState,useRef } from "react";
 import { useSidebar } from "../context/SidebarContext";
 import { firestore } from "../firebase";
-import { getDoc,doc,arrayUnion,setDoc,updateDoc,deleteField,collection,getDocs} from "firebase/firestore";
+import { getDoc,doc,arrayUnion,setDoc,updateDoc,deleteField,collection,getDocs,FieldValue} from "firebase/firestore";
 import { FaExclamationCircle,FaPlus,FaMinus } from "react-icons/fa";
 import modalIcon from '../assets/modalIcon.png'
 import * as XLSX from "xlsx"
@@ -32,6 +32,7 @@ const Fuels = () => {
     let ele=document.getElementById("branchSelect")
     if(ele)ele.value="Select branch";
     
+    selectedIndexes2.current = [];
     setVariantOffice("")
     setFilterList({})
   },[module])
@@ -14484,8 +14485,16 @@ const deleteVariant = async() => {
         return;
     }
     var selectData=[];
-    selectedIndexes2.current.map((val)=>{selectData.push(selectedVariant[val])})
-    
+    // var unselectedData=[]
+    // selectedIndexes2.current.map((val,index)=>{selectData.push(selectedVariant[val])})
+    selectedVariant.map((val,index)=>{
+      if(!selectedIndexes2.current.includes(index)){
+        selectData.push(val)
+      }
+    })
+
+    setSelectedVariant(selectData)
+    setTempSelectedVariant(selectData)
 
     var aColumns = getColumns(module);
     const editableColumns = aColumns
@@ -14520,13 +14529,14 @@ const deleteVariant = async() => {
       var domain = userData?.username.split("@");
       updateDoc(doc(firestore,domain[1],"Master Data","Reporting Variant",module),{
         [variantOffice]:selectData
+        // selectData:FieldValue.delete()
       })
         .then(() => {
           setShowModal(true)
           setModalText("Variant successfully deleted!");
           // console.log("test",fetchedVariant[variantOffice])
           console.log(selectedVariant)
-          setSelectedVariant()
+          // setSelectedVariant()
           setFetchedVariant((prevData) => ({
             ...prevData,
             [variantOffice]: prevData[variantOffice].filter((item) => !selectData.includes(item)),

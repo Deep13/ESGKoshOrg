@@ -72,6 +72,7 @@ const addRow=()=>{
   const newRow = {};
   getColumns(module)?.forEach((col) => (newRow[col.title] = ""));
   setSelectedVariant([...selectedVariant, newRow]);
+  setTempSelectedVariant([...selectedVariant, newRow]);
   setFetchedVariant({...fetchedVariant,
     [variantOffice]:[...selectedVariant, newRow],})
 }
@@ -83,9 +84,10 @@ const deleteRow=()=>{
   selectedIndexes2.current = [];
 
   console.log("updayed rows",updatedRows)
-  setSelectedVariant([updatedRows]);
-  setFetchedVariant({...fetchedVariant,
-    [variantOffice]:[updatedRows],})
+  setSelectedVariant(updatedRows);
+  setTempSelectedVariant(updatedRows);
+  // setFetchedVariant({...fetchedVariant,
+  //   [variantOffice]:[updatedRows],})
 }
 
 const checkKey=(moduleValue)=>{
@@ -15322,7 +15324,7 @@ const ignoreFields=()=>{
         </div>
         <div onClick={()=>deleteRow()} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
           <FaMinus />
-          Delete selected row
+          Delete selected rows
         </div>
       </div>
     </div>

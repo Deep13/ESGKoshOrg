@@ -446,6 +446,10 @@ export default function Sidebar({ onRaiseIncident }) {
             </li>
           </ul>
 
+          <div className="flex items-center justify center text-sm mx-auto my-2">
+            Version: 1.00
+          </div>
+
         </div>
       </nav>
     </aside>

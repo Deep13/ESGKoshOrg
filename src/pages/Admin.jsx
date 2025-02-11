@@ -17,6 +17,7 @@ const Admin = () => {
   const [month, setMonth] = useState("");
   const { master, userData, sheets,module,fullTotalPercentage,setMaster } = useSidebar();
   const [action, setAction] = useState(master?.currentReportingCycle?.status);
+  const [noData,setNoData] = useState(false);
 
   const getData = async (domain) => {
     setLoading(true)
@@ -41,6 +42,7 @@ const Admin = () => {
         setLoading(false)
       } else {
         console.log("No such document!");
+        setNoData(true);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -1044,7 +1046,13 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
       >
         {loading?(
             <div className="flex justify-center items-center py-10">
-            <Spinner />
+            {noData?(
+                <div>
+                    No previous cycles found.
+                </div>
+            ):(
+                <Spinner />
+            )}
           </div>):(
             <>
                 <table className="w-full border-collapse rounded-[1rem] py-5">

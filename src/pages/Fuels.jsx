@@ -15085,17 +15085,35 @@ const ignoreFields=()=>{
   }
 
   const downloadTableAsExcel = () => {
-    // Convert table data to worksheet
-    const tableData = selectedVariant;
-    const worksheet = XLSX.utils.json_to_sheet(tableData);
+    if (!selectedVariant.length) return;
+  
+    // Get the table columns
+    const columns = getColumns(module).map(col => col.title);
+  
+    // Format the data to include only visible columns
+    const formattedData = selectedVariant.map(ticket => {
+      let formattedRow = {};
+      columns.forEach(col => {
+        formattedRow[col] = ticket[col] || "--"; // Default empty values to "--"
+      });
+      return formattedRow;
+    });
+  
+    // Create worksheet with formatted data
+    const worksheet = XLSX.utils.json_to_sheet(formattedData, { header: columns });
+  
+    // Apply styling (optional) - adjusting column widths
+    const colWidths = columns.map(() => ({ wch: 20 })); // Adjust column width to 20 characters
+    worksheet["!cols"] = colWidths;
   
     // Create a workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Table Data");
   
     // Trigger download
-    XLSX.writeFile(workbook,"table 1.xlsx");
+    XLSX.writeFile(workbook, `${module} Report for ${branch}.xlsx`);
   };
+  
 
   const handleUpload = (event) => {
     const file = event.target.files[0];
@@ -15115,7 +15133,7 @@ const ignoreFields=()=>{
   
         // Set the data to your table
         console.log("func is running",data)
-        setSelectedVariant(data);
+        setSelectedVariant([...data]);
         setTempSelectedVariant([...data]);
       };
       reader.readAsBinaryString(file);
@@ -15303,16 +15321,30 @@ const ignoreFields=()=>{
         </select>
         ))}
       </div>
-      
-
-      {/* <div className="flex mt-3">
-        <div className='flex'>
-          <input type='file' accept=".xls, .xlsx" placeholder="Upload Excel"  onChange={(event) => handleUpload(event)}></input>
-        </div>
-        <div className="flex border-2 rounded-xl cursor-pointer px-4 py-2" onClick={()=>downloadTableAsExcel()}>Download Excel</div>
-      </div> */}
 
     </div>
+
+    <div className="flex items-center justify-end gap-5  mt-2 rounded-lg">
+  <div className="flex items-center">
+    <label className="flex items-center cursor-pointer bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-3 py-2 rounded-lg ">
+      <span className="mx-auto">Upload Excel</span>
+      <input
+        type="file"
+        accept=".xls, .xlsx"
+        className="hidden"
+        onChange={(event) => handleUpload(event)}
+      />
+    </label>
+  </div>
+
+  <button
+    className="flex items-center bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-3 py-2 rounded-lg "
+    onClick={() => downloadTableAsExcel()}
+  >
+    Download Excel
+  </button>
+</div>
+
 
     {(module=="Flight"||module=="Accommodation")&&
     <div className=" flex items-center justify-between mt-3 px-3">

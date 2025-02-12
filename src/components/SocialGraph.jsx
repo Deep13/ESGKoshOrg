@@ -34,10 +34,23 @@ const SocialGraph = ({ data={labels:[],datasets:[]}, stacked = false, setYear=nu
     }
   };
 
+  const cleanedData = {
+    ...data,
+    datasets: data.datasets.map(dataset => ({
+      ...dataset,
+      data: dataset.data.map(value => 
+        value === null || isNaN(value) ? 0 : value // Replace null/NaN with 0
+      ),
+    })),
+  };
+  
+  console.log("Original Data:", data);
+  console.log("Transformed Data:", cleanedData);
+  
   return (
     <div className="w-full h-[200px]">
       {/* <Bar data={data} options={options} /> */}
-      <Bar data={data} options={options} />
+      <Bar data={cleanedData} options={options} />
     </div>
   );
 };

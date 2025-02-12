@@ -14643,8 +14643,10 @@ else{
     console.log("check", officeType);
   
     // Update the selected variant based on the office type
-    if(fetchedVariant && fetchedVariant[officeType]){setSelectedVariant(fetchedVariant[officeType]);}
-      setLoading(true)
+    if(fetchedVariant && fetchedVariant[officeType]){
+      setSelectedVariant(fetchedVariant[officeType]);
+    }
+      // setLoading(true)
     try {
       // Fetch data from Firestore
       const docRef = doc(
@@ -14667,7 +14669,8 @@ else{
                 setLoading(false)
               }
               else{
-                if (fetchedVariant[officeType]) {
+                setDataStatus("Not Submitted");
+                if (fetchedVariant && fetchedVariant[officeType]) {
                   console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
                   setSelectedVariant(fetchedVariant[officeType])
                   setTempSelectedVariant(fetchedVariant[officeType])

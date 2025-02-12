@@ -6,7 +6,6 @@ import SocialGraph from "../components/SocialGraph";
 import BubbleChart from "../components/BubbleChart";
 import { useSidebar } from "../context/SidebarContext";
 import Spinner from '../components/Spinner';
-import modalIcon from "../assets/modalIcon.png"
 
 const Analytics = () => {
   const { module, userData, master } = useSidebar();
@@ -25,8 +24,6 @@ const Analytics = () => {
   console.log(module);
 
   
-
-// const transformMonthWiseData = (data, selectedYear) => {
 //     const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     
 //     // Initialize empty array for each month
@@ -856,16 +853,18 @@ const processDataForGraph= (data)=> {
 function transformEnvDataForGraphByYear(backendData) {
   const transformedData = {
     labels: [],
-    datasets: []
+    datasets: [],
   };
 
   const metricsMap = {}; // Store fuel type data grouped by year dynamically
 
+  // Extract unique years and sort them before processing
+  const uniqueYears = [...new Set(backendData?.map(entry => entry.year))].sort();
+  transformedData.labels = uniqueYears;
+
   backendData?.forEach(yearEntry => {
     const year = yearEntry.year;
-    if (!transformedData.labels.includes(year)) {
-      transformedData.labels.push(year);
-    }
+    const yearIndex = transformedData.labels.indexOf(year);
 
     Object.entries(yearEntry).forEach(([key, monthData]) => {
       if (key === "year" || key === "type") return;
@@ -875,11 +874,12 @@ function transformEnvDataForGraphByYear(backendData) {
 
         Object.entries(locationData.Type).forEach(([fuelType, value]) => {
           if (!metricsMap[fuelType]) {
-            metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+            // Initialize with correct length
+            metricsMap[fuelType] = new Array(uniqueYears.length).fill(0);
           }
 
-          const yearIndex = transformedData.labels.indexOf(year);
-          metricsMap[fuelType][yearIndex] += Number(value) || 0;
+          const numericValue = isNaN(Number(value)) ? 0 : Number(value);
+          metricsMap[fuelType][yearIndex] += numericValue;
         });
       });
     });
@@ -888,9 +888,10 @@ function transformEnvDataForGraphByYear(backendData) {
   // Convert metrics map into datasets dynamically
   Object.entries(metricsMap).forEach(([fuelType, data], index) => {
     const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+
     transformedData.datasets.push({
       label: fuelType,
-      data: data,
+      data: data, // Already aligned with sorted years
       backgroundColor: colors[index % colors.length], // Assign color dynamically
       borderColor: colors[index % colors.length],
       borderWidth: 1,
@@ -899,6 +900,7 @@ function transformEnvDataForGraphByYear(backendData) {
 
   return transformedData;
 }
+
 function transformEnvDataForGraphByMonth(backendData, selectedYear) {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -1625,6 +1627,7 @@ useEffect(()=>{
   updateData()
 },[year])
 
+console.log("test ",transformEnvDataForGraphByYear(fetchedData))
   
   return (
     <div className="flex flex-col justify-center items-center p-5 gap-5">
@@ -1695,7 +1698,7 @@ useEffect(()=>{
       {year && (
         <div className=" bg-white rounded-lg w-full p-3">
           <div className="flex justify-between px-3 mb-3">
-            <div className="font-bold text-lg text-slate-600">MONTH-WISE</div>
+            <div className="font-bold text-lg text-slate-600">MONTH-WISE-{year}</div>
             <div className="flex gap-24 items-center">
               {/* <div className=" flex gap-3 items-center">
                 <div className="w-4 h-4 rounded-full bg-[#3d9f86]"></div>

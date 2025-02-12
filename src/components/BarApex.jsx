@@ -47,6 +47,8 @@ const allTrainingTypes = Array.from(
     },
   };
 
+  console.log(series)
+
   return <Chart options={options} series={series} type="bar" height={500} />;
 };
 

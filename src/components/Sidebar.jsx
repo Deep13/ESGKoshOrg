@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from "react"; // Import useState
 import { AiOutlineIssuesClose } from "react-icons/ai";
 import { GoIssueReopened } from "react-icons/go";
-
+//update variant and reporting variant on create variant
 export default function Sidebar({ onRaiseIncident }) {
   const { expanded, setExpanded, setPage, page, setModule, module,sheets,userData, setActiveSubmenu, activeSubmenu } = useSidebar(); // Use the hook
   const navigate = useNavigate();
@@ -24,10 +24,12 @@ export default function Sidebar({ onRaiseIncident }) {
   const analyticsDataList={
     "Environment":["Fuel","Bioenergy","Water","WTT- fuels","Freighting goods",
       "Business travel - land and sea","Employees commuting","Materials","Owned Vehicles",
-      "Refrigerant and other","Food","Accommodation","Flight","Home Office","Elec heat cooling","Waste Disposal"],
-    "Governance":["Entity","Eco. Performance"],
+      "Refrigerant and other","Food","Accommodation","Flight","Home Office","Elec heat cooling",
+      "Waste Disposal"],
     "Social":["Retention","Training and Edu","Mktg and Labelling","Social Benefits",
-      "Employment","CHS","Child Labor","Customer Privacy","OH and S"]   
+      "Employment","CHS","Child Labor","Customer Privacy","OH and S"] ,
+      "Governance":["Entity","Eco. Performance"],
+      
   }
   console.log("Sheet data",sheets)
 

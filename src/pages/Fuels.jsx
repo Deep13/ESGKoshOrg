@@ -23,8 +23,9 @@ const Fuels = () => {
   const selectedIndexes2=useRef([]);
   const [filterList,setFilterList] = useState({});
   const [tempSelectedVariant,setTempSelectedVariant] = useState([]);
+  const [tempIndexMap, setTempIndexMap] = useState(new Map());
   // Data configurations based on the fuel type (fuel, bioenergy)
-  const {module, master,userData, activeSubmenu,sheets } = useSidebar();
+  const {module, master,userData, sheets } = useSidebar();
   
   useEffect(()=>{
     setSelectedVariant(null);
@@ -35,7 +36,20 @@ const Fuels = () => {
     selectedIndexes2.current = [];
     setVariantOffice("")
     setFilterList({})
+    setDataStatus("not Submitted")
+    setFetchedVariant(null);
   },[module])
+
+  // useEffect(()=>{
+  //   setSelectedVariant(null);
+  //   setOffice("")
+  //   let ele=document.getElementById("branchSelect")
+  //   if(ele)ele.value="Select branch";
+
+  //   let ele2=document.getElementById("officeSelect")
+  //   if(ele2)ele2.value="";
+
+  // },[tab])
 
   const fuelData = {
     Fuel: [
@@ -65,27 +79,40 @@ const tooltipData={
   "Entry level wage for Female": "Entry level - wage full-time wage in the lowest employment category Note: Intern or apprentice wages are not considered entry level wages."
 }
 
-const addRow=()=>{
+const addRow=(param='recorded')=>{
   console.log("data got",getColumns(module))
   console.log("selected",selectedVariant);
   console.log("fetched",fetchedVariant);
   const newRow = {};
   getColumns(module)?.forEach((col) => (newRow[col.title] = ""));
+ if(param=='recorded'){
   setSelectedVariant([...selectedVariant, newRow]);
   setTempSelectedVariant([...selectedVariant, newRow]);
   setFetchedVariant({...fetchedVariant,
     [variantOffice]:[...selectedVariant, newRow],})
+ }
+ else{
+  setVariantData([...variantData,newRow])
+ }
 }
 
-const deleteRow=()=>{
-  if (selectedIndexes2.length === 0) return;
-  const updatedRows = selectedVariant.filter((_, index) => !selectedIndexes2.current.includes(index));
-  // Clear selected indexes after deletion
-  selectedIndexes2.current = [];
+const deleteRow=(param='recorded')=>{
+  
 
-  console.log("updayed rows",updatedRows)
-  setSelectedVariant(updatedRows);
-  setTempSelectedVariant(updatedRows);
+  
+  if(param=='recorded'){
+    if (selectedIndexes2.length === 0) return;
+    const updatedRows = selectedVariant.filter((_, index) => !selectedIndexes2.current.includes(index));
+    // Clear selected indexes after deletion
+    selectedIndexes2.current = [];
+    setSelectedVariant(updatedRows);
+    setTempSelectedVariant(updatedRows);
+  }
+  else{
+    const updatedRows = variantData.filter((_, index) => !selectedIndexes.current.includes(index));
+    selectedIndexes.current = [];
+    setVariantData(updatedRows)
+  }
   // setFetchedVariant({...fetchedVariant,
   //   [variantOffice]:[updatedRows],})
 }
@@ -9123,11 +9150,11 @@ const calculateEmissions = () => {
           "Values": ""
         },
         {
-          "Data": "Markets served by the entity nationally (comma seperated)",
+          "Data": "Markets served by the entity nationally",
           "Values": ""
         },
         {
-          "Data": "Markets served by the entity internationally (comma seperated)",
+          "Data": "Markets served by the entity internationally",
           "Values": ""
         }
       ],
@@ -14427,6 +14454,7 @@ const getColumns=(module)=> {
         setDoc(doc(firestore,domain[1],"Master Data","Reporting Variant",module),{
           [office]:arrayUnion(...selectData)
         },{merge:true}).then(()=>{
+          fetchVariantData()
           setShowModal(true);
           setModalText("Variant Saved Successfully")
           // alert("Variant Saved Successfully")
@@ -14443,6 +14471,7 @@ const getColumns=(module)=> {
         },{merge:true}).then(()=>{
           setShowModal(true)
           setModalText("Variant Saved Successfully")
+          fetchVariantData()
         })
         .catch((error)=>{
           console.log(error)
@@ -14628,6 +14657,23 @@ else{
 }
 },[selectedVariant])
 
+const createTable=async()=>{
+  await getDoc(doc(firestore,"Master Data","Factors"))
+  .then((doc)=>{
+    if(doc.exists){
+      var docData=doc.data();
+      console.log("docdata",docData)
+      var oData = getVariantData(module);
+      var conData = findGHGConversion(oData, doc.data().factor);
+      setSelectedVariant(conData);
+      setTempSelectedVariant(conData);
+      console.log("conData",conData)
+    }
+  }
+
+  )
+
+}
  const branchChange = async (value) => {
   console.log("Module",module)
   console.log("tabledata",fetchedVariant)
@@ -14683,8 +14729,9 @@ else{
                   console.log("Branch does not exist in reporting variant, creating table...");
                   console.log("selected Variant",selectedVariant)
                   // console.log("data from func",getVariantData(module))
-                  setSelectedVariant(getVariantData(module))
-                  setTempSelectedVariant(getVariantData(module))
+                  // setSelectedVariant(getVariantData(module))
+                  // setTempSelectedVariant(getVariantData(module))
+                  createTable()
                   // Create the whole table (example logic)
                   // const newTableData = {
                   //     branch: branch,
@@ -14716,8 +14763,9 @@ else{
                   console.log("selected Variant",selectedVariant)
                   // console.log("data from func",getVariantData(module))
                   setLoading(false)
-                  setSelectedVariant(getVariantData(module))
-                  setTempSelectedVariant(getVariantData(module))
+                  createTable()
+                  // setSelectedVariant(getVariantData(module))
+                  // setTempSelectedVariant(getVariantData(module))
                   // Create the whole table (example logic)
                   // const newTableData = {
                   //     branch: branch,
@@ -14928,9 +14976,31 @@ const ignoreFields=()=>{
     
     ignoreFields();
     console.log("fix",totalEmissions)
+    console.log("test23",selectedVariant,monthYear.month,monthYear.year,module,domain[1],userData)
+    let sanitizedVariant= sanitizeObject(selectedVariant);
+    // if(module=="Elec heat cooling"){
+    //   sanitizedVariant = selectedVariant
+    //   .filter(item => item.Amount !== "" && item["GEF Factors"] !== undefined && item["T&D Factors"] !== undefined ) // Remove invalid entries
+    //   .map(item => ({
+    //     ...item
+    //   }));
+    // }
+    // if(checkKey(module)!=="Environment" || module=="Flight" || module=="Accomodation"){
+    //   sanitizedVariant=selectedVariant;
+    // }
+    // else{
+    //   sanitizedVariant = selectedVariant
+    //   .filter(item => item.Amount !== "" && item.Factor !== undefined) // Remove invalid entries
+    //   .map(item => ({
+    //     ...item
+    //   }));
+    // }
+
+  console.log("Sanitized Data:", sanitizedVariant);
+
     setDoc(doc(firestore,domain[1],"TransactionData",monthYear.month+"-"+monthYear.year,module),{
       [branch]: {
-          data: selectedVariant,
+          data: sanitizedVariant,
           status: "Submitted",
           updatedAt: new Date(),
           updatedBy: userData?.userId,
@@ -15053,6 +15123,8 @@ const ignoreFields=()=>{
 
   }
   const saveDraft = async () =>{
+  console.log("selected",selectedVariant);
+  console.log("temp",tempSelectedVariant);
     if(!branch){
       setShowModal(true);
       setModalText("Kindly Select Branch")
@@ -15086,6 +15158,22 @@ const ignoreFields=()=>{
 
       });
   }
+
+
+  const sanitizeObject = (obj) => {
+    if (Array.isArray(obj)) {
+      return obj.map(sanitizeObject); // Recursively handle arrays
+    } else if (typeof obj === "object" && obj !== null) {
+      return Object.fromEntries(
+        Object.entries(obj).map(([key, value]) => [key, value === undefined ? null : sanitizeObject(value)])
+      );
+    }
+    return obj; // Return the value as is if not an object/array
+  };
+  
+  // Apply sanitization to selectedVariant
+ 
+  
 
   const downloadTableAsExcel = () => {
     if (!selectedVariant.length) return;
@@ -15176,39 +15264,42 @@ const ignoreFields=()=>{
     };
   
 
-  const handleFilter=()=>{
-    var container=document.getElementById("filterContainer")
-    var filters = Array.from(container.children);
+  const handleFilter = () => {
+  var container = document.getElementById("filterContainer");
+  var filters = Array.from(container.children);
 
-    // // Check if all filters are set to "All"
-    const allFiltersAreAll = filters.every(val => val.value === "All");
-  
-    if (allFiltersAreAll) {
-      setTempSelectedVariant([...selectedVariant]); // Reset to original data
-      return;
-    }
-    var a=[];
-    selectedVariant.map((item)=>{
-     var flag=false;
-     for (const val of container.children) {
-        if(val.value!=="All"){
-          if(item[val.dataset.title]==val.value){
-            flag=true
-          }
-          else{
-            flag=false;
-            return;
-          }
-        }
-      }
+  // Check if all filters are set to "All"
+  const allFiltersAreAll = filters.every(val => val.value === "All");
 
-      if(flag){
-        a.push(item)
-      }
-    })
-
-    setTempSelectedVariant(a);
+  if (allFiltersAreAll) {
+    setTempSelectedVariant([...selectedVariant]); // Reset to original data
+    setTempIndexMap(new Map(selectedVariant.map((_, index) => [index, index]))); // Reset index map
+    return;
   }
+
+  let filteredData = [];
+  let indexMap = new Map(); // Store the index mapping
+
+  selectedVariant.forEach((item, originalIndex) => {
+    let flag = true;
+
+    for (const val of container.children) {
+      if (val.value !== "All" && item[val.dataset.title] !== val.value) {
+        flag = false;
+        break;
+      }
+    }
+
+    if (flag) {
+      indexMap.set(filteredData.length, originalIndex); // Store (filteredIndex -> originalIndex)
+      filteredData.push(item);
+    }
+  });
+
+  setTempSelectedVariant(filteredData);
+  setTempIndexMap(indexMap);
+};
+
 
   const handleInputChange = (index, columnTitle, value) => {
     setVariantData(prevData =>
@@ -15259,14 +15350,25 @@ const ignoreFields=()=>{
         </div>
       :
     <>
-      {tab=='variant'?
-        <div onClick={()=>deleteVariant()} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
-          Delete
-        </div>:
-        <div onClick={()=>onSaveVariant()} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
-        Save
-      </div>
-      }
+      {tab === 'variant' ? (
+  <div
+    onClick={() => deleteVariant()}
+    className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer"
+  >
+    Delete
+  </div>
+) : tab === 'create' && master?.currentReportingCycle ? (
+  <div
+    onClick={() => onSaveVariant()}
+    className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer"
+  >
+    Save
+  </div>
+  
+) : (
+  <div></div>
+)}
+
       </>
         }
       </div>
@@ -15327,7 +15429,7 @@ const ignoreFields=()=>{
 
     </div>
 
-    <div className="flex items-center justify-end gap-5  mt-2 rounded-lg">
+    {/* <div className="flex items-center justify-end gap-5  mt-2 rounded-lg">
   <div className="flex items-center">
     <label className="flex items-center cursor-pointer bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-3 py-2 rounded-lg ">
       <span className="mx-auto">Upload Excel</span>
@@ -15346,7 +15448,7 @@ const ignoreFields=()=>{
   >
     Download Excel
   </button>
-</div>
+</div> */}
 
 
     {(module=="Flight"||module=="Accommodation")&&
@@ -15374,6 +15476,7 @@ const ignoreFields=()=>{
       placeholder="All"
       className={` p-3 min-w-[200px] rounded-xl mt-2`}
       value={variantOffice}
+      id="officeSelect"
       onChange={(e)=>{
         setVariantOffice(e.target.value)
         setSelectedVariant(fetchedVariant[e.target.value])
@@ -15395,7 +15498,7 @@ const ignoreFields=()=>{
   {loading ? (
     // Show the spinner while loading
     <div className="flex justify-center items-center py-10">
-      <Spinner /> {/* Assuming Spinner component is properly imported */}
+      <Spinner /> 
     </div>
   ) : (
     // Show the table once data is loaded
@@ -15447,13 +15550,14 @@ const ignoreFields=()=>{
                     type={column.type === "Number" ? "number" : "text"}
                     disabled={tab === "variant"}
                     value={ticket[column.title] || ""}
+                    onWheel={(e)=>e.target.blur()}
                     onChange={(e) => {
                       const updatedValue = e.target.value;
-
+                      console.log(tempIndexMap.get(index))
                       // Update selectedVariant safely
                       const updatedVariant = [...selectedVariant];
-                      updatedVariant[index] = {
-                        ...updatedVariant[index],
+                      updatedVariant[tempIndexMap.get(index)] = {
+                        ...updatedVariant[tempIndexMap.get(index)],
                         [column.title]: updatedValue,
                       };
                       setSelectedVariant(updatedVariant);
@@ -15514,6 +15618,21 @@ const ignoreFields=()=>{
           </select>
             }
       </div>
+      {(module=="Flight"||module=="Accommodation")&&
+    <div className=" flex items-center justify-between mt-3 px-3">
+      <div className="font-semibold text-xl text-[#343C6A]">Editable Table</div>
+      <div className="flex gap-3">
+        <div onClick={()=>addRow('create')} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
+          <FaPlus/>
+          Add row
+        </div>
+        <div onClick={()=>deleteRow('create')} className="hover:text-[#343C6A] flex gap-2 items-center border-2 border-black hover:border-[#343C6A] rounded-lg px-2 py-1 cursor-pointer font-semibold">
+          <FaMinus />
+          Delete selected rows
+        </div>
+      </div>
+    </div>
+    }
      
 
       <table className="w-full border-collapse rounded-[1rem]">
@@ -15593,3 +15712,5 @@ const ignoreFields=()=>{
 };
 
 export default Fuels;
+
+

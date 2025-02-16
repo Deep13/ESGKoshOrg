@@ -463,6 +463,7 @@ const SocialOverview = () => {
   };
   
   console.log("ah",transformData(overviewObj))
+  console.log("employye",employeeChart)
 
   return (
     <div className="p-2 flex flex-col gap-3 items-center">
@@ -551,7 +552,14 @@ const SocialOverview = () => {
                     </select> */}
                 </div>
                 <div className="mt-2">
-                    <SocialGraph data={employeeChart}/>
+                  {
+                  employeeChart?
+                  <SocialGraph data={employeeChart}/>
+                  :
+                  <div className="h-48 mx-auto flex items-center justify-center">
+                    No data available for analytics
+                  </div>
+                }
                 </div>
             </div>
             <div className="flex flex-col justify-between rounded-xl p-2 w-[23rem] h-[15.5rem] bg-gradient-to-r from-[#43729F] to-[#008397] text-white">
@@ -617,8 +625,13 @@ const SocialOverview = () => {
   );
 })} */}
 
+                  {barData?
                   <BarApex trainingData={barData}/>
-
+                  :
+                  <div className="h-48 mx-auto flex items-center justify-center">
+                    No Data available for analytics
+                  </div>
+                  }
 
             </div>
         </div>

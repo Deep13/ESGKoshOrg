@@ -109,6 +109,7 @@ const Dashboard = () => {
     };
   }
   
+  console.log("user",userData)
   
   const getCalculatedPercentage=async(domain,monthYear)=>{ 
     await getDoc(doc(firestore,domain[1], "TransactionData",monthYear.month+"-"+monthYear.year,"Statistics"))

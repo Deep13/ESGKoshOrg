@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { RxCross2, RxPencil2 } from "react-icons/rx";
 import { collection, addDoc } from "firebase/firestore"; 
 import { firestore } from "./firebase"; // Import Firestore instance
@@ -19,6 +19,10 @@ const Layout = () => {
     phone: "",
     email: "",
   });
+
+  useEffect(()=>{
+    formData.email=userData?.email
+  },[])
 
   // Handle input changes
   const handleChange = (e) => {
@@ -93,7 +97,7 @@ const Layout = () => {
           <Outlet />
           {/* Popup Form */}
           {showPopup && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-200">
               <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
                 <div className="flex justify-between">
                   <div className="flex gap-2">
@@ -135,11 +139,14 @@ const Layout = () => {
                       type="number"
                       name="phone"
                       value={formData.phone}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        const value = e.target.value.slice(0, 10); // Limit length
+                        handleChange({ target: { name: "phone", value } });
+                      }}
                       className="w-full p-2 border rounded-2xl bg-[#eceded]"
                       placeholder="Enter your phone number"
-                      pattern="[0-9]{10}"
-                      maxLength="10"
+                      min="1000000000"
+                      max="9999999999"
                       required
                     />
                   </div>

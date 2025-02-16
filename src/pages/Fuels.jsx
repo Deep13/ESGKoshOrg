@@ -4,6 +4,7 @@ import { firestore } from "../firebase";
 import { getDoc,doc,arrayUnion,setDoc,updateDoc,deleteField,collection,getDocs,FieldValue} from "firebase/firestore";
 import { FaExclamationCircle,FaPlus,FaMinus } from "react-icons/fa";
 import modalIcon from '../assets/modalIcon.png'
+import { SiTicktick } from "react-icons/si";
 import * as XLSX from "xlsx"
 import Spinner from '../components/Spinner'
 
@@ -24,8 +25,9 @@ const Fuels = () => {
   const [filterList,setFilterList] = useState({});
   const [tempSelectedVariant,setTempSelectedVariant] = useState([]);
   const [tempIndexMap, setTempIndexMap] = useState(new Map());
+  const [office, setOffice] = useState(null);
   // Data configurations based on the fuel type (fuel, bioenergy)
-  const {module, master,userData, sheets } = useSidebar();
+  const {module, master,userData, sheets , setMaster} = useSidebar();
   
   useEffect(()=>{
     setSelectedVariant(null);
@@ -34,23 +36,41 @@ const Fuels = () => {
     if(ele)ele.value="Select branch";
     
     selectedIndexes2.current = [];
-    setVariantOffice("")
+    setVariantOffice("");
     setFilterList({})
     setDataStatus("not Submitted")
     setFetchedVariant(null);
   },[module])
 
-  // useEffect(()=>{
-  //   setSelectedVariant(null);
-  //   setOffice("")
-  //   let ele=document.getElementById("branchSelect")
-  //   if(ele)ele.value="Select branch";
+  useEffect(()=>{
+    setTempSelectedVariant([]);
+    setOffice("")
+    let ele=document.getElementById("branchSelect")
+    if(ele)ele.value="Select branch";
 
-  //   let ele2=document.getElementById("officeSelect")
-  //   if(ele2)ele2.value="";
+    let ele2=document.getElementById("officeSelect")
+    console.log("officeSeelct",ele2)
+    if(ele2)ele2.value="";
+    setSelectedVariant(null);
+    setVariantOffice("");
+  },[tab])
 
-  // },[tab])
+  useEffect(()=>{
+    selectedIndexes.current=[];
+    document.querySelectorAll(".table-checkbox").forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+  },[office])
 
+
+  useEffect(()=>{
+    setFilterList({});
+    setTempSelectedVariant([]);
+    selectedIndexes2.current = [];
+    selectedIndexes.current = [];
+  },[branch])
+  
+console.log("variant office",variantOffice)
   const fuelData = {
     Fuel: [
       { title: "Fuels", editable: false, key: "fuels" },
@@ -4349,48 +4369,7 @@ const calculateEmissions = () => {
           "Number of nights per room": "",
           "Factor": ""
         },
-        {
-          "Reference": 2806,
-          "Country": "India",
-          "Number of occupied rooms": "",
-          "Number of nights per room": "",
-          "Factor": ""
-        },
-        {
-          "Reference": 2806,
-          "Country": "India",
-          "Number of occupied rooms": "",
-          "Number of nights per room": "",
-          "Factor": ""
-        },
-        {
-          "Reference": 2806,
-          "Country": "India",
-          "Number of occupied rooms": "",
-          "Number of nights per room": "",
-          "Factor": ""
-        },
-        {
-          "Reference": 2806,
-          "Country": "India",
-          "Number of occupied rooms": "",
-          "Number of nights per room": "",
-          "Factor": ""
-        },
-        {
-          "Reference": 2806,
-          "Country": "India",
-          "Number of occupied rooms": "",
-          "Number of nights per room": "",
-          "Factor": ""
-        },
-        {
-          "Reference": 2806,
-          "Country": "India",
-          "Number of occupied rooms": "",
-          "Number of nights per room": "",
-          "Factor": ""
-        },
+      
       ],
       "Business travel - land and sea": [
         {
@@ -14156,6 +14135,18 @@ const calculateEmissions = () => {
 
     };
 
+    if(module=="Flight"){
+      return [
+        {
+          "Origin (city or IATA code)": "Delhi",
+          "Destination (city or IATA code)": "Mumbai",
+          "Class": "Economy",
+          "Single way / \nreturn": " Single way",
+          "kg CO2e": ""
+        }
+      ]
+    }
+
     return variantMap[module];
   }
 
@@ -14611,7 +14602,7 @@ const deleteVariant = async() => {
   // Getting the fuel type from the Sidebar context
 
   // console.log(fuel)
-  const [office, setOffice] = useState(null);
+
   // Get the columns for the current fuel type
   const getColumn = () => {
     return fuelData[module] || [];
@@ -14664,6 +14655,7 @@ const createTable=async()=>{
       var docData=doc.data();
       console.log("docdata",docData)
       var oData = getVariantData(module);
+      console.log("o",oData);
       var conData = findGHGConversion(oData, doc.data().factor);
       setSelectedVariant(conData);
       setTempSelectedVariant(conData);
@@ -14726,6 +14718,7 @@ const createTable=async()=>{
                   // Handle logic if branch exists in reporting variant
                   // setTableData([]); // Show an empty table
               } else {
+                  setDataStatus("Not Submitted");
                   console.log("Branch does not exist in reporting variant, creating table...");
                   console.log("selected Variant",selectedVariant)
                   // console.log("data from func",getVariantData(module))
@@ -14749,6 +14742,7 @@ const createTable=async()=>{
               // setTableData(tableData); // Update the table with the fetched data
           } else {
               // Data does not exist, check the reporting variant
+              setDataStatus("Not Submitted");
               if (fetchedVariant&&fetchedVariant[officeType]) {
                   console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
                   setSelectedVariant(fetchedVariant[officeType])
@@ -14963,7 +14957,7 @@ const ignoreFields=()=>{
       setModalText("Kindly Select Branch")
       return;
     }
-
+   
     if(dataStatus=='Submitted'){
       setShowModal(true);
       setModalText("You cannot submit data for this branch as it is already submitted")
@@ -14973,6 +14967,31 @@ const ignoreFields=()=>{
     var domain = userData?.username.split("@");
     var monthYear = master?.currentReportingCycle;
     var {totalEmissions,fullEmissions,scopeWiseEmission} = calculateEmissions();
+
+    await getDoc(doc(firestore,domain[1],"Master Data"))
+    .then(async (docSnapshot)=>{               
+      if(docSnapshot.data()){
+        console.log(docSnapshot.data());
+        setMaster(docSnapshot.data());
+        monthYear=docSnapshot.data().currentReportingCycle;}})
+    const docRef = doc(
+      firestore,
+      domain[1],
+      "TransactionData",
+      `${monthYear?.month}-${monthYear?.year}`,
+       module
+     );
+      const docSnapshot = await getDoc(docRef);
+    
+      if (docSnapshot.exists() && docSnapshot.data()) {
+        const tableData=docSnapshot.data();
+        setDataStatus(tableData[branch].status);
+        if(tableData[branch].status=='Submitted'){
+          setShowModal(true);
+          setModalText("You cannot submit data for this branch as it is already submitted")
+          return ;
+        }
+      }
     
     ignoreFields();
     console.log("fix",totalEmissions)
@@ -15138,9 +15157,37 @@ const ignoreFields=()=>{
     var domain = userData?.username.split("@");
     var monthYear = master?.currentReportingCycle;
     // var flag = fetchedVariant[officeType]
+
+    await getDoc(doc(firestore,domain[1],"Master Data"))
+    .then(async (docSnapshot)=>{               
+      if(docSnapshot.data()){
+        console.log(docSnapshot.data());
+        setMaster(docSnapshot.data());
+        monthYear=docSnapshot.data().currentReportingCycle;}})
+    const docRef = doc(
+      firestore,
+      domain[1],
+      "TransactionData",
+      `${monthYear?.month}-${monthYear?.year}`,
+       module
+     );
+      const docSnapshot = await getDoc(docRef);
+    
+      if (docSnapshot.exists() && docSnapshot.data()) {
+        const tableData=docSnapshot.data();
+        setDataStatus(tableData[branch]?.status);
+        if(tableData[branch]?.status=='Submitted'){
+          setShowModal(true);
+          setModalText("You cannot submit data for this branch as it is already submitted")
+          return ;
+        }
+      }
+
+    ignoreFields();
+    let sanitizedData=sanitizeObject(selectedVariant);
     setDoc(doc(firestore,domain[1],"TransactionData",monthYear.month+"-"+monthYear.year,module),{
       [branch]: {
-          data: selectedVariant,
+          data: sanitizedData,
           status: "Draft",
           updatedAt: new Date(),
           updatedBy: userData?.userId,
@@ -15311,7 +15358,7 @@ const ignoreFields=()=>{
   console.log("Branches",typeof(branch),branch)
   return (
     <div className="px-5">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-3">
         <div className="flex gap-10">
           <div
             onClick={() => setTab("recorded")}
@@ -15329,7 +15376,7 @@ const ignoreFields=()=>{
           >
             Variants
           </div>
-          {!(master?.currentReportingCycle?.status)&&
+          {!(master?.currentReportingCycle?.status)&&(userData?.role=="Admin")&&
           <div
           onClick={() => setTab("create")}
           className={` cursor-pointer border-b-[3px] ${
@@ -15344,7 +15391,10 @@ const ignoreFields=()=>{
           <div onClick={()=>saveDraft()} className="border-2 rounded-xl px-3 py-2 cursor-pointer">
             Save as Draft
           </div>
-          <div onClick={()=>saveRecord()} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
+          <div onClick={()=>{
+            saveRecord()
+            setDataStatus("Submitted")
+            }} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
             Save
           </div>
         </div>
@@ -15357,13 +15407,30 @@ const ignoreFields=()=>{
   >
     Delete
   </div>
-) : tab === 'create' && master?.currentReportingCycle ? (
+) : tab === 'create' ? (
+
+  <div className="flex gap-4 mt-4">
   <div
     onClick={() => onSaveVariant()}
     className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer"
   >
     Save
   </div>
+
+  <div
+    onClick={() => {
+      selectedIndexes.current = [];
+      document.querySelectorAll(".table-checkbox").forEach((checkbox) => {
+        checkbox.checked = false;
+      });
+    }}
+    className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#d9534f] to-[#c9302c]
+ py-2 cursor-pointer"
+  >
+    Clear
+  </div>
+</div>
+
   
 ) : (
   <div></div>
@@ -15470,7 +15537,7 @@ const ignoreFields=()=>{
     </>
       }
       {tab=='variant'&&
-      <div className={`flex flex-col w-52 `}>
+      <div className={`flex flex-col w-60 `}>
       {formattedOfficeTypes&&formattedOfficeTypes.length>0&&
       <select
       placeholder="All"
@@ -15480,6 +15547,7 @@ const ignoreFields=()=>{
       onChange={(e)=>{
         setVariantOffice(e.target.value)
         setSelectedVariant(fetchedVariant[e.target.value])
+        setTempSelectedVariant(fetchedVariant[e.target.value])
         // e.target.style.width='auto'
       }}
     >
@@ -15494,7 +15562,12 @@ const ignoreFields=()=>{
      
 </div>
       }
+      {dataStatus === "Submitted" && 
+    <div className=" bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white font-semibold p-2 mt-3 mx-auto w-28 text-center rounded-t-lg mb-[-1.25rem]">
+      Submitted
+    </div>}
       <div className="rounded-[1rem] flex justify-center mt-5 pb-3 px-5 border-2 border-[#f26c35] bg-white shadow-lg overflow-y-auto">
+        
   {loading ? (
     // Show the spinner while loading
     <div className="flex justify-center items-center py-10">
@@ -15502,6 +15575,8 @@ const ignoreFields=()=>{
     </div>
   ) : (
     // Show the table once data is loaded
+    <>
+    
     <table className="w-full border-collapse rounded-[1rem]">
       <thead>
         <tr className="text-left text-md rounded-lg border-b">
@@ -15524,6 +15599,7 @@ const ignoreFields=()=>{
               {(tab !== "recorded" || module == "Flight" || module == "Accommodation") && (
                 <input
                   type="checkbox"
+                  checked={tab !== "recorded" ? false : ticket.checked}
                   onChange={(e) => {
                     if (e.target.checked) {
                       selectedIndexes2.current.push(index);
@@ -15549,15 +15625,15 @@ const ignoreFields=()=>{
                     className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
                     type={column.type === "Number" ? "number" : "text"}
                     disabled={tab === "variant"}
-                    value={ticket[column.title] || ""}
+                    value={tab=='recorded'?ticket[column.title]:"" }
                     onWheel={(e)=>e.target.blur()}
                     onChange={(e) => {
                       const updatedValue = e.target.value;
                       console.log(tempIndexMap.get(index))
                       // Update selectedVariant safely
                       const updatedVariant = [...selectedVariant];
-                      updatedVariant[tempIndexMap.get(index)] = {
-                        ...updatedVariant[tempIndexMap.get(index)],
+                      updatedVariant[tempIndexMap.get(index)||index] = {
+                        ...updatedVariant[tempIndexMap.get(index)||index],
                         [column.title]: updatedValue,
                       };
                       setSelectedVariant(updatedVariant);
@@ -15592,6 +15668,7 @@ const ignoreFields=()=>{
         ))}
       </tbody>
     </table>
+    </>
   )}
 </div>
 
@@ -15654,7 +15731,7 @@ const ignoreFields=()=>{
           {variantData.map((ticket, index) => (
             <tr key={index} className="text-gray-700 text-sm border-b">
               <td >
-                <input type='checkbox' onChange={(e)=>{
+                <input type='checkbox' className='table-checkbox' onChange={(e)=>{
                   e.target.checked?selectedIndexes.current.push(index):selectedIndexes.current.splice(selectedIndexes.current.indexOf(index),1)
                 }}></input>
               </td>
@@ -15695,6 +15772,7 @@ const ignoreFields=()=>{
             
             <div className="mb-5 flex gap-5 jusify-center items-center">
               <img src={modalIcon} alt="modal Icon" className="h-10"/>
+              {/* <SiTicktick size={32} color={"#29C472"}/> */}
               {modalText}
             </div>
 
@@ -15712,5 +15790,4 @@ const ignoreFields=()=>{
 };
 
 export default Fuels;
-
 

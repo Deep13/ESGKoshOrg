@@ -407,6 +407,8 @@ const EnvOverview = () => {
   // const [treeData,setTreeData]=useState(data);
   // setTreeData(data);
  console.log("test2",filteredOverview)
+
+ console.log("pie",wasteData)
   return (
     <div className='flex flex-col px-3 py-2 gap-2 overflow-x-hidden'>
  
@@ -495,35 +497,40 @@ const EnvOverview = () => {
           <div className="bg-white rounded-xl flex-1 p-3 w-full h-[15rem]">
             <h2 className="text-lg font-semibold text-gray-700 mb-4">SCOPE-WISE EMISSION</h2>
             <div className="flex justify-between">
-              {scopeData.map((scope, index) => (
-                <div key={index} className="flex flex-col items-center w-1/3">
-                  {/* Progress Bar */}
-                  <div className="w-24">
-                    <CircularProgressbar
-                      value={scope.percentage}
-                      text={`${scope.percentage}%`}
-                      styles={buildStyles({
-                        textSize: "18px",
-                        pathColor: scope.color,
-                        textColor: "#866969",
-                        trailColor: "#E5E7EB",
-                        strokeLinecap: "round",
-                        pathTransitionDuration: 0.5,
-                        strokeWidth: 40, // Adjust stroke width for better visibility
-                        pathTransition: "none", // Removes animation delay
-                        strokeDasharray: `${scope.percentage * 2.8}, 200`, // Creates a dashed effect (4px line, 4px gap)
-                      })}
-                    />
-                  </div>
- 
- 
-                  {/* Labels */}
-                  <p className="text-sm font-medium mt-2">{scope.label}</p>
-                  {/* <p className="text-xs text-gray-500">Emission</p> */}
-                  <p className="text-sm font-semibold text-gray-700">{scope.emission}</p>
-                  <p className="text-sm font-semibold text-gray-700">kgCO2e</p>
-                </div>
-              ))}
+            {scopeData.length > 0 ? (
+  scopeData.map((scope, index) => (
+    <div key={index} className="flex flex-col items-center w-1/3">
+      {/* Progress Bar */}
+      <div className="w-24">
+        <CircularProgressbar
+          value={scope.percentage}
+          text={`${scope.percentage}%`}
+          styles={buildStyles({
+            textSize: "18px",
+            pathColor: scope.color,
+            textColor: "#866969",
+            trailColor: "#E5E7EB",
+            strokeLinecap: "round",
+            pathTransitionDuration: 0.5,
+            strokeWidth: 40,
+            pathTransition: "none",
+            strokeDasharray: `${scope.percentage * 2.8}, 200`,
+          })}
+        />
+      </div>
+
+      {/* Labels */}
+      <p className="text-sm font-medium mt-2">{scope.label}</p>
+      <p className="text-sm font-semibold text-gray-700">{scope.emission}</p>
+      <p className="text-sm font-semibold text-gray-700">kgCO2e</p>
+    </div>
+  ))
+) : (
+  <div className="flex justify-center items-center w-full h-32 text-gray-500 text-lg font-medium">
+    No data available for analytics
+  </div>
+)}
+
             </div>
           </div>
  
@@ -562,8 +569,14 @@ const EnvOverview = () => {
         <div className=" flex gap-3 items-center">
           <div className="bg-white flex-1 p-2 border rounded-xl">
             <div className="font-semibold text-xl text-[#343C6A] mb-1">EMISSION BY CATEGORIES</div>
-           
-            <TreemapChart data={treeMapData} />
+           {/* {treeMapData?
+           <TreemapChart data={treeMapData} />
+           :
+           <div className="flex justify-center items-center w-full h-32 text-gray-500 text-lg font-medium">
+            No data available for analytics
+            </div>
+           } */}
+           <TreemapChart data={treeMapData} />
           </div>
  
         </div>
@@ -590,9 +603,15 @@ const EnvOverview = () => {
             <div className="font-semibold text-xl text-[#343C6A] mb-1"> WASTE EMISSION SOURCES</div>
             <div className="flex justify-between items-center px-2">
               <div className=""></div>
-              <div className=" flex items-center justify-center">
-                {/* <PieChart data={pieChartData} /> */}
+              <div className=" flex items-center justify-center w-full">
+                {/* <PieApex data={pieChartData} /> */}
+                {pieChartData?.series?.length!=0?
                 <PieApex data={pieChartData} />
+                :
+                <div className="flex justify-center items-center w-full h-64 text-gray-500 text-lg font-medium">
+                No data available for analytics
+                </div>
+                }
               </div>
             </div>
           </div>
@@ -611,7 +630,13 @@ const EnvOverview = () => {
           </div>
         ))} */}
  
-              <PyramidChart data={wasteData.data} categories={wasteData.labels} colors={colors} title="Custom Pyramid Chart" />
+             {wasteData?.data.length!=0?
+             <PyramidChart data={wasteData.data} categories={wasteData.labels} colors={colors} title="Custom Pyramid Chart" />
+             :
+             <div className="flex justify-center items-center w-full h-52 text-gray-500 text-lg font-medium">
+            No data available for analytics
+            </div> 
+            }
  
             </div>
           </div>

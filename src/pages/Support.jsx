@@ -10,6 +10,7 @@ const Support = () => {
   const [priority, setPriority] = useState("All");
   const [status, setStatus] = useState("All");
   const [loading, setLoading] = useState(false); // Loading state
+  const [selectedIncident,setSelectedIncident] = useState(null);
 
   const resetFilter = () => {
     setPriority("All");
@@ -126,18 +127,19 @@ const Support = () => {
 
               <tbody>
                 {tableInfo?.map((tableData, index) => (
-                  <tr key={index} className="text-gray-700 text-sm border-b">
+                  <tr key={index} className="text-gray-700 text-sm border-b cursor-pointer" onClick={() => setSelectedIncident(tableData)}>
                     <td className="py-3 px-3 whitespace-nowrap">
                       {tableData.incidentID.split("-")[0]} -
                       <br />
                       {tableData?.incidentID?.split("-")[1]}
                     </td>
-                    <td className="py-3 px-3 whitespace-nowrap">{tableData.email}</td>
-                    <td className="py-3 px-3 whitespace-nowrap">{tableData.phone}</td>
-                    <td className="py-3 px-3 whitespace-nowrap">{tableData.title}</td>
-                    <td className="py-3 px-3 whitespace-nowrap">
+                    <td className="py-3 px-3 whitespace-wrap">{tableData.email}</td>
+                    <td className="py-3 px-3 whitespace-wrap">{tableData.phone}</td>
+                    <td className="py-3 px-3 whitespace-wrap">{tableData.title}</td>
+                    <td className="py-3 px-3 max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
                       {tableData.description}
                     </td>
+
                     <td className="py-3 px-3 whitespace-nowrap">{tableData.createdDate}</td>
                     <td className="py-3 px-3 whitespace-nowrap">{tableData.status}</td>
                     <td className="py-3 px-3 whitespace-nowrap">
@@ -156,6 +158,41 @@ const Support = () => {
           </div>
         )}
       </div>
+
+      {selectedIncident && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4">
+    <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] shadow-lg overflow-y-auto">
+      <h2 className="text-xl font-semibold mb-3">Incident Details</h2>
+      
+      <div className="space-y-2 text-sm">
+        <p><strong>ID:</strong> {selectedIncident.incidentID}</p>
+        <p><strong>Email:</strong> {selectedIncident.email}</p>
+        <p><strong>Phone:</strong> {selectedIncident.phone}</p>
+        <p><strong>Title:</strong> {selectedIncident.title}</p>
+        
+        {/* Description with Scroll */}
+        <div className="max-h-40 overflow-y-auto border p-2 rounded-md [&::-webkit-scrollbar]:w-1
+            [&::-webkit-scrollbar-track]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-[#f5fcf9]
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-[#29C472]">
+          <p><strong>Description:</strong> {selectedIncident.description}</p>
+        </div>
+        
+        <p><strong>Status:</strong> {selectedIncident.status}</p>
+        <p><strong>Priority:</strong> {selectedIncident.priority}</p>
+      </div>
+
+      <button
+        onClick={() => setSelectedIncident(null)}
+        className="mt-4 bg-red-500 text-white px-4 py-2 rounded-lg w-full"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

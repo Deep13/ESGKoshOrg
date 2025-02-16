@@ -18,6 +18,7 @@ const Admin = () => {
   const { master, userData, sheets,module,fullTotalPercentage,setMaster } = useSidebar();
   const [action, setAction] = useState(master?.currentReportingCycle?.status);
   const [noData,setNoData] = useState(false);
+  
 
   const getData = async (domain) => {
     setLoading(true)
@@ -926,6 +927,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
         setNoticeModal(true);
         setNoticeModalText("Please enter both month and year.")
        console.log("Please enter both month and year.");
+       return
     }
     
     setAction(true)

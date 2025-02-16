@@ -23,6 +23,10 @@ const Analytics = () => {
   let monthData;
   console.log(module);
 
+  useEffect(()=>{
+    setYear(null)
+    setMonthWiseData({labels:[],datasets:[]})
+  },[module])
   
 //     const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     
@@ -115,46 +119,49 @@ function transformDataForGraphByYear(backendData) {
     datasets: []
   };
 
-  // Create a map to store metrics data by year
-  const metricsMap = {};
+  const metricsMap = {}; // Store metric data grouped by year
 
-  // Iterate over all the data to group by year
+  // Extract and sort unique years first
+  const uniqueYears = [...new Set(backendData?.map(entry => entry.year))].sort();
+  yearWiseData.labels = uniqueYears;
+
   backendData?.forEach(yearData => {
     const year = yearData.year;
-    if (!yearWiseData.labels.includes(year)) {
-      yearWiseData.labels.push(year); // Add year to labels
-    }
+    const yearIndex = yearWiseData.labels.indexOf(year);
 
-    // Iterate through each month data
     Object.entries(yearData).forEach(([key, monthData]) => {
       if (key === "year" || key === "type") return;
 
       Object.values(monthData).forEach(locationData => {
-        Object.entries(locationData).forEach(([metric, value]) => {
+        Object.entries(locationData).forEach(([rawMetric, value]) => {
+          const metric = rawMetric.toLowerCase().trim(); // Normalize metric names
+
           if (!metricsMap[metric]) {
-            metricsMap[metric] = new Array(yearWiseData.labels.length).fill(0);
+            // Ensure all datasets align with all years
+            metricsMap[metric] = new Array(uniqueYears.length).fill(0);
           }
 
-          const yearIndex = yearWiseData.labels.indexOf(year);
+          // Assign correct year index
           metricsMap[metric][yearIndex] += Number(value) || 0;
         });
       });
     });
   });
 
-  // Push data into the datasets
+  // Convert metricsMap into dataset format
   Object.entries(metricsMap).forEach(([metric, data]) => {
     yearWiseData.datasets.push({
       label: metric,
-      data: data,
+      data: data, // Aligned with sorted years
       backgroundColor: getRandomColor(),
       borderColor: getRandomColor(),
-      borderWidth: 1,
+      borderWidth: 1
     });
   });
 
   return yearWiseData;
 }
+
 
   function entityTransform(inputData) {
     const transformedData = {};
@@ -952,30 +959,33 @@ function transformEnvDataForGraphByMonth(backendData, selectedYear) {
 function transformVehicleDataForGraphByYear(backendData) {
   const transformedData = {
     labels: [],
-    datasets: []
+    datasets: [],
   };
 
   const metricsMap = {}; // Store fuel type data grouped by year dynamically
 
+  // Extract unique years and sort them before processing
+  const uniqueYears = [...new Set(backendData?.map(entry => entry.year))].sort();
+  transformedData.labels = uniqueYears;
+
   backendData?.forEach(yearEntry => {
     const year = yearEntry.year;
-    if (!transformedData.labels.includes(year)) {
-      transformedData.labels.push(year);
-    }
+    const yearIndex = transformedData.labels.indexOf(year);
 
     Object.entries(yearEntry).forEach(([key, monthData]) => {
       if (key === "year" || key === "type") return;
 
       Object.values(monthData).forEach(locationData => {
-        if (!locationData.Vehicles) return; // Ensure "Type" exists
+        if (!locationData.Vehicles) return; // Ensure "Vehicles" exists
 
         Object.entries(locationData.Vehicles).forEach(([fuelType, value]) => {
           if (!metricsMap[fuelType]) {
-            metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+            // Initialize with correct length
+            metricsMap[fuelType] = new Array(uniqueYears.length).fill(0);
           }
 
-          const yearIndex = transformedData.labels.indexOf(year);
-          metricsMap[fuelType][yearIndex] += Number(value) || 0;
+          const numericValue = isNaN(Number(value)) ? 0 : Number(value);
+          metricsMap[fuelType][yearIndex] += numericValue;
         });
       });
     });
@@ -984,9 +994,10 @@ function transformVehicleDataForGraphByYear(backendData) {
   // Convert metrics map into datasets dynamically
   Object.entries(metricsMap).forEach(([fuelType, data], index) => {
     const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+
     transformedData.datasets.push({
       label: fuelType,
-      data: data,
+      data: data, // Already aligned with sorted years
       backgroundColor: colors[index % colors.length], // Assign color dynamically
       borderColor: colors[index % colors.length],
       borderWidth: 1,
@@ -995,6 +1006,7 @@ function transformVehicleDataForGraphByYear(backendData) {
 
   return transformedData;
 }
+
 function transformVehicleDataForGraphByMonth(backendData, selectedYear) {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -1043,33 +1055,83 @@ function transformVehicleDataForGraphByMonth(backendData, selectedYear) {
   return transformedData;
 }
 
+// function transformActivityDataForGraphByYear(backendData) {
+//   const transformedData = {
+//     labels: [],
+//     datasets: []
+//   };
+
+//   const metricsMap = {}; // Store fuel type data grouped by year dynamically
+
+//   backendData?.forEach(yearEntry => {
+//     const year = yearEntry.year;
+//     if (!transformedData.labels.includes(year)) {
+//       transformedData.labels.push(year);
+//     }
+
+//     Object.entries(yearEntry).forEach(([key, monthData]) => {
+//       if (key === "year" || key === "type") return;
+
+//       Object.values(monthData).forEach(locationData => {
+//         if (!locationData.Activity) return; // Ensure "Type" exists
+
+//         Object.entries(locationData.Activity).forEach(([fuelType, value]) => {
+//           if (!metricsMap[fuelType]) {
+//             metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+//           }
+
+//           const yearIndex = transformedData.labels.indexOf(year);
+//           metricsMap[fuelType][yearIndex] += Number(value) || 0;
+//         });
+//       });
+//     });
+//   });
+
+//   // Convert metrics map into datasets dynamically
+//   Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+//     const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+//     transformedData.datasets.push({
+//       label: fuelType,
+//       data: data,
+//       backgroundColor: colors[index % colors.length], // Assign color dynamically
+//       borderColor: colors[index % colors.length],
+//       borderWidth: 1,
+//     });
+//   });
+
+//   return transformedData;
+// }
+
 function transformActivityDataForGraphByYear(backendData) {
   const transformedData = {
     labels: [],
-    datasets: []
+    datasets: [],
   };
 
   const metricsMap = {}; // Store fuel type data grouped by year dynamically
 
+  // Extract unique years and sort them before processing
+  const uniqueYears = [...new Set(backendData?.map(entry => entry.year))].sort();
+  transformedData.labels = uniqueYears;
+
   backendData?.forEach(yearEntry => {
     const year = yearEntry.year;
-    if (!transformedData.labels.includes(year)) {
-      transformedData.labels.push(year);
-    }
+    const yearIndex = transformedData.labels.indexOf(year);
 
     Object.entries(yearEntry).forEach(([key, monthData]) => {
       if (key === "year" || key === "type") return;
 
       Object.values(monthData).forEach(locationData => {
-        if (!locationData.Activity) return; // Ensure "Type" exists
+        if (!locationData.Activity) return; // Ensure "Activity" exists
 
         Object.entries(locationData.Activity).forEach(([fuelType, value]) => {
           if (!metricsMap[fuelType]) {
-            metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+            // Initialize with correct length
+            metricsMap[fuelType] = new Array(uniqueYears.length).fill(0);
           }
 
-          const yearIndex = transformedData.labels.indexOf(year);
-          metricsMap[fuelType][yearIndex] += Number(value) || 0;
+          const numericValue = isNaN(Number(value)) ? 0 : Number(value);
+          metricsMap[fuelType][yearIndex] += numericValue;
         });
       });
     });
@@ -1078,9 +1140,10 @@ function transformActivityDataForGraphByYear(backendData) {
   // Convert metrics map into datasets dynamically
   Object.entries(metricsMap).forEach(([fuelType, data], index) => {
     const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+
     transformedData.datasets.push({
       label: fuelType,
-      data: data,
+      data: data, // Already aligned with sorted years
       backgroundColor: colors[index % colors.length], // Assign color dynamically
       borderColor: colors[index % colors.length],
       borderWidth: 1,
@@ -1089,6 +1152,7 @@ function transformActivityDataForGraphByYear(backendData) {
 
   return transformedData;
 }
+
 function transformActivityDataForGraphByMonth(backendData, selectedYear) {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -1136,19 +1200,22 @@ function transformActivityDataForGraphByMonth(backendData, selectedYear) {
 
   return transformedData;
 }
+
 function transformLevelDataForGraphByYear(backendData) {
   const transformedData = {
     labels: [],
-    datasets: []
+    datasets: [],
   };
 
   const metricsMap = {}; // Store fuel type data grouped by year dynamically
 
+  // Extract unique years and sort them before processing
+  const uniqueYears = [...new Set(backendData?.map(entry => entry.year))].sort();
+  transformedData.labels = uniqueYears;
+
   backendData?.forEach(yearEntry => {
     const year = yearEntry.year;
-    if (!transformedData.labels.includes(year)) {
-      transformedData.labels.push(year);
-    }
+    const yearIndex = transformedData.labels.indexOf(year);
 
     Object.entries(yearEntry).forEach(([key, monthData]) => {
       if (key === "year" || key === "type") return;
@@ -1158,11 +1225,12 @@ function transformLevelDataForGraphByYear(backendData) {
 
         Object.entries(locationData.Level2).forEach(([fuelType, value]) => {
           if (!metricsMap[fuelType]) {
-            metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+            // Initialize with correct length
+            metricsMap[fuelType] = new Array(uniqueYears.length).fill(0);
           }
 
-          const yearIndex = transformedData.labels.indexOf(year);
-          metricsMap[fuelType][yearIndex] += Number(value) || 0;
+          const numericValue = isNaN(Number(value)) ? 0 : Number(value);
+          metricsMap[fuelType][yearIndex] += numericValue;
         });
       });
     });
@@ -1171,9 +1239,10 @@ function transformLevelDataForGraphByYear(backendData) {
   // Convert metrics map into datasets dynamically
   Object.entries(metricsMap).forEach(([fuelType, data], index) => {
     const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+
     transformedData.datasets.push({
       label: fuelType,
-      data: data,
+      data: data, // Already aligned with sorted years
       backgroundColor: colors[index % colors.length], // Assign color dynamically
       borderColor: colors[index % colors.length],
       borderWidth: 1,
@@ -1182,6 +1251,60 @@ function transformLevelDataForGraphByYear(backendData) {
 
   return transformedData;
 }
+
+// function transformLevelDataForGraphByYear(backendData) {
+//   const transformedData = {
+//     labels: [],
+//     datasets: [],
+//   };
+
+//   const metricsMap = {}; // Store fuel type data grouped by year dynamically
+
+//   backendData?.forEach((yearEntry) => {
+//     const year = yearEntry.year;
+//     if (!transformedData.labels.includes(year)) {
+//       transformedData.labels.push(year);
+//     }
+
+//     Object.entries(yearEntry).forEach(([key, monthData]) => {
+//       if (key === "year" || key === "type") return;
+
+//       Object.values(monthData).forEach((locationData) => {
+//         if (!locationData?.Level2) return; // Ensure "Level2" exists
+
+//         Object.entries(locationData.Level2).forEach(([fuelType, value]) => {
+//           if (value === undefined || value === null || isNaN(Number(value))) {
+//             console.warn(`Skipping invalid value for ${fuelType} in year ${year}:`, value);
+//             return; // Skip invalid values
+//           }
+
+//           if (!metricsMap[fuelType]) {
+//             metricsMap[fuelType] = new Array(transformedData.labels.length).fill(0);
+//           }
+
+//           const yearIndex = transformedData.labels.indexOf(year);
+//           const numericValue = value === 0? value : Number(value);
+//           metricsMap[fuelType][yearIndex] += numericValue;
+//         });
+//       });
+//     });
+//   });
+
+//   // Convert metrics map into datasets dynamically
+//   const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+//   Object.entries(metricsMap).forEach(([fuelType, data], index) => {
+//     transformedData.datasets.push({
+//       label: fuelType,
+//       data: data.map((val) => (isNaN(val) ? 0 : val)), // Ensure no NaN values
+//       backgroundColor: colors[index % colors.length], // Assign color dynamically
+//       borderColor: colors[index % colors.length],
+//       borderWidth: 1,
+//     });
+//   });
+
+//   return transformedData;
+// }
+
 function transformLevelDataForGraphByMonth(backendData, selectedYear) {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -1627,7 +1750,10 @@ useEffect(()=>{
   updateData()
 },[year])
 
-console.log("test ",transformEnvDataForGraphByYear(fetchedData))
+console.log("test ",fetchedData)
+
+console.log("year",yearData);
+console.log("month",monthWiseData)
   
   return (
     <div className="flex flex-col justify-center items-center p-5 gap-5">
@@ -1695,7 +1821,11 @@ console.log("test ",transformEnvDataForGraphByYear(fetchedData))
           </>
         )}
       </div>
-      {year && (
+      {(monthWiseData?.labels?.length === 0 && monthWiseData?.datasets?.length === 0)?(
+        <div className='flex items-center justify-center'>
+           
+        </div>
+      ): (
         <div className=" bg-white rounded-lg w-full p-3">
           <div className="flex justify-between px-3 mb-3">
             <div className="font-bold text-lg text-slate-600">MONTH-WISE-{year}</div>

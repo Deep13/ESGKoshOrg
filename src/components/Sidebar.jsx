@@ -22,12 +22,13 @@ export default function Sidebar({ onRaiseIncident }) {
 
   
   const analyticsDataList={
-    "Environment":["Fuel","Bioenergy","Water","WTT- fuels","Freighting goods",
-      "Business travel - land and sea","Employees commuting","Materials","Owned Vehicles",
-      "Refrigerant and other","Food","Accommodation","Flight","Home Office","Elec heat cooling",
-      "Waste Disposal"],
-    "Social":["Retention","Training and Edu","Mktg and Labelling","Social Benefits",
-      "Employment","CHS","Child Labor","Customer Privacy","OH and S"] ,
+    "Environment":["Fuel","Bioenergy","Refrigerant and other","Elec heat cooling",
+      "Owned Vehicles","Materials","WTT- fuels","Waste Disposal","Flight","Accommodation",
+      "Business travel - land and sea","Freighting goods","Employees commuting",      
+      "Food","Home Office","Water"
+      ],
+    "Social":["Employment","Retention","OH and S","Training and Edu","Child Labor","Customer Privacy",
+      "Mktg and Labelling","CHS","Social Benefits"] ,
       "Governance":["Entity","Eco. Performance"],
       
   }
@@ -247,10 +248,8 @@ export default function Sidebar({ onRaiseIncident }) {
                         [&::-webkit-scrollbar-thumb]:bg-[#29C472]]
                         bg-[#f5fcf9]">
                           <li className={`py-2 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
-                                module === key.toLowerCase().replace(/\s+/g, "-")
-                                  ? "text-[#29C472]"
-                                  : "text-slate-600"
-                              }`} onClick={()=>{
+    module === `${key} Overview` ? "text-[#29C472]" : "text-slate-600"
+  }`} onClick={()=>{
                                 setModule(`${key} Overview`)
                                 setPage(`${key} Overview`)
                                 console.log(`${key} Overview`)
@@ -344,7 +343,7 @@ export default function Sidebar({ onRaiseIncident }) {
                                 handleClick("fuels",item);
                               }}
                               className={`py-2 font-medium rounded-md cursor-pointer hover:bg-indigo-50 ${
-                                module === item.toLowerCase().replace(/\s+/g, "-") && page === "fuels"
+                                module === item && page === "fuels"
                                   ? "text-[#29C472]"
                                   : "text-slate-600"
                               }`}

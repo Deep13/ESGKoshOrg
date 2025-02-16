@@ -10,7 +10,7 @@ const Header = () => {
         "branchwise":"Branch Wise Progress",
         "Environment Overview":module,
         "Social Overview":module,
-        "Government Overview":module,
+        "Governance Overview":module,
         "fuels":module
     }
   return (

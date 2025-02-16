@@ -486,7 +486,13 @@ const GovOverview = () => {
         <div className=" flex items-center gap-2 w-ful">
             <div className="flex flex-col justify-between rounded-xl p-3 w-[23rem] bg-white">
                 <div className='font-semibold text-xl text-[#343C6A]'>ENTITY</div>
-                <DoughnutChart data={chartData}/>
+                {chartData?
+                 <DoughnutChart data={chartData}/>
+                 :
+                 <div className="h-48 mx-auto flex items-center justify-center">
+                    No data available for analytics
+                 </div>
+                }
             </div>
             <div className=" bg-white rounded-xl border w-[40rem] h-[15.5rem] px-3 py-2 flex-1">
               <div className=' font-semibold mb-2 text-xl text-[#343C6A]'>MARKET PRESENCE</div>
@@ -502,13 +508,18 @@ const GovOverview = () => {
                     </div>
                     <div>Emission %</div>
                 </div> */}
+                {areaChart1?
                 <LineChart
-                    data={areaChart1}
-                    lines={linesConfig}
-                    xKey=""
-                    yLabel=""
-                    fillVal={true}
-                />
+                data={areaChart1}
+                lines={linesConfig}
+                xKey=""
+                yLabel=""
+                fillVal={true}
+            />:
+            <div className="h-48 mx-auto flex items-center justify-center">
+                    No Data available for analytics
+                  </div>
+                }
             </div>
             <div className='flex-1'>
                 {/* <div className='flex items-center gap-2 ml-10'>
@@ -516,13 +527,25 @@ const GovOverview = () => {
                     </div>
                     <div>Emission %</div>
                 </div> */}
-                <LineChart
+                {/* <LineChart
                     data={areaChart2}
                     lines={linesConfig}
                     xKey=""
                     yLabel=""
                     fillVal={true}
-                />
+                /> */}
+                {areaChart2?
+                <LineChart
+                data={areaChart2}
+                lines={linesConfig}
+                xKey=""
+                yLabel=""
+                fillVal={true}
+            />:
+            <div className="h-48 mx-auto flex items-center justify-center">
+                    No Data available for analytics
+                  </div>
+                }
             </div>
             </div>
         </div>

@@ -55,6 +55,7 @@ const Fuels = () => {
     setVariantOffice("");
   },[tab])
 
+
   useEffect(()=>{
     selectedIndexes.current=[];
     document.querySelectorAll(".table-checkbox").forEach((checkbox) => {
@@ -159,6 +160,7 @@ const calculateEmissions = () => {
     let totalEmissions = 0;
     let fullEmissions=0;
     let bifurcatedEmissions = { Type: {} }; // For modules grouped by Type
+    let childEmissions = {Type:{}};
     let activityEmissions = { Activity: {} }; // For modules grouped by Activity
     let disposalMethodEmissions = { }; // For Waste Disposal (grouped by Disposal Method)
     let level2Emissions = { Level2: {} }; // For Owned Vehicles (grouped by Level 2)
@@ -194,6 +196,21 @@ const calculateEmissions = () => {
           })
 
             return {totalEmissions:bifurcatedEmissions,fullEmissions:fullEmissions};
+
+        case "Child Labor":
+          selectedVariant.forEach(item => {
+                const risk = checkValue(item["Risk Level"]);
+                const amount = parseFloat(item["No. of Incidents reported"]) || 0;
+                
+                if (!childEmissions.Type[risk]) {
+                    childEmissions.Type[risk] = 0;
+                }
+
+                childEmissions.Type[risk] += amount;
+            });
+            
+
+            return {totalEmissions:childEmissions};
 
        
         case "Elec heat cooling":
@@ -1754,7 +1771,7 @@ const calculateEmissions = () => {
           "Distance (km)": "",
           "Factor": ""
         },
-
+  
         {
           "Scope": "Scope 1",
           "Reference": "361",
@@ -1766,7 +1783,7 @@ const calculateEmissions = () => {
           "Distance (km)": "",
           "Factor": ""
         },
-
+  
         {
           "Scope": "Scope 1",
           "Reference": "377",
@@ -1778,7 +1795,7 @@ const calculateEmissions = () => {
           "Distance (km)": "",
           "Factor": ""
         },
-
+  
         {
           "Scope": "Scope 1",
           "Reference": "393",
@@ -1790,7 +1807,7 @@ const calculateEmissions = () => {
           "Distance (km)": "",
           "Factor": ""
         },
-
+  
         {
           "Scope": "Scope 1",
           "Reference": "333",
@@ -2077,8 +2094,8 @@ const calculateEmissions = () => {
           "Distance (km)": "",
           "Factor": ""
         },
-
-
+  
+  
         {
           "Scope": "Scope 1",
           "Reference": "405",
@@ -4350,7 +4367,7 @@ const calculateEmissions = () => {
           "Factor": ""
         }
       ]
-
+  
       ,
       "Flight": [
         {
@@ -6504,7 +6521,7 @@ const calculateEmissions = () => {
           "Amount": "",
           "Factor": ""
         },
-
+  
         {
           "Reference": "670",
           "Type": "Water Drainage",
@@ -6551,2531 +6568,2531 @@ const calculateEmissions = () => {
           "Factor": ""
         }
       ],
-
+  
       "Entity": [
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "BOD",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CFO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "CEO",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Independent Directors",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Male",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Female",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "50+",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "35 to 50",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "22 to 35",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Less than 1 year",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 1- 2 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 2-5 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 5-7 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Between 7-9 years",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Entity Type": "Executives",
           "Gender": "Others",
           "Age": "Less than 22",
           "Tenure": "Above 10 years",
-          "Count": ""
+          "Head Count": ""
         },
-
+  
       ]
-
+  
       ,
       "Eco. Performance": [
         {
@@ -9137,1480 +9154,1480 @@ const calculateEmissions = () => {
           "Values": ""
         }
       ],
-
+  
       "Employment": [
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
-
-
-
+  
+  
+  
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Male",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "Female",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
           "Gender": "LGBTQ",
           "Age": "Overall",
-          "Count": ""
+          "Head Count": ""
         }
       ]
       ,
@@ -10653,2016 +10670,2016 @@ const calculateEmissions = () => {
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
-        },
-        {
-          "Employee Type": "BOD",
-          "Gender": "Others",
-          "Tenure": "Less than 1 year",
-          "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
+          "Age": "50+",
+          "Head Count": ""
+        },
+        {
+          "Employee Type": "BOD",
+          "Gender": "Others",
+          "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "BOD",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Employees",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Temporary Employee",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Male",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Female",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Less than 1 year",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 1-2 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 2-5 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 5-7 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Between 7-9 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "50+",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "35 to 50",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "22 to 35",
-          "Count": ""
+          "Head Count": ""
         },
         {
           "Employee Type": "Workers",
           "Gender": "Others",
           "Tenure": "Above 10 years",
           "Age": "Less than 22",
-          "Count": ""
+          "Head Count": ""
         }
       ]
       ,
@@ -12671,1293 +12688,1293 @@ const calculateEmissions = () => {
           "Injury Type": "Slips, Trips, and Falls",
           "Number of Incidents": "",
           "Gender": "Male",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Slips, Trips, and Falls",
           "Number of Incidents": "",
           "Gender": "Female",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Slips, Trips, and Falls",
           "Number of Incidents": "",
           "Gender": "Others",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Cuts and Lacerations",
           "Number of Incidents": "",
           "Gender": "Male",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Cuts and Lacerations",
           "Number of Incidents": "",
           "Gender": "Female",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Cuts and Lacerations",
           "Number of Incidents": "",
           "Gender": "Others",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Overexertion Injuries",
           "Number of Incidents": "",
           "Gender": "Male",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Overexertion Injuries",
           "Number of Incidents": "",
           "Gender": "Female",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Overexertion Injuries",
           "Number of Incidents": "",
           "Gender": "Others",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Contact with Objects and Equipment",
           "Number of Incidents": "",
           "Gender": "Male",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Contact with Objects and Equipment",
           "Number of Incidents": "",
           "Gender": "Female",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Contact with Objects and Equipment",
           "Number of Incidents": "",
           "Gender": "Others",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Fires and Explosions",
           "Number of Incidents": "",
           "Gender": "Male",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Fires and Explosions",
           "Number of Incidents": "",
           "Gender": "Female",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Fires and Explosions",
           "Number of Incidents": "",
           "Gender": "Others",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Exposure to Hazardous Materials",
           "Number of Incidents": "",
           "Gender": "Male",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Exposure to Hazardous Materials",
           "Number of Incidents": "",
           "Gender": "Female",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Exposure to Hazardous Materials",
           "Number of Incidents": "",
           "Gender": "Others",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Accident during Business Travel",
           "Number of Incidents": "",
           "Gender": "Male",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Accident during Business Travel",
           "Number of Incidents": "",
           "Gender": "Female",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Accident during Business Travel",
           "Number of Incidents": "",
           "Gender": "Others",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Accident during workplace commute",
           "Number of Incidents": "",
           "Gender": "Male",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Accident during workplace commute",
           "Number of Incidents": "",
           "Gender": "Female",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Accident during workplace commute",
           "Number of Incidents": "",
           "Gender": "Others",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Others",
           "Number of Incidents": "",
           "Gender": "Male",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Others",
           "Number of Incidents": "",
           "Gender": "Female",
-          "Count of Persons": ""
+          "Head Count": ""
         },
         {
           "Injury Type": "Others",
           "Number of Incidents": "",
           "Gender": "Others",
-          "Count of Persons": ""
+          "Head Count": ""
         },
       ]
       ,
       "Training and Edu": [
         {
           "Types of training": "Employee health & safety training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Employee health & safety training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Employee health & safety training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Employee health & safety training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Employee health & safety training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Employee Skill Upgradation Training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Employee Skill Upgradation Training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Employee Skill Upgradation Training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Employee Skill Upgradation Training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Employee Skill Upgradation Training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Onboarding and orientation",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Onboarding and orientation",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Onboarding and orientation",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Onboarding and orientation",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Onboarding and orientation",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Technical Training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Technical Training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Technical Training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Technical Training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Technical Training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "corporate training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "corporate training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "corporate training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "corporate training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "corporate training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Anti-corruption Training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Anti-corruption Training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Anti-corruption Training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Anti-corruption Training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Anti-corruption Training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "POSH training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "POSH training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "POSH training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "POSH training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "POSH training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "POSH training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Strategy Implementation",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Strategy Implementation",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Strategy Implementation",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Strategy Implementation",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Strategy Implementation",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Business operation",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Business operation",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Business operation",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Business operation",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Business operation",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Organisation structure",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Organisation structure",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Organisation structure",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Organisation structure",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Organisation structure",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Risk Management training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Risk Management training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Risk Management training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Risk Management training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Risk Management training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Regulatory framework",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Regulatory framework",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Regulatory framework",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Regulatory framework",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Regulatory framework",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cyber security",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cyber security",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cyber security",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cyber security",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cyber security",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Future outlook training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Future outlook training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Future outlook training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Future outlook training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Future outlook training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Leadership connect program",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Leadership connect program",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Leadership connect program",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Leadership connect program",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Leadership connect program",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Corporate governance training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Corporate governance training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Corporate governance training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Corporate governance training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Corporate governance training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Emerging compliance landscape",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Emerging compliance landscape",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Emerging compliance landscape",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Emerging compliance landscape",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Emerging compliance landscape",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "AML (Anti-money laundering)",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "AML (Anti-money laundering)",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "AML (Anti-money laundering)",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "AML (Anti-money laundering)",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "AML (Anti-money laundering)",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "KYC",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "KYC",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "KYC",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "KYC",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "KYC",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Whistle-blower Policy Training",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Whistle-blower Policy Training",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Whistle-blower Policy Training",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Whistle-blower Policy Training",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Whistle-blower Policy Training",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "NRI Product & KYC Documentation",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "NRI Product & KYC Documentation",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "NRI Product & KYC Documentation",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "NRI Product & KYC Documentation",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "NRI Product & KYC Documentation",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Mobile Banking",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Mobile Banking",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Mobile Banking",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Mobile Banking",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Mobile Banking",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Prohibition of Insider Trading",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Prohibition of Insider Trading",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Prohibition of Insider Trading",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Prohibition of Insider Trading",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Prohibition of Insider Trading",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cash Management System",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cash Management System",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cash Management System",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cash Management System",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Cash Management System",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Code of Conduct & Ethics",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Code of Conduct & Ethics",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Code of Conduct & Ethics",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Code of Conduct & Ethics",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Code of Conduct & Ethics",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "CERSAI",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "CERSAI",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "CERSAI",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "CERSAI",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "CERSAI",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Grievance Redressal Mechanism",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Grievance Redressal Mechanism",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Grievance Redressal Mechanism",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Grievance Redressal Mechanism",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Grievance Redressal Mechanism",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Other",
-
+  
           "Segment": "BOD",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Other",
-
+  
           "Segment": "Employees",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Other",
-
+  
           "Segment": "Key management personnel",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Other",
-
+  
           "Segment": "Workers",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         },
         {
           "Types of training": "Other",
-
+  
           "Segment": "others",
           "Avg Hours per batch": "",
-          "No. of employees": "",
+          "Head Count": "",
           "Financial investment": "",
         }
       ]
@@ -14132,7 +14149,7 @@ const calculateEmissions = () => {
           "Domain": "Food Safety"
         }
       ]
-
+  
     };
 
     if(module=="Flight"){
@@ -14703,7 +14720,7 @@ const createTable=async()=>{
                 console.log("Data exists for the branch:", tableData[branch].data);
                 setSelectedVariant(tableData[branch].data)
                 setTempSelectedVariant(tableData[branch].data)
-                setDataStatus(tableData[branch].status);
+                setDataStatus(tableData[branch]?.status);
                 setLoading(false)
               }
               else{
@@ -14985,8 +15002,8 @@ const ignoreFields=()=>{
     
       if (docSnapshot.exists() && docSnapshot.data()) {
         const tableData=docSnapshot.data();
-        setDataStatus(tableData[branch].status);
-        if(tableData[branch].status=='Submitted'){
+        setDataStatus(tableData[branch]?.status);
+        if(tableData[branch]?.status=='Submitted'){
           setShowModal(true);
           setModalText("You cannot submit data for this branch as it is already submitted")
           return ;
@@ -15400,7 +15417,7 @@ const ignoreFields=()=>{
         </div>
       :
     <>
-      {tab === 'variant' ? (
+      {(tab === 'variant' && userData?.role=='Admin') ? (
   <div
     onClick={() => deleteVariant()}
     className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer"
@@ -15586,7 +15603,7 @@ const ignoreFields=()=>{
               key={index}
               className={`py-2 px-3 text-left font-medium max-w-[100%] w-[${100 / getColumn().length}%]`}
             >
-              {column.title}
+              {column.title=="Count"?"Head Count" :column.title}
             </th>
           ))}
         </tr>
@@ -15625,6 +15642,7 @@ const ignoreFields=()=>{
                     className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
                     type={column.type === "Number" ? "number" : "text"}
                     disabled={tab === "variant"}
+                    min={0}
                     value={tab=='recorded'?ticket[column.title]:"" }
                     onWheel={(e)=>e.target.blur()}
                     onChange={(e) => {
@@ -15748,6 +15766,7 @@ const ignoreFields=()=>{
                       className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
                       type={column.type === "Number" ? "number" : "text"}
                       // disabled={tab !== 'recorded' && tab !== 'create'}
+                      min={0}
                       value={ticket[column.title]}
                       onChange={(e) =>
                         handleInputChange(index, column.title, e.target.value)

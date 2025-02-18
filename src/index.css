@@ -6,3 +6,6 @@
     -webkit-filter: grayscale(100%);
     filter: grayscale(100%);
   } */
+  .leaflet-container {
+    z-index: 0 !important; /* Lower than the pop-up */
+  }

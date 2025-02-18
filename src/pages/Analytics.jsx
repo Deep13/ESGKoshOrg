@@ -1616,12 +1616,13 @@ function getRandomColor() {
 
     case "Social Benefits":
     case "Customer Privacy":
-    case "Child Labor":
     case "CHS":
     case "Mktg and Labelling":
       yearWiseData=transformDataForGraphByYear(fetchedData)
       if(year)monthData=transformDataForGraph(fetchedData,year)
       break;
+
+    case "Child Labor":
     case "Bioenergy":
     case "Fuel":
     case "WTT- fuels":
@@ -1811,7 +1812,7 @@ console.log("month",monthWiseData)
             {module == "Elec heat cooling" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
             {module == "Mktg and Labelling" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
             {module == "Customer Privacy" && <SocialGraph data={yearData} stacked={true} setYear={setYear} />}
-            {module == "Child Labor" && <SocialGraph data={yearData} stacked={true} setYear={setYear} />}
+            {module == "Child Labor" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
             {module == "CHS" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
             {module == "Social Benefits" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
             {module == "Eco. Performance" && <SocialGraph data={yearData} setYear={setYear} />}
@@ -1868,7 +1869,7 @@ console.log("month",monthWiseData)
            {module == "Elec heat cooling" && <SocialGraph data={monthWiseData} stacked={false} />}
           {module == "Mktg and Labelling" && <SocialGraph data={monthWiseData} stacked={false} />}
           {module == "Customer Privacy" && <SocialGraph data={monthWiseData} stacked={true} />}
-          {module == "Child Labor" && <SocialGraph data={monthWiseData} stacked={true} />}
+          {module == "Child Labor" && <SocialGraph data={monthWiseData} stacked={false} />}
           {module == "CHS" && <SocialGraph data={monthWiseData} stacked={false} />}
           {module == "Social Benefits" && <SocialGraph data={monthWiseData} stacked={false} />}
           {module == "Eco. Performance" && <SocialGraph data={monthWiseData} />}

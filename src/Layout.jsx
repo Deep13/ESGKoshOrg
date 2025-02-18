@@ -22,7 +22,7 @@ const Layout = () => {
 
   useEffect(()=>{
     formData.email=userData?.email
-  },[])
+  },[showPopup,userData])
 
   // Handle input changes
   const handleChange = (e) => {
@@ -97,7 +97,7 @@ const Layout = () => {
           <Outlet />
           {/* Popup Form */}
           {showPopup && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-200">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-1000">
               <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
                 <div className="flex justify-between">
                   <div className="flex gap-2">

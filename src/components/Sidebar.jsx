@@ -160,7 +160,7 @@ export default function Sidebar({ onRaiseIncident }) {
               setPage('home')
             }}
           >
-            <h4 className="font-semibold">ESG KOSH</h4>
+            <h4 className="font-semibold">Sustrack</h4>
           </div>
           <button
             onClick={() =>{ 

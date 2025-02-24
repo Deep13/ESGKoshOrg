@@ -1,3 +1,4 @@
+import { FaExclamationCircle } from "react-icons/fa";
 import { useSidebar } from "../context/SidebarContext"
 
 const getTitle = (title) => {
@@ -53,10 +54,42 @@ const Header = () => {
         "Governance Overview":module,
         "fuels":getTitle(module)
     }
+
+    const tooltipData={
+      "Fuel":"Combustion of fuels in owned or controlled stationary equipment such as boilers, furnaces, Turbines, heaters, incinerators, engines, flares, etc.",
+      "Bioenergy":"Combustion of fuels produced from recently living sources at a site or in assets under the direct control of the reporting organization.",
+      "Refrigerant and other": "From leakage from air-conditioning and refrigeration units or the release to the atmosphere of other gases that have a Global Warming Potential.",
+      "WTT- fuels":"Emissions associated with extraction, refining, and transportation of raw fuel sources to an organization’s site (or asset) before their combustion.",
+      "Materials":"All materials consumed in the reporting period cover the extraction, primary processing, manufacturing, and transporting of materials to the point of sale.",
+      "Waste Disposal":"All waste disposed of in the reporting months",
+      "Business travel - land and sea":" Travel for business purposes in assets not owned or directly operated by business. This includes mileage for business purposes in, for example, cars owned by employees, public transport, and hire cars.",
+      "Freighting goods":"Shipment of goods over land, by air through a third–party company.",
+      "Employees commuting":"Employees travel between their homes and their workplace.",
+      "Home Office":"The emission factors consider the energy consumption for the workstation, lighting, and cooling or heating.",
+    }
   return (
     <div className='w-full h-16 bg-white text-[#343C6A] flex items-center justify-between px-5'>
         <div className=" font-bold ">
-            {values[page]}
+            
+            {                 
+                tooltipData[module] ? (
+                  <div className="flex gap-2 items-center">
+                    {values[page]}
+                    <div className="group cursor-pointer">
+                      <FaExclamationCircle size={12}/>
+                      <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg">
+                          {tooltipData[module]}
+                      </div>
+
+                    </div>
+                  </div>
+                ):(
+                <div>
+                  {values[page]}
+                </div>
+                )
+             
+            }
         </div>
         <div className="flex gap-2">
             <div>

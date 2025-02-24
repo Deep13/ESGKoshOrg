@@ -97,7 +97,11 @@ const tooltipData={
   "Local Minimum Wage as Male": "Minimum compensation for employment per hour, or other unit of time, allowed under law, in circumstances in which different minimums can be used as a reference, report which minimum wage is being used",
   "Local Minimum Wage as Female": "Minimum compensation for employment per hour, or other unit of time, allowed under law, in circumstances in which different minimums can be used as a reference, report which minimum wage is being used",
   "Entry level wage for Male": "Entry level - wage full-time wage in the lowest employment category Note: Intern or apprentice wages are not considered entry level wages.",
-  "Entry level wage for Female": "Entry level - wage full-time wage in the lowest employment category Note: Intern or apprentice wages are not considered entry level wages."
+  "Entry level wage for Female": "Entry level - wage full-time wage in the lowest employment category Note: Intern or apprentice wages are not considered entry level wages.",
+  "1 average meal":"Calculated as 20% vegetarian meal, 40% meal with chicken, 40% meal with beef",
+  "1 cold or hot snack":"Calculated as 50% cold sandwich, 50% hot snack (burger and fries)",
+  "Water Supply":"Water delivered through the mains supply network",
+  "Water Treatment ":"Water returned into the sewage system through mains drains",
 }
 
 const addRow=(param='recorded')=>{
@@ -533,11 +537,11 @@ const calculateEmissions = () => {
   case "Eco. Performance":{
     let saveValues={
       "Total turnover":0,
-      "Total Revenue":0,
+      "Net Worth":0,
     }
     fullEmissions={
       "Total turnover":0,
-      "Total Revenue":0,
+      "Net Worth":0,
       "Direct economic value generated":0,
       "Direct economic value Distributed":0,
 
@@ -547,9 +551,9 @@ const calculateEmissions = () => {
         saveValues["Total turnover"]=item.Values
         fullEmissions["Total turnover"]=item.Values
       }
-      if(item.Data=="Total Revenue"){
-        saveValues["Total Revenue"]=item.Values
-        fullEmissions["Total Revenue"]=item.Values
+      if(item.Data=="Net Worth"){
+        saveValues["Net Worth"]=item.Values
+        fullEmissions["Net Worth"]=item.Values
       }
       if(item.Data=="Direct economic value Distributed"){
         fullEmissions["Direct economic value Distributed"]=item.Values
@@ -9103,7 +9107,7 @@ const calculateEmissions = () => {
           "Values": ""
         },
         {
-          "Data": "Total Revenue",
+          "Data": "Net Worth",
           "Values": ""
         },
         {
@@ -13985,22 +13989,7 @@ const calculateEmissions = () => {
       "Child Labor": [
         {
           "Supplier Name": "",
-          "Risk Level": "High",
-          "No. of Incidents reported": ""
-        },
-        {
-          "Supplier Name": "",
-          "Risk Level": "Moderate",
-          "No. of Incidents reported": ""
-        },
-        {
-          "Supplier Name": "",
-          "Risk Level": "Low",
-          "No. of Incidents reported": ""
-        },
-        {
-          "Supplier Name": "",
-          "Risk Level": "Uncertain",
+          "Risk Level": "",
           "No. of Incidents reported": ""
         }
       ]
@@ -14214,7 +14203,7 @@ const calculateEmissions = () => {
 const getColumns=(module)=> {
   var columns = {
     "Fuel": [
-      { "title": "Fuels", "editable": false },
+      // { "title": "Fuels", "editable": false },
       { "title": "Type", "editable": false },
       { "title": "Fuel", "editable": false },
       { "title": "Unit", "editable": false },
@@ -14222,7 +14211,7 @@ const getColumns=(module)=> {
       { "title": "Factor", "editable": true, "type": "Number" }
     ],
     "Bioenergy": [
-      { "title": "Fuels", "editable": false },
+      // { "title": "Fuels", "editable": false },
       { "title": "Type", "editable": false },
       { "title": "Fuel", "editable": false },
       { "title": "Unit", "editable": false },
@@ -14370,7 +14359,7 @@ const getColumns=(module)=> {
       { "title": "Financial investment", "editable": true, "type": "Number" },
     ],
     "Child Labor": [
-      { "title": "Risk Level", "editable": false },
+      { "title": "Risk Level", "editable": true, "type":"dropdown"},
       { "title": "Supplier Name", "editable": true },
       { "title": "No. of Incidents reported", "editable": true, "type": "Number" }
     ],
@@ -15538,7 +15527,7 @@ const ignoreFields=()=>{
 </div> */}
 
 
-    {(module=="Flight"||module=="Accommodation")&&
+    {(module=="Flight"||module=="Accommodation" || module=="Child Labor")&&
     <div className=" flex items-center justify-between mt-3 px-3">
       <div className="font-semibold text-xl text-[#343C6A]">Editable Table</div>
       <div className="flex gap-3">
@@ -15606,7 +15595,7 @@ const ignoreFields=()=>{
               key={index}
               className={`py-2 px-3 text-left font-medium max-w-[100%] w-[${100 / getColumn().length}%]`}
             >
-              {column.title=="Count"?"Head Count" :column.title}
+              {column.title=="Count"?"Head Count"  :column.title=="Country-Type"?"Country":column.title}
             </th>
           ))}
         </tr>
@@ -15616,7 +15605,7 @@ const ignoreFields=()=>{
         {tempSelectedVariant?.map((ticket, index) => (
           <tr key={index} className="text-gray-700 text-sm border-b">
             <td>
-              {(tab !== "recorded" || module == "Flight" || module == "Accommodation") && (
+              {(tab !== "recorded" || module == "Flight" || module == "Accommodation" || module=="Child Labor") && (
                 <input
                   type="checkbox"
                   checked={tab !== "recorded" ? false : ticket.checked}
@@ -15640,34 +15629,76 @@ const ignoreFields=()=>{
                 style={{ width: `${100 / getColumns(module).length}%` }}
               >
                 {column.editable ? (
-                  <input
-                    placeholder={column.title}
-                    className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
-                    type={column.type === "Number" ? "number" : "text"}
-                    disabled={tab === "variant"}
-                    min={0}
-                    value={tab=='recorded'?ticket[column.title]:"" }
-                    onWheel={(e)=>e.target.blur()}
-                    onChange={(e) => {
-                      const updatedValue = e.target.value;
-                      console.log(tempIndexMap.get(index))
-                      // Update selectedVariant safely
-                      const updatedVariant = [...selectedVariant];
-                      updatedVariant[tempIndexMap.get(index)||index] = {
-                        ...updatedVariant[tempIndexMap.get(index)||index],
-                        [column.title]: updatedValue,
-                      };
-                      setSelectedVariant(updatedVariant);
-                      const updatedTempVariant = tempSelectedVariant.map((item, tempIndex) => {
-                        if (item === ticket) {  // Ensure we update only the filtered item
-                          return { ...item, [column.title]: updatedValue };
-                        }
-                        return item;
-                      });
-                    
-                      setTempSelectedVariant(updatedTempVariant);
-                    }}
-                  />
+                  column.type === "dropdown" ? (
+                    <select
+                      className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
+                      disabled={tab === "variant"}
+                      value={tab === "recorded" ? ticket[column.title] : ""}
+                      onChange={(e) => {
+                        const updatedValue = e.target.value;
+                        console.log(tempIndexMap.get(index));
+                  
+                        // Update selectedVariant safely
+                        const updatedVariant = [...selectedVariant];
+                        updatedVariant[tempIndexMap.get(index) || index] = {
+                          ...updatedVariant[tempIndexMap.get(index) || index],
+                          [column.title]: updatedValue,
+                        };
+                        setSelectedVariant(updatedVariant);
+                  
+                        // Update tempSelectedVariant
+                        const updatedTempVariant = tempSelectedVariant.map((item) =>
+                          item === ticket ? { ...item, [column.title]: updatedValue } : item
+                        );
+                        setTempSelectedVariant(updatedTempVariant);
+                      }}
+                    >
+                      <option value="" disabled>
+                        Select {column.title}
+                      </option>
+                      <option value="Low">
+                       Low
+                      </option>
+                      <option value="Moderate">
+                        Moderate
+                      </option>
+                      <option value="High">
+                        High
+                      </option>
+                      <option value="Uncertain">
+                        Uncertain
+                      </option>
+                      
+                    </select>
+                  ) : (
+                    <input
+                      placeholder={column.title}
+                      className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
+                      type={column.type === "Number" ? "number" : "text"}
+                      disabled={tab === "variant"}
+                      min={0}
+                      value={tab === "recorded" ? ticket[column.title] : ""}
+                      onWheel={(e) => e.target.blur()}
+                      onChange={(e) => {
+                        const updatedValue = e.target.value;
+                        console.log(tempIndexMap.get(index));
+                  
+                        // Update selectedVariant safely
+                        const updatedVariant = [...selectedVariant];
+                        updatedVariant[tempIndexMap.get(index) || index] = {
+                          ...updatedVariant[tempIndexMap.get(index) || index],
+                          [column.title]: updatedValue,
+                        };
+                        setSelectedVariant(updatedVariant);
+                  
+                        // Update tempSelectedVariant
+                        const updatedTempVariant = tempSelectedVariant.map((item) =>
+                          item === ticket ? { ...item, [column.title]: updatedValue } : item
+                        );
+                        setTempSelectedVariant(updatedTempVariant);
+                      }}
+                    />
+                  )                  
                 ) : (
                   tooltipData[ticket[column.title]] ? (
                     <div className="flex gap-2 items-center">
@@ -15675,12 +15706,12 @@ const ignoreFields=()=>{
                       <div className="group flex mt-2 cursor-pointer gap-2">
                         <FaExclamationCircle size={12} />
                         <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg">
-                          {tooltipData[ticket[column.title]]}
+                          {ticket[column.title]=="Total Revenue"?"Net Worth":ticket[column.title] || "--"}
                         </div>
                       </div>
                     </div>
                   ) : (
-                    ticket[column.title] || "--"
+                    ticket[column.title]=="Total Revenue"?"Net Worth":ticket[column.title] || "--"
                   )
                 )}
               </td>
@@ -15716,7 +15747,7 @@ const ignoreFields=()=>{
           </select>
             }
       </div>
-      {(module=="Flight"||module=="Accommodation")&&
+      {(module=="Flight"||module=="Accommodation" || module=="Child Labor")&&
     <div className=" flex items-center justify-between mt-3 px-3">
       <div className="font-semibold text-xl text-[#343C6A]">Editable Table</div>
       <div className="flex gap-3">

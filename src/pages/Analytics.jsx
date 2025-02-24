@@ -538,6 +538,13 @@ function retentionTransformByMonth(inputData, filterType, selectedYear) {
         borderColor: "#ffae55",
         borderWidth: 1,
       },
+      {
+        label: "Total Revenue",
+        data: [],
+        backgroundColor: "#ffff55",
+        borderColor: "#ffff55",
+        borderWidth: 1,
+      },
     ],
   };
 
@@ -786,7 +793,7 @@ const processDataForGraph= (data)=> {
     datasets: [
       { label: "Total Turnover", data: Array(12).fill(0), backgroundColor: "#4ba9dd", borderColor: "#4ba9dd", borderWidth: 1 },
       { label: "Total Revenue", data: Array(12).fill(0), backgroundColor: "#ffae55", borderColor: "#ffae55", borderWidth: 1 },
-      // { label: "Financial Assistance from Governments", data: Array(12).fill(0), backgroundColor: "#e34545", borderColor: "#e34545", borderWidth: 1 },
+      { label: "Net Worth", data: Array(12).fill(0), backgroundColor: "#ffff55", borderColor: "#ffff55", borderWidth: 1 },
     ]
   };
 
@@ -804,7 +811,7 @@ const processDataForGraph= (data)=> {
           let financialData = location;
           graphData.datasets[0].data[monthIndex] += parseFloat(financialData["Total turnover"] || 0);
           graphData.datasets[1].data[monthIndex] += parseFloat(financialData["Total Revenue"] || 0);
-          // graphData.datasets[2].data[monthIndex] += parseFloat(financialData["Financial assistance received from governments"] || 0);
+          graphData.datasets[2].data[monthIndex] += parseFloat(financialData["Net Worth"] || 0);
         });
       }
     });

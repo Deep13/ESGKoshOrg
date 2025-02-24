@@ -22,6 +22,7 @@ const Layout = () => {
 
   useEffect(()=>{
     formData.email=userData?.email
+    formData.phone=userData?.phone
   },[showPopup,userData])
 
   // Handle input changes

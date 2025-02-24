@@ -106,7 +106,10 @@ const addRow=(param='recorded')=>{
   console.log("fetched",fetchedVariant);
   const newRow = {};
   getColumns(module)?.forEach((col) => (newRow[col.title] = ""));
+  console.log("new Row",newRow,branch.split('-')[0])
+  
  if(param=='recorded'){
+  newRow.Country=branch.split('-')[0];
   setSelectedVariant([...selectedVariant, newRow]);
   setTempSelectedVariant([...selectedVariant, newRow]);
   setFetchedVariant({...fetchedVariant,
@@ -14005,108 +14008,108 @@ const calculateEmissions = () => {
       "Customer Privacy": [
         {
           "Nature of Complaints": "Data Breaches",
-          "no. of complaint received": "",
-          "no. of complaint solved": ""
+          "No. of complaints received": "",
+          "No. of complaints solved": ""
         },
         {
           "Nature of Complaints": "Data Leaks",
-          "no. of complaint received": "",
-          "no. of complaint solved": ""
+          "No. of complaints received": "",
+          "No. of complaints solved": ""
         },
         {
           "Nature of Complaints": "Unauthorized Data Collection or Use",
-          "no. of complaint received": "",
-          "no. of complaint solved": ""
+          "No. of complaints received": "",
+          "No. of complaints solved": ""
         },
         {
           "Nature of Complaints": "Difficulties Accessing or Controlling Personal Data",
-          "no. of complaint received": "",
-          "no. of complaint solved": ""
+          "No. of complaints received": "",
+          "No. of complaints solved": ""
         }
       ]
       ,
       "Mktg and Labelling": [
         {
           "Incident": "Comparative Advertising",
-          "No.of non-compliance Incident": "",
-          "No. of time regulation violated": ""
+          "No. of non-compliance Incidents": "",
+          "No. of times regulation violated": ""
         },
         {
           "Incident": "Consumer Protection",
-          "No.of non-compliance Incident": "",
-          "No. of time regulation violated": ""
+          "No. of non-compliance Incidents": "",
+          "No. of times regulation violated": ""
         },
         {
           "Incident": "False Advertising and Misleading Claims",
-          "No.of non-compliance Incident": "",
-          "No. of time regulation violated": ""
+          "No. of non-compliance Incidents": "",
+          "No. of times regulation violated": ""
         },
         {
           "Incident": "Greenwashing",
-          "No.of non-compliance Incident": "",
-          "No. of time regulation violated": ""
+          "No. of non-compliance Incidents": "",
+          "No. of times regulation violated": ""
         },
         {
           "Incident": "Health and Wellness Claims",
-          "No.of non-compliance Incident": "",
-          "No. of time regulation violated": ""
+          "No. of non-compliance Incidents": "",
+          "No. of times regulation violated": ""
         },
         {
           "Incident": "Labeling Compliance",
-          "No.of non-compliance Incident": "",
-          "No. of time regulation violated": ""
+          "No. of non-compliance Incidents": "",
+          "No. of times regulation violated": ""
         },
         {
           "Incident": "Product Liability",
-          "No.of non-compliance Incident": "",
-          "No. of time regulation violated": ""
+          "No. of non-compliance Incidents": "",
+          "No. of times regulation violated": ""
         },
         {
           "Incident": "Trademark and Intellectual Property",
-          "No.of non-compliance Incident": "",
-          "No. of time regulation violated": ""
+          "No. of non-compliance Incidents": "",
+          "No. of times regulation violated": ""
         }
       ]
       ,
       "CHS": [
         {
           "Type of Incident": "Product defects or malfunctions",
-          "No.of non-compliance Incident": "",
+          "No. of non-compliance Incidents": "",
           "Customers Impacted": ""
         },
         {
           "Type of Incident": "Safety hazards",
-          "No.of non-compliance Incident": "",
+          "No. of non-compliance Incidents": "",
           "Customers Impacted": ""
         },
         {
           "Type of Incident": "Injuries or illnesses",
-          "No.of non-compliance Incident": "",
+          "No. of non-compliance Incidents": "",
           "Customers Impacted": ""
         },
         {
           "Type of Incident": "Product recalls",
-          "No.of non-compliance Incident": "",
+          "No. of non-compliance Incidents": "",
           "Customers Impacted": ""
         },
         {
           "Type of Incident": "Errors or omissions in service delivery",
-          "No.of non-compliance Incident": "",
+          "No. of non-compliance Incidents": "",
           "Customers Impacted": ""
         },
         {
           "Type of Incident": "Inadequate customer support",
-          "No.of non-compliance Incident": "",
+          "No. of non-compliance Incidents": "",
           "Customers Impacted": ""
         },
         {
           "Type of Incident": "Security incidents",
-          "No.of non-compliance Incident": "",
+          "No. of non-compliance Incidents": "",
           "Customers Impacted": ""
         },
         {
           "Type of Incident": "Others",
-          "No.of non-compliance Incident": "",
+          "No. of non-compliance Incidents": "",
           "Customers Impacted": ""
         }
       ]
@@ -15002,7 +15005,7 @@ const ignoreFields=()=>{
     
       if (docSnapshot.exists() && docSnapshot.data()) {
         const tableData=docSnapshot.data();
-        setDataStatus(tableData[branch]?.status);
+        // setDataStatus(tableData[branch]?.status);
         if(tableData[branch]?.status=='Submitted'){
           setShowModal(true);
           setModalText("You cannot submit data for this branch as it is already submitted")

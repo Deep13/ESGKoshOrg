@@ -584,7 +584,7 @@ const SocialOverview = () => {
         </div>
         <div className="bg-white rounded-xl w-full px-3 py-2">
             <div className=" font-semibold text-[#343C6A]">
-                TRAINING AND EDUCATION
+                TRAINING AND EDUCATION (Head Count by Segment)
             </div>
 
             <div className="w-full flex flex-col px-3 py-2">

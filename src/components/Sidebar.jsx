@@ -20,7 +20,46 @@ export default function Sidebar({ onRaiseIncident }) {
 
   const [reporitngDropdown,setReportingDropdown] = useState(false);
 
-  
+  const getTitle = (title) => {
+    const aTitle = {
+      "Fuel": "Fuel",
+      "Bioenergy": "Bioenergy",
+      "Refrigerant and other": "Refrigerant and Other",
+      "Elec heat cooling": "Electricity Heat and Cooling",
+      "Owned Vehicles": "Company Owned Vehicle",
+      "Materials": "Materials",
+      "WTT- fuels": "WTT- Fuels",
+      "Waste Disposal": "Waste Disposal",
+      "Flight": "Flight",
+      "Accommodation": "Accommodation",
+      "Business travel - land and sea": "Business Travel - Land and Sea",
+      "Freighting goods": "Freighting Goods",
+      "Employees commuting": "Employees Commuting",
+      "Food": "Food",
+      "Home Office": "Home Office",
+      "Water": "Water",
+      "Employment": "Employment",
+      "Leave": "Leave",
+      "Retention": "Retention",
+      "OH and S": "Occupational Health and Safety",
+      "Training and Edu": "Training and Education",
+      "Child Labor": "Child Labor",
+      "Customer Privacy": "Customer Privacy",
+      "Mktg and Labelling": "Marketing and Labelling ",
+      "CHS": "Customer Health & Safety",
+      "Social Benefits": "Social Benefits",
+      "Entity": "Entity",
+      "Eco. Performance": "Economic Performance",
+      "Market Presence": "Market Presence",
+    }
+    if (aTitle[title]) {
+      return aTitle[title];
+    }
+    else {
+      return title
+    }
+  }
+
   const analyticsDataList={
     "Environment":["Fuel","Bioenergy","Refrigerant and other","Elec heat cooling",
       "Owned Vehicles","Materials","WTT- fuels","Waste Disposal","Flight","Accommodation",
@@ -227,7 +266,7 @@ export default function Sidebar({ onRaiseIncident }) {
               </div>
               {analyticsDropdown&& (
                 <ul className="ml-5 ">
-                  {Object.entries(analyticsDataList).map(([key, values]) => (
+                  {Object.entries(analyticsDataList).filter(([key]) => key in dataList).map(([key, values]) => (
                     <li key={key} className="flex flex-col">
                       <div
                         onClick={() => setActiveSubmenu((prev) => (prev === key ? null : key))}
@@ -270,7 +309,7 @@ export default function Sidebar({ onRaiseIncident }) {
                                   : "text-slate-600"
                               }`}
                             >
-                              {item}
+                              {getTitle(item)}
                             </li>
                           ))}
                         </ul>
@@ -348,7 +387,7 @@ export default function Sidebar({ onRaiseIncident }) {
                                   : "text-slate-600"
                               }`}
                             >
-                              {item}
+                              {getTitle(item)}
                             </li>
                           ))}
                         </ul>

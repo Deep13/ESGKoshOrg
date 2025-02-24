@@ -483,8 +483,8 @@ const GovOverview = () => {
       </div>
         
       </div>
-        <div className=" flex items-center gap-2 w-ful">
-            <div className="flex flex-col justify-between rounded-xl p-3 w-[23rem] bg-white">
+        <div className=" flex items-center gap-2 w-full">
+            <div className="flex flex-col justify-between rounded-xl p-3 w-[30rem] bg-white">
                 <div className='font-semibold text-xl text-[#343C6A]'>ENTITY</div>
                 {chartData?
                  <DoughnutChart data={chartData}/>
@@ -494,7 +494,7 @@ const GovOverview = () => {
                  </div>
                 }
             </div>
-            <div className=" bg-white rounded-xl border w-[40rem] h-[15.5rem] px-3 py-2 flex-1">
+            <div className=" bg-white rounded-xl border w-[40rem] h-[18rem] px-3 py-2 flex-1">
               <div className=' font-semibold mb-2 text-xl text-[#343C6A]'>MARKET PRESENCE</div>
               <MapComponent/>
             </div>

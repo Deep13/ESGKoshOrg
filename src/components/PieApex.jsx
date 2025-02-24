@@ -1,23 +1,7 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
-import paper from "../assets/paper.jpg";
-import plastic from "../assets/plastic.jpg";
-import construction from "../assets/construction.jpg";
-import refuse from "../assets/refuse.png";
-import eWaste from "../assets/eWaste.jpg";
-import otherwaste from "../assets/other-waste.jpg";
-import metal from "../assets/metal-waste.jpg";
- 
+
 const PieApex = ({ data = { series: [], labels: [] } }) => {
-  const imgSrc = {
-    "Construction": construction,
-    "Paper": paper,
-    "Plastic": plastic,
-    "Other": otherwaste,
-    "Refuse": refuse,
-    "Electrical items": eWaste,
-    "Metal": metal,
-  }
   const chartData = {
     series: data.series, // Using the correct prop
     options: {
@@ -26,29 +10,26 @@ const PieApex = ({ data = { series: [], labels: [] } }) => {
         type: "pie",
       },
       labels: data.labels, // Ensure labels are passed correctly
-      colors: ["#93C3EE", "#E5C6A0", "#669DB5", "#94A74A"], // Ensure enough colors
-      fill: {
-        type: "image",
-        opacity: 0.85,
-        image: {
-          src: data.labels.map(item => imgSrc[item]), // Ensure images match series length
-          width: 25,
-          imagedHeight: 25,
-        },
-      },
+      colors: [
+        "#4ba9dd", "#ffae55", "#94A74A", "#E94E77", "#A239CA", "#FEC601", "#3D348B"
+      ], // Added more distinct colors
       stroke: {
-        width: 4,
+        width: 2,
+        colors: ["#fff"], // White border for better visibility
       },
       dataLabels: {
         enabled: true,
         style: {
-          colors: ["#111"],
+          colors: ["#111"], // Dark text for readability
         },
         background: {
           enabled: true,
           foreColor: "#fff",
           borderWidth: 0,
         },
+      },
+      legend: {
+        position: "bottom",
       },
       responsive: [
         {
@@ -65,10 +46,8 @@ const PieApex = ({ data = { series: [], labels: [] } }) => {
       ],
     },
   };
- 
-  return <ReactApexChart options={chartData.options} series={chartData.series} type="pie" width={400} />;
+
+  return <ReactApexChart options={chartData.options} series={chartData.series} type="pie" width={300} />;
 };
- 
+
 export default PieApex;
- 
- 

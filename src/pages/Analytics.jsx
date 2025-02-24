@@ -28,52 +28,17 @@ const Analytics = () => {
     setMonthWiseData({labels:[],datasets:[]})
   },[module])
   
-//     const monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    
-//     // Initialize empty array for each month
-//     let emissionData = new Array(12).fill(0);
-
-//     // Find the entry for the selected year
-//     const yearData = data?.find(entry => entry.year == selectedYear);
-//     if (!yearData) return { labels: monthLabels, datasets: [] };
-
-//     // Loop through the months (10, 11, etc.), ensuring numerical keys are considered
-//     Object.entries(yearData).forEach(([monthKey, monthData]) => {
-//         if (!isNaN(monthKey) && monthKey !== "year" && monthKey !== "type") {
-//             const monthIndex = parseInt(monthKey, 10) - 1; // Convert 10 -> 9 (Oct), 11 -> 10 (Nov), etc.
-//             if (monthIndex >= 0 && monthIndex < 12) {
-//                 let totalEmission = 0;
-
-//                 // Sum up all values in the month data
-//                 Object.values(monthData).forEach(locationData => {
-//                     Object.entries(locationData).forEach(([key, value]) => {
-//                         if (key.includes("Emission")) {
-//                             totalEmission += Number(value) || 0;
-//                         }
-//                     });
-//                 });
-
-//                 emissionData[monthIndex] = totalEmission; // Assign total emission to the correct month
-//             }
-//         }
-//     });
-
-//     return {
-//         labels: monthLabels,
-//         datasets: [
-//             {
-//                 label: "Emission %",
-//                 data: emissionData,
-//                 backgroundColor: "#4BA0B6",
-//                 borderColor: "#4BA0B6",
-//                 borderWidth: 1,
-//             }
-//         ],
-//     };
-// };
 function transformDataForGraph(backendData, selectedYear) {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  
+  const colorMap={
+    "No. of complaints received":"#4ba9dd",
+    "No. of complaints solved":"#ffae55",
+    "No. of non-compliance Incidents": "#4ba9dd",
+    "No. of times regulation violated": "#ffae55",
+    "Customers Impacted": "#ffae55",
+    "No. of Benefeciaries":"#4ba9dd",
+    "Expenditure":"#ffae55",
+  }
   const monthWiseData = {
     labels: months,
     datasets: []
@@ -105,8 +70,8 @@ function transformDataForGraph(backendData, selectedYear) {
     monthWiseData.datasets.push({
       label: metric,
       data: data,
-      backgroundColor: getRandomColor(),
-      borderColor: getRandomColor(),
+      backgroundColor: colorMap[metric],
+      borderColor: colorMap[metric],
       borderWidth: 1,
     });
   });
@@ -114,6 +79,15 @@ function transformDataForGraph(backendData, selectedYear) {
   return monthWiseData;
 }
 function transformDataForGraphByYear(backendData) {
+  const colorMap={
+    "No. of complaints received":"#4ba9dd",
+    "No. of complaints solved":"#ffae55",
+    "No. of non-compliance Incidents": "#4ba9dd",
+    "No. of times regulation violated": "#ffae55",
+    "Customers Impacted": "#ffae55",
+    "No. of Beneficiaries":"#4ba9dd",
+    "Expenditure":"#ffae55",
+  }
   const yearWiseData = {
     labels: [],
     datasets: []
@@ -134,7 +108,7 @@ function transformDataForGraphByYear(backendData) {
 
       Object.values(monthData).forEach(locationData => {
         Object.entries(locationData).forEach(([rawMetric, value]) => {
-          const metric = rawMetric.toLowerCase().trim(); // Normalize metric names
+          const metric = rawMetric; // Normalize metric names
 
           if (!metricsMap[metric]) {
             // Ensure all datasets align with all years
@@ -153,8 +127,8 @@ function transformDataForGraphByYear(backendData) {
     yearWiseData.datasets.push({
       label: metric,
       data: data, // Aligned with sorted years
-      backgroundColor: getRandomColor(),
-      borderColor: getRandomColor(),
+      backgroundColor: colorMap[metric],
+      borderColor: colorMap[metric],
       borderWidth: 1
     });
   });
@@ -545,78 +519,61 @@ function retentionTransformByMonth(inputData, filterType, selectedYear) {
 
 
 
-  const ecoPerformanceTransform = (fetchedData) => {
-    // Prepare the chart data object with labels for years
-    const chartData = {
-      labels: [],
-      datasets: [
-        {
-          label: "Total Turnover",
-          data: [],
-          backgroundColor: "#4ba9dd",
-          borderColor: "#4ba9dd",
-          borderWidth: 1,
-        },
-        {
-          label: "Total Revenue",
-          data: [],
-          backgroundColor: "#ffae55",
-          borderColor: "#ffae55",
-          borderWidth: 1,
-        },
-        
-        // {
-        //   label: "Financial Assistance from Governments",
-        //   data: [],
-        //   backgroundColor: "#e34545",
-        //   borderColor: "#e34545",
-        //   borderWidth: 1,
-        // },
-      ],
-    };
-  
-    // Loop through the fetchedData
-    fetchedData?.forEach((yearData) => {
-      const year = yearData.year; // Get the year
-      chartData.labels.push(year); // Add the year to the labels
-  
-      // Loop through the regions inside each year (10, 11, 01, etc.)
-      Object.keys(yearData)?.forEach((regionKey) => {
-        // Skip the year and type keys
-        if (regionKey === 'year' || regionKey === 'type') return;
-  
-        // For each region, aggregate the required data
-        const region = yearData[regionKey];
-  
-        let totalTurnover = 0;
-        let totalRevenue = 0;
-        // let totalRevenue = 0;
-        // let financialAssistance = 0;
-  
-        // Accumulate values from all regions under this year
-        Object.keys(region).forEach((regionName) => {
-          const regionData = region[regionName]?.data; // Safely access region data
-  
-          // Check if regionData exists before accessing the properties
-          if (regionData) {
-            totalTurnover += parseFloat(regionData["Total turnover"]) || 0;
-            // directEconomicValue += parseFloat(regionData["Direct economic value Distributed"]) || 0;
-            totalRevenue += parseFloat(regionData["Total Revenue"]) || 0;
-            // financialAssistance += parseFloat(regionData["Financial assistance received from governments"]) || 0;
-          }
-        });
-  
-        // Push the accumulated values into the corresponding dataset
-        chartData.datasets[0].data.push(totalTurnover);
-        // chartData.datasets[1].data.push(directEconomicValue);
-        chartData.datasets[1].data.push(totalRevenue);
-        // chartData.datasets[2].data.push(financialAssistance);
+ const ecoPerformanceTransform = (fetchedData) => {
+  // Initialize the chart data structure
+  const chartData = {
+    labels: [],
+    datasets: [
+      {
+        label: "Total Turnover",
+        data: [],
+        backgroundColor: "#4ba9dd",
+        borderColor: "#4ba9dd",
+        borderWidth: 1,
+      },
+      {
+        label: "Total Revenue",
+        data: [],
+        backgroundColor: "#ffae55",
+        borderColor: "#ffae55",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  // Loop through fetched data entries
+  fetchedData?.forEach((yearData) => {
+    const year = yearData.year; // Extract year
+    if (!year) return; // Skip if year is missing
+
+    let totalTurnover = 0;
+    let totalRevenue = 0;
+
+    // Loop through the regions inside each year (10, 11, 01, etc.)
+    Object.keys(yearData).forEach((regionKey) => {
+      if (regionKey === "year" || regionKey === "type") return; // Skip non-region keys
+
+      const region = yearData[regionKey];
+
+      // Process each location inside the region
+      Object.values(region).forEach((regionData) => {
+        if (regionData) {
+          totalTurnover += parseFloat(regionData["Total turnover"]) || 0;
+          totalRevenue += parseFloat(regionData["Total Revenue"]) || 0;
+        }
       });
     });
-    
-    console.log(chartData)
-    return chartData;
-  };
+
+    // Push year and aggregated values to chart data
+    chartData.labels.push(year);
+    chartData.datasets[0].data.push(totalTurnover);
+    chartData.datasets[1].data.push(totalRevenue);
+  });
+
+  console.log(chartData);
+  return chartData;
+};
+
 
   const transformBubbleChartData = (backendDataArray) => {
     const bubbleData = { datasets: [] };
@@ -819,8 +776,8 @@ const transformOHSChartDataByMonth = (backendDataArray, selectedYear) => {
 
 const processDataForGraph= (data)=> {
   const monthMap = {
-    "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May", "06": "Jun",
-    "07": "Jul", "08": "Aug", "09": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
+    "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
+    "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
   };
 
   // Initialize result structure

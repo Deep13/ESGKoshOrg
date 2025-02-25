@@ -101,7 +101,7 @@ const tooltipData={
   "1 average meal":"Calculated as 20% vegetarian meal, 40% meal with chicken, 40% meal with beef",
   "1 cold or hot snack":"Calculated as 50% cold sandwich, 50% hot snack (burger and fries)",
   "Water Supply":"Water delivered through the mains supply network",
-  "Water Treatment":"Water returned into the sewage system through mains drains",
+  "Water Drainage":"Water returned into the sewage system through mains drains",
   "Electricity":"Electricity used by an organization at sites owned/ controlled by them. (Not for renewable energy)",
   "Heat and steam":"Emission within an organization that purchases heat/steam energy for heating purpose or for use in specific industrial processes. For heating from other sources, please use the tab fuels.",
   "District cooling":"Air conditioning from chilled water within a centralized energy plants and underground pipes distribution.",
@@ -15361,8 +15361,14 @@ const ignoreFields=()=>{
   setTempIndexMap(indexMap);
 };
 
+  const handleRatioUpdate=()=>{
+    console.log(selectedVariant)
+  }
 
   const handleInputChange = (index, columnTitle, value) => {
+    // if(module=="Market Presence" && index>4){
+    //   handleRatioUpdate();
+    // }
     setVariantData(prevData =>
       prevData.map((item, i) =>
         i === index ? { ...item, [columnTitle]: value } : item
@@ -15561,8 +15567,13 @@ const ignoreFields=()=>{
       id="officeSelect"
       onChange={(e)=>{
         setVariantOffice(e.target.value)
-        setSelectedVariant(fetchedVariant[e.target.value])
-        setTempSelectedVariant(fetchedVariant[e.target.value])
+        if(fetchedVariant){
+          setSelectedVariant(fetchedVariant[e.target.value])
+          setTempSelectedVariant(fetchedVariant[e.target.value])
+        }
+        else{
+          createTable()
+        }
         // e.target.style.width='auto'
       }}
     >
@@ -15601,7 +15612,20 @@ const ignoreFields=()=>{
               key={index}
               className={`py-2 px-3 text-left font-medium max-w-[100%] w-[${100 / getColumn().length}%]`}
             >
-              {column.title=="Count"?"Head Count"  :column.title=="Country-Type"?"Type":column.title}
+              
+              {column.title=="T&D Factors"?
+              (<div className="flex gap-2 items-center">
+                <span>{column.title}</span>
+                <div className="group flex mt-2 cursor-pointer gap-2">
+                  <FaExclamationCircle size={12} />
+                  <div className="hidden group-hover:block z-40 absolute w-40 p-2 bg-black opacity-70 text-white rounded-lg whitespace-pre-wrap">
+                  Emission associated with grid losses (energy loss that occurs in getting the electricity from the power plant to your organization)
+                  </div>
+                </div>
+              </div>
+              ):(
+                column.title=="Count"?"Head Count"  :column.title=="Country-Type"?"Type":column.title
+              )}
             </th>
           ))}
         </tr>
@@ -15681,7 +15705,8 @@ const ignoreFields=()=>{
                       placeholder={column.title}
                       className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
                       type={column.type === "Number" ? "number" : "text"}
-                      disabled={tab === "variant"}
+                      // disabled={tab === "variant"}
+                      disabled={tab === "variant"||(module=="Market Presence" && (ticket.Data=="Ratio of entry level wage to local minimum wage for Male"||ticket.Data=="Ratio of entry level wage to local minimum wage for Female") )}
                       min={0}
                       value={tab === "recorded" ? ticket[column.title] : ""}
                       onWheel={(e) => e.target.blur()}
@@ -15695,12 +15720,31 @@ const ignoreFields=()=>{
                           ...updatedVariant[tempIndexMap.get(index) || index],
                           [column.title]: updatedValue,
                         };
+
+                        if(module=="Market Presence" && index<4){
+                          
+                          if(updatedVariant[0].Values!='' &&updatedVariant[2].Values!=''){
+                            updatedVariant[4].Values= (parseInt(updatedVariant[0].Values)/parseInt(updatedVariant[2].Values))
+                          }
+                          if(updatedVariant[1].Values!='' &&updatedVariant[3].Values!=''){
+                            updatedVariant[5].Values= (parseInt(updatedVariant[1].Values)/parseInt(updatedVariant[3].Values))
+                          }
+                        }
                         setSelectedVariant(updatedVariant);
                   
                         // Update tempSelectedVariant
                         const updatedTempVariant = tempSelectedVariant.map((item) =>
                           item === ticket ? { ...item, [column.title]: updatedValue } : item
                         );
+                        // if(module=="Market Presence" && index<4){
+                          
+                        //   if(updatedVariant[0].Values!='' &&updatedVariant[2].Values!=''){
+                        //     updatedTempVariant[4].Values= (parseInt(updatedVariant[0].Values)/parseInt(updatedVariant[2].Values))
+                        //   }
+                        //   if(updatedVariant[1].Values!='' &&updatedVariant[3].Values!=''){
+                        //     updatedTempVariant[5].Values= (parseInt(updatedVariant[1].Values)/parseInt(updatedVariant[3].Values))
+                        //   }
+                        // }
                         setTempSelectedVariant(updatedTempVariant);
                       }}
                     />
@@ -15711,7 +15755,7 @@ const ignoreFields=()=>{
                       <span>{ticket[column.title]}</span>
                       <div className="group flex mt-2 cursor-pointer gap-2">
                         <FaExclamationCircle size={12} />
-                        <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg">
+                        <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg whitespace-pre-wrap">
                           {tooltipData[ticket[column.title]]}
                         </div>
                       </div>
@@ -15805,7 +15849,7 @@ const ignoreFields=()=>{
                       placeholder={column.title}
                       className="border bg-[#eceded] py-2 px-5 rounded-xl text-[#718EBF] w-full"
                       type={column.type === "Number" ? "number" : "text"}
-                      // disabled={tab !== 'recorded' && tab !== 'create'}
+                     
                       min={0}
                       value={ticket[column.title]}
                       onChange={(e) =>

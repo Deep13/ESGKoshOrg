@@ -56,7 +56,7 @@ const Header = () => {
     }
 
     const tooltipData={
-      "Fuel":"Combustion of fuels in owned or controlled stationary equipment such as boilers, furnaces, Turbines, heaters, incinerators, engines, flares, etc.",
+      "Fuel":"Combustion of fuels in owned or controlled stationary equipment such as boilers, furnaces, Turbines, heaters, incinerators, engines, flares, etc. \n\nDo not Include here the combustion of fuels in transportation devices such as automobiles, trucks, buses, trains, airplanes, boats, ships, barges, vessels, etc.",
       "Bioenergy":"Combustion of fuels produced from recently living sources at a site or in assets under the direct control of the reporting organization.",
       "Refrigerant and other": "From leakage from air-conditioning and refrigeration units or the release to the atmosphere of other gases that have a Global Warming Potential.",
       "WTT- fuels":"Emissions associated with extraction, refining, and transportation of raw fuel sources to an organization’s site (or asset) before their combustion.",
@@ -66,6 +66,9 @@ const Header = () => {
       "Freighting goods":"Shipment of goods over land, by air through a third–party company.",
       "Employees commuting":"Employees travel between their homes and their workplace.",
       "Home Office":"The emission factors consider the energy consumption for the workstation, lighting, and cooling or heating.",
+      "Food":"Provided by the organization",
+      "Owned Vehicles":"Travel in cars or motorcycles owned or controlled by the reporting organization.",
+      "Elec heat cooling":"Unit of energy used from Purchased electricity, heat, steam, or cooling .",
     }
   return (
     <div className='w-full h-16 bg-white text-[#343C6A] flex items-center justify-between px-5'>
@@ -77,7 +80,7 @@ const Header = () => {
                     {values[page]}
                     <div className="group cursor-pointer">
                       <FaExclamationCircle size={12}/>
-                      <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-85 text-white rounded-lg">
+                      <div className="hidden group-hover:block z-40 absolute w-80 p-2 bg-black opacity-85 text-white rounded-lg whitespace-pre-wrap">
                           {tooltipData[module]}
                       </div>
 

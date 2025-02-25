@@ -77,7 +77,7 @@ const Header = () => {
                     {values[page]}
                     <div className="group cursor-pointer">
                       <FaExclamationCircle size={12}/>
-                      <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg">
+                      <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-85 text-white rounded-lg">
                           {tooltipData[module]}
                       </div>
 

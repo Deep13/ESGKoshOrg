@@ -129,7 +129,7 @@ const GovOverview = () => {
       })
     }
     setFilteredOverview(obj)
-    console.log(obj)
+    console.log("check",obj)
  
   }
 
@@ -161,6 +161,8 @@ const GovOverview = () => {
   
     return result;
   };
+  
+  
   
 
   const fetchAnalyticsData = async () => {
@@ -308,14 +310,15 @@ const GovOverview = () => {
     
     if(filteredOverview && filteredOverview["Eco. Performance"]){
       console.log("labelist",labelList);
-      const ecoData=filteredOverview["Eco. Performance"];
-      console.log("e",ecoData["Total Revenue"])
+      const ecoData = filteredOverview["Eco. Performance"];
+
+
       setAreaChart1({
           labels: labelList,
           datasets: [
             {
-              label: "Total Revenue",
-              data: ecoData["Total Revenue"],
+              label: "Net Worth",
+              data:ecoData["Total Revenue"],
               backgroundColor: "rgba(48,77,255,0.7)",
               borderColor: "rgba(48,77,255,0.3)",
               borderWidth: 1,

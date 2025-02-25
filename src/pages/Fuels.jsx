@@ -101,7 +101,12 @@ const tooltipData={
   "1 average meal":"Calculated as 20% vegetarian meal, 40% meal with chicken, 40% meal with beef",
   "1 cold or hot snack":"Calculated as 50% cold sandwich, 50% hot snack (burger and fries)",
   "Water Supply":"Water delivered through the mains supply network",
-  "Water Treatment ":"Water returned into the sewage system through mains drains",
+  "Water Treatment":"Water returned into the sewage system through mains drains",
+  "Electricity":"Electricity used by an organization at sites owned/ controlled by them. (Not for renewable energy)",
+  "Heat and steam":"Emission within an organization that purchases heat/steam energy for heating purpose or for use in specific industrial processes. For heating from other sources, please use the tab fuels.",
+  "District cooling":"Air conditioning from chilled water within a centralized energy plants and underground pipes distribution.",
+  "Petrol": "Small Car - Engine size < 1.4 Liters\nMedium Car - Engine size 1.4 – 2.0 Liters\nLarge Car - Engine size > 2.0 Liters",
+  "Diesel": "Small Car - Engine size > 1.7 Liters\nMedium Car - Engine size 1.7 – 2.0 Liters\nLarge Car - Engine size > 2.0 Liters",
 }
 
 const addRow=(param='recorded')=>{
@@ -537,11 +542,11 @@ const calculateEmissions = () => {
   case "Eco. Performance":{
     let saveValues={
       "Total turnover":0,
-      "Net Worth":0,
+      "Total Revenue":0,
     }
     fullEmissions={
       "Total turnover":0,
-      "Net Worth":0,
+      "Total Revenue":0,
       "Direct economic value generated":0,
       "Direct economic value Distributed":0,
 
@@ -551,9 +556,9 @@ const calculateEmissions = () => {
         saveValues["Total turnover"]=item.Values
         fullEmissions["Total turnover"]=item.Values
       }
-      if(item.Data=="Net Worth"){
-        saveValues["Net Worth"]=item.Values
-        fullEmissions["Net Worth"]=item.Values
+      if(item.Data=="Total Revenue"){
+        saveValues["Total Revenue"]=item.Values
+        fullEmissions["Total Revenue"]=item.Values
       }
       if(item.Data=="Direct economic value Distributed"){
         fullEmissions["Direct economic value Distributed"]=item.Values
@@ -1729,7 +1734,7 @@ const calculateEmissions = () => {
           "Reference": 2938,
           "Reference 2": 814,
           "Activity": "Electricity",
-          "Country-Type": "India",
+          "Country-Type": "--",
           "Unit": "kWh",
           "Amount": null,
           "GEF Factors": null,
@@ -1749,7 +1754,7 @@ const calculateEmissions = () => {
           "Reference": 3172,
           "Reference 2": null,
           "Activity": "District cooling",
-          "Country-Type": "India",
+          "Country-Type": "--",
           "Unit": "Ton of refrigeration",
           "Amount": null,
           "GEF Factors": null,
@@ -1759,7 +1764,7 @@ const calculateEmissions = () => {
           "Reference": 2938,
           "Reference 2": 814,
           "Activity": "Electricity - Backup",
-          "Country-Type": "India",
+          "Country-Type": "--",
           "Unit": "kWh",
           "Amount": null,
           "GEF Factors": null,
@@ -9107,7 +9112,7 @@ const calculateEmissions = () => {
           "Values": ""
         },
         {
-          "Data": "Net Worth",
+          "Data": "Total Revenue",
           "Values": ""
         },
         {
@@ -15454,7 +15459,8 @@ const ignoreFields=()=>{
       {tab=='recorded'&&
     
     <>
-    <div className={`flex justify-between items-center`}>
+    <div className={`flex ${module === 'Owned Vehicles' ? 'flex-col justify-start items-start' : 'flex-row justify-between items-center'}`}
+    >
       <div className="w-32">
         {userData?.branches&&userData?.branches.length>0&&        
         <select
@@ -15464,7 +15470,7 @@ const ignoreFields=()=>{
           id="branchSelect"
           onChange={(e) => {
             const selectedBranch = JSON.parse(e.target.value);
-            console.log("Selected Branch:", selectedBranch.branch);
+            console.log("Selected Branch:", selectedBranch);
             setBranch(selectedBranch.branch);
             branchChange(e.target.value);
           }}
@@ -15472,7 +15478,7 @@ const ignoreFields=()=>{
           <option value={"Select branch"} disabled>Select Branch</option>
           {userData?.branches?.map((branch, index) => (
             <option key={index} value={JSON.stringify(branch)}>
-              {branch.branch}
+              {branch.branch+` [${branch.officeType}]`}
             </option>
           ))}
         </select>
@@ -15595,7 +15601,7 @@ const ignoreFields=()=>{
               key={index}
               className={`py-2 px-3 text-left font-medium max-w-[100%] w-[${100 / getColumn().length}%]`}
             >
-              {column.title=="Count"?"Head Count"  :column.title=="Country-Type"?"Country":column.title}
+              {column.title=="Count"?"Head Count"  :column.title=="Country-Type"?"Type":column.title}
             </th>
           ))}
         </tr>
@@ -15706,7 +15712,7 @@ const ignoreFields=()=>{
                       <div className="group flex mt-2 cursor-pointer gap-2">
                         <FaExclamationCircle size={12} />
                         <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg">
-                          {ticket[column.title]=="Total Revenue"?"Net Worth":ticket[column.title] || "--"}
+                          {tooltipData[ticket[column.title]]}
                         </div>
                       </div>
                     </div>

@@ -15724,10 +15724,10 @@ const ignoreFields=()=>{
                         if(module=="Market Presence" && index<4){
                           
                           if(updatedVariant[0].Values!='' &&updatedVariant[2].Values!=''){
-                            updatedVariant[4].Values= (parseInt(updatedVariant[0].Values)/parseInt(updatedVariant[2].Values))
+                            updatedVariant[4].Values= (parseInt(updatedVariant[0].Values)/parseInt(updatedVariant[2].Values)).toFixed(2)
                           }
                           if(updatedVariant[1].Values!='' &&updatedVariant[3].Values!=''){
-                            updatedVariant[5].Values= (parseInt(updatedVariant[1].Values)/parseInt(updatedVariant[3].Values))
+                            updatedVariant[5].Values= (parseInt(updatedVariant[1].Values)/parseInt(updatedVariant[3].Values)).toFixed(2)
                           }
                         }
                         setSelectedVariant(updatedVariant);

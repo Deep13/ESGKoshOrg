@@ -17,18 +17,18 @@ const markerIcon = new L.Icon({
 
 
 const MapComponent = () => {
-  const {master} = useSidebar();
-  const branchData=master?.branches;
+  const { master } = useSidebar();
+  const branchData = master?.branches;
 
   // const findCenterCoordinates=(coordinates)=> {
   //   let totalLat = 0, totalLong = 0;
   //   let count = coordinates.length;
-     
+
   //       coordinates.forEach(coord => {
   //           totalLat += parseFloat(coord.lat);
   //           totalLong += parseFloat(coord.long);
   //       });
-     
+
   //       return [
   //   (totalLat / count).toFixed(6), // Keeping 6 decimal places for precision
   //   (totalLong / count).toFixed(6)
@@ -39,7 +39,7 @@ const MapComponent = () => {
     <div className="bg-white rounded-xl border w-full h-[14rem]">
       <MapContainer
         center={[
-          branchData?.[0]?.latitude ?? 0, 
+          branchData?.[0]?.latitude ?? 0,
           branchData?.[0]?.longitude ?? 0
         ]} // Centering on the world
         zoom={4} // Set zoom level
@@ -48,9 +48,12 @@ const MapComponent = () => {
         attributionControl={false} // Remove attribution control
         style={{ height: "100%", width: "100%" }}
       >
-       <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        <TileLayer
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+          attribution='&copy; Esri & OpenStreetMap contributors'
         />
+
+
         {branchData?.map((branch, index) =>
           branch.latitude && branch.longitude ? (
             <Marker key={index} position={[branch.latitude, branch.longitude]} icon={markerIcon}>

@@ -12,7 +12,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { useEffect, useState, useMemo } from "react";
 import TreemapChart from '../components/TreemapChart'
 import PieApex from "../components/PieApex";
- 
+import DoughnutChart from '../components/DoughnutChart';
 //code by Deepak start////
 const monthNames = {
   "01": "Jan",
@@ -29,7 +29,7 @@ const monthNames = {
   "12": "Dec",
 };
 //code by Deepak end////
- 
+
 const data = [
   {
     x: 'India',
@@ -58,13 +58,13 @@ const data = [
   },
   // Add more entries here...
 ];
- 
+
 const EnvOverview = () => {
   const { userData, master } = useSidebar()
   const [overviewObj, setOverviewObj] = useState([])
   const [wasteData, setWasteData] = useState({ "data": [], "labels": [] });
   //code by Deepak start////
- 
+
   const [selectedYear, setSelectedYear] = useState("All");
   const [selectedMonth, setSelectedMonth] = useState("All");
   const [selectedCountry, setSelectedCountry] = useState("All");
@@ -78,15 +78,15 @@ const EnvOverview = () => {
   const [pieChartData, setPieChartData] = useState();
   const [scopeData, setscopeData] = useState([]);
   //code by Deepak end////
- 
- 
- 
+
+
+
   // const pieChartData = {
   //   labels: ["Red", "Blue", "Green", "Yellow"], // Labels for pie chart sections
   //   values: [300, 50, 100, 75], // Data values corresponding to each label
   //   colors: ["#FF5733", "#33FF57", "#3357FF", "#FFFF33"], // Colors for each slice
   // };
- 
+
   const transformDataForTreemap = (data) => {
     let formattedData = [{ x: 0, y: 0 }];
     if (data && Object.keys(data).length > 0) {
@@ -98,14 +98,14 @@ const EnvOverview = () => {
       delete data["sea"];
       console.log(JSON.stringify(data));
       const total = Object.values(data).reduce((sum, value) => sum + value, 0);
- 
+
       // Convert to required format with percentage calculation
       formattedData = Object.entries(data).map(([key, value]) => ({
         x: key,
         y: parseFloat(((value / total) * 100).toFixed(2)) // Percentage calculation
       }));
       // formattedData = [];
- 
+
       // for (const key in data) {
       //   if (typeof data[key] === "number") {
       //     // Push if it's a simple key-value pair
@@ -118,23 +118,23 @@ const EnvOverview = () => {
       //   }
       // }
     }
- 
- 
+
+
     return formattedData;
   };
- 
- 
-  const colors = ["#FF4560", "#FEB019", "#00E396", "#008FFB", "#775DD0"];
- 
+
+
+  const colors = ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"];
+
   //waste emission pie chart gov eco performance social
- 
+
   //code by Deepak start////
   // Function to sum values based on scope category
   const sumScopeValues = (data, mapping) => {
     const scopeColors = {
-      "Scope 1": "#2979F2",
-      "Scope 2": "#29C472",
-      "Scope 3": "#FF3D3D"
+      "Scope 1": "#109ad8",
+      "Scope 2": "#45bf34",
+      "Scope 3": "#f26c35"
     };
     // Initialize Scope categories
     const scopeTotals = {
@@ -160,9 +160,9 @@ const EnvOverview = () => {
         }
       }
     }
- 
+
     const totalEmissions = scopeTotals["Scope 1"] + scopeTotals["Scope 2"] + scopeTotals["Scope 3"];
- 
+
     // Convert to required format
     const scopeDataObj = Object.keys(scopeTotals).map(scope => ({
       label: scope,
@@ -170,9 +170,9 @@ const EnvOverview = () => {
       color: scopeColors[scope],
       emission: Math.round(scopeTotals[scope]) // Rounding emissions for cleaner output
     }))
- 
+
     return scopeDataObj;
- 
+
   };
   const total = (selection) => {
     var obj = {};
@@ -188,7 +188,7 @@ const EnvOverview = () => {
         }
       })
     }
- 
+
     const scopeData = {
       "Fuel": "Scope 1",
       "Bioenergy": "Scope 1",
@@ -207,18 +207,18 @@ const EnvOverview = () => {
       "Food": "Scope 3",
       "Home Office": "Scope 3"
     };
- 
- 
- 
- 
- 
+
+
+
+
+
     // Sum values into their respective scopes
     var scopeWiseData = sumScopeValues(obj, scopeData);
     setscopeData(scopeWiseData)
     setFilteredOverview(obj)
     console.log(obj)
-    var tempObj={...obj}
- 
+    var tempObj = { ...obj }
+
     if (tempObj && tempObj["Waste Method"]) {
       const sortedData = Object.fromEntries(
         Object.entries(tempObj["Waste Method"]).sort((a, b) => a[1] - b[1])
@@ -238,19 +238,19 @@ const EnvOverview = () => {
         }
       )
     }
- 
+
     if (tempObj && Object.keys(tempObj).length > 0) {
       setPieChartData(transformWasteDataForPieChart(tempObj))
       setTreeMapData(transformDataForTreemap(tempObj))
     }
- 
- 
- 
+
+
+
   }
- 
+
   const mergeAndSumObjects = (obj1, obj2) => {
     const result = { ...obj1 }; // Clone obj1 to avoid modifying it
- 
+
     for (const key in obj2) {
       if (obj2.hasOwnProperty(key)) {
         if (typeof obj2[key] === "object" && obj2[key] !== null && !Array.isArray(obj2[key])) {
@@ -262,21 +262,21 @@ const EnvOverview = () => {
         }
       }
     }
- 
+
     return result;
   }
- 
+
   const fetchAnalyticsData = async () => {
     try {
       // Reference to the Firestore collection
       if (userData) {
         const collectionRef = collection(firestore, userData?.domain, "AnalyticsData", "Reporting Data");
- 
+
         // Query documents where the name contains the module
         const q = query(collectionRef, where("type", "==", "Environment-Overview"));
         // Fetch documents
         const querySnapshot = await getDocs(q);
- 
+
         if (!querySnapshot.empty) {
           // You can also store this data if you need
           const data = querySnapshot.docs.map(doc => doc.data());
@@ -288,16 +288,16 @@ const EnvOverview = () => {
             Object.keys(item).map(item2 => {
               if (item2 !== "type" && item2 !== "year") {
                 Object.keys(item[item2]).map(item3 => {
- 
+
                   branches[yearMonth + "-" + monthNames[(item2 < 10) ? '0' + item2.toString() : item2.toString()] + "-" + item3] = item[item2][item3]
- 
- 
+
+
                 })
               }
- 
+
             })
- 
- 
+
+
           })
           setlowestlevelData(branches)
           console.log("branches", branches)
@@ -314,9 +314,9 @@ const EnvOverview = () => {
           });
           setfilterlist(parsedData)
           console.log("parsedData", parsedData)
- 
+
           console.log("Analytics", data);
- 
+
           // setLoading(false)
         } else {
           console.log("No documents matching the query.");
@@ -325,30 +325,30 @@ const EnvOverview = () => {
     } catch (error) {
       console.error("Error fetching documents: ", error);
     }
- 
- 
+
+
   };
- 
+
 
   useEffect(() => {
     fetchAnalyticsData()
- 
- 
+
+
   }, [])
- 
+
   useEffect(() => {
     if (lowestlevelData) {
       total()
     }
   }, [lowestlevelData])
- 
- 
- 
+
+
+
   const transformWasteDataForPieChart = (backendData) => {
     const wasteActivity = backendData["Waste Activity"];
- 
+
     if (!wasteActivity) return { labels: [], series: [] };
- 
+
     // Extract individual waste categories (excluding "All")
     const transformedData = Object.entries(wasteActivity)
       .filter(([key]) => key !== "All") // Exclude "All"
@@ -356,64 +356,69 @@ const EnvOverview = () => {
         label: key,
         value: value
       }));
- 
+
     console.log("transformation", transformedData)
     const sortedData = transformedData.sort((a, b) => a.label.localeCompare(b.label));
     return {
       labels: sortedData.map(item => item.label),
-      series: sortedData.map(item => item.value)
+      datasets: [
+        {
+          data: sortedData.map(item => item.value), // Correctly update data
+          backgroundColor: ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"],
+        },
+      ]
     };
   };
- 
+
 
   // Extract unique filter options
   const years = useMemo(() => ["All", ...new Set(filterlist.map(entry => entry.year))], [filterlist]);
- 
+
   const months = useMemo(() => {
     if (selectedYear === "All") return ["All"];
     const yearData = filterlist.find(entry => entry.year === selectedYear);
     if (!yearData) return ["All"];
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear).map(entry => entry.month))];
   }, [filterlist, selectedYear]);
- 
+
   const countries = useMemo(() => {
     if (selectedYear === "All" || selectedMonth === "All") return ["All"];
- 
+
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear && entry.month === selectedMonth).map(entry => entry.country))];
   }, [filterlist, selectedYear, selectedMonth]);
- 
+
   const states = useMemo(() => {
     if (selectedYear === "All" || selectedMonth === "All" || selectedCountry === "All") return ["All"];
- 
+
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear && entry.month === selectedMonth && entry.country === selectedCountry).map(entry => entry.state))];
   }, [filterlist, selectedYear, selectedMonth, selectedCountry]);
- 
+
   const districts = useMemo(() => {
     if (selectedYear === "All" || selectedMonth === "All" || selectedCountry === "All" || selectedState === "All") return ["All"];
- 
+
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear && entry.month === selectedMonth && entry.country === selectedCountry && entry.state === selectedState).map(entry => entry.district))];
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState]);
- 
+
   const blocks = useMemo(() => {
     if (selectedYear === "All" || selectedMonth === "All" || selectedCountry === "All" || selectedState === "All" || selectedDistrict === "All") return ["All"];
- 
+
     return ["All", ...new Set(filterlist.filter(entry => entry.year === selectedYear && entry.month === selectedMonth && entry.country === selectedCountry && entry.state === selectedState && entry.district === selectedDistrict).map(entry => entry.block))];
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState, selectedDistrict]);
   //code by Deepak end////
- 
 
- 
+
+
   console.log("does it work?", filteredOverview)
   // const [treeData,setTreeData]=useState(data);
   // setTreeData(data);
- console.log("test2",filteredOverview)
+  console.log("test2", filteredOverview)
 
- console.log("pie",wasteData)
+  console.log("pie", wasteData)
   return (
     <div className='flex flex-col px-3 py-2 gap-2 overflow-x-hidden'>
- 
+
       {/* //code by Deepak start//// */}
- 
+
       <div className="flex justify-end mb-[20px]" >
         <select value={selectedYear} onChange={(event) => {
           setSelectedYear(event.target.value);
@@ -488,53 +493,53 @@ const EnvOverview = () => {
           })}
         </select>
       </div>
- 
+
       {/* //code by Deepak end//// */}
- 
+
       {overviewObj && <>
         <div className="flex items-center gap-5">
- 
+
           <div className="bg-white rounded-xl flex-1 p-3 w-full h-[15rem]">
             <h2 className="text-lg font-semibold text-gray-700 mb-4">SCOPE-WISE EMISSION</h2>
             <div className="flex justify-between">
-            {scopeData.length > 0 ? (
-  scopeData.map((scope, index) => (
-    <div key={index} className="flex flex-col items-center w-1/3">
-      {/* Progress Bar */}
-      <div className="w-24">
-        <CircularProgressbar
-          value={scope.percentage}
-          text={`${scope.percentage}%`}
-          styles={buildStyles({
-            textSize: "18px",
-            pathColor: scope.color,
-            textColor: "#866969",
-            trailColor: "#E5E7EB",
-            strokeLinecap: "round",
-            pathTransitionDuration: 0.5,
-            strokeWidth: 40,
-            pathTransition: "none",
-            strokeDasharray: `${scope.percentage * 2.8}, 200`,
-          })}
-        />
-      </div>
+              {scopeData.length > 0 ? (
+                scopeData.map((scope, index) => (
+                  <div key={index} className="flex flex-col items-center w-1/3">
+                    {/* Progress Bar */}
+                    <div className="w-24">
+                      <CircularProgressbar
+                        value={scope.percentage}
+                        text={`${scope.percentage}%`}
+                        styles={buildStyles({
+                          textSize: "18px",
+                          pathColor: scope.color,
+                          textColor: "#866969",
+                          trailColor: "#E5E7EB",
+                          strokeLinecap: "round",
+                          pathTransitionDuration: 0.5,
+                          strokeWidth: 40,
+                          pathTransition: "none",
+                          strokeDasharray: `${scope.percentage * 2.8}, 200`,
+                        })}
+                      />
+                    </div>
 
-      {/* Labels */}
-      <p className="text-sm font-medium mt-2">{scope.label}</p>
-      <p className="text-sm font-semibold text-gray-700">{scope.emission}</p>
-      <p className="text-sm font-semibold text-gray-700">kgCO2e</p>
-    </div>
-  ))
-) : (
-  <div className="flex justify-center items-center w-full h-32 text-gray-500 text-lg font-medium">
-    No data available for analytics
-  </div>
-)}
+                    {/* Labels */}
+                    <p className="text-sm font-medium mt-2">{scope.label}</p>
+                    <p className="text-sm font-semibold text-gray-700">{scope.emission}</p>
+                    <p className="text-sm font-semibold text-gray-700">kgCO2e</p>
+                  </div>
+                ))
+              ) : (
+                <div className="flex justify-center items-center w-full h-32 text-gray-500 text-lg font-medium">
+                  No data available for analytics
+                </div>
+              )}
 
             </div>
           </div>
- 
-          <div className="bg-white flex flex-col w-[26rem] h-[15rem] p-2 border rounded-xl bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
+
+          <div className="bg-white flex flex-col w-[26rem] h-[15rem] p-2 border rounded-xl bg-[#127a41] text-white">
             <div className="">
               EMISSION FROM BUISNESS TRAVEL
             </div>
@@ -569,16 +574,16 @@ const EnvOverview = () => {
         <div className=" flex gap-3 items-center">
           <div className="bg-white flex-1 p-2 border rounded-xl">
             <div className="font-semibold text-xl text-[#343C6A] mb-1">EMISSION BY CATEGORIES</div>
-           {/* {treeMapData?
+            {/* {treeMapData?
            <TreemapChart data={treeMapData} />
            :
            <div className="flex justify-center items-center w-full h-32 text-gray-500 text-lg font-medium">
             No data available for analytics
             </div>
            } */}
-           <TreemapChart data={treeMapData} />
+            <TreemapChart data={treeMapData} />
           </div>
- 
+
         </div>
         <div className="flex items-center gap-5">
           <div className="bg-white w-[12rem] h-[19rem] overflow-y-hidden p-2 border rounded-xl flex flex-col">
@@ -588,7 +593,7 @@ const EnvOverview = () => {
             <div className="flex mt-1 items-center">
               <div className=" text-slate-600">
                 <div className="">
-                  EMISSION <br /> {filteredOverview?.["Elec heat cooling"]?.toFixed(2) || "NA"} kWh
+                  {filteredOverview?.["Elec heat cooling"]?.toFixed(2) || "NA"} kWh
                 </div>
                 {/* <div className="">
                   CONSUMPTION<br/> value
@@ -605,12 +610,13 @@ const EnvOverview = () => {
               <div className=""></div>
               <div className=" flex items-center justify-center w-full">
                 {/* <PieApex data={pieChartData} /> */}
-                {pieChartData?.series?.length!=0?
-                <PieApex data={pieChartData} />
-                :
-                <div className="flex justify-center items-center w-full h-64 text-gray-500 text-lg font-medium">
-                No data available for analytics
-                </div>
+                {pieChartData?.series?.length != 0 ?
+                  // <PieApex data={pieChartData} />
+                  <DoughnutChart data={pieChartData} />
+                  :
+                  <div className="flex justify-center items-center w-full h-64 text-gray-500 text-lg font-medium">
+                    No data available for analytics
+                  </div>
                 }
               </div>
             </div>
@@ -629,15 +635,15 @@ const EnvOverview = () => {
             {wasteData[i]}
           </div>
         ))} */}
- 
-             {wasteData?.data.length!=0?
-             <PyramidChart data={wasteData.data} categories={wasteData.labels} colors={colors} title="Custom Pyramid Chart" />
-             :
-             <div className="flex justify-center items-center w-full h-52 text-gray-500 text-lg font-medium">
-            No data available for analytics
-            </div> 
-            }
- 
+
+              {wasteData?.data.length != 0 ?
+                <PyramidChart data={wasteData.data} categories={wasteData.labels} colors={colors} title="Custom Pyramid Chart" />
+                :
+                <div className="flex justify-center items-center w-full h-52 text-gray-500 text-lg font-medium">
+                  No data available for analytics
+                </div>
+              }
+
             </div>
           </div>
         </div>
@@ -645,6 +651,5 @@ const EnvOverview = () => {
     </div>
   )
 }
- 
+
 export default EnvOverview
- 

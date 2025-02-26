@@ -1,8 +1,8 @@
 import Chart from "react-apexcharts";
 
-const TrainingEduChart = ({ trainingData={} }) => {
+const TrainingEduChart = ({ trainingData = {} }) => {
 
-const allTrainingTypes = Array.from(
+  const allTrainingTypes = Array.from(
     new Set(
       Object.values(trainingData)
         .flatMap((category) => Object.entries(category))
@@ -25,6 +25,7 @@ const allTrainingTypes = Array.from(
       type: "bar",
       stacked: true,
     },
+    colors: ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"],
     plotOptions: {
       bar: {
         horizontal: true, // Horizontal bar chart
@@ -32,12 +33,12 @@ const allTrainingTypes = Array.from(
     },
     xaxis: {
       labels: {
-         show: false, // Hide X-axis labels
-        },
-      categories:Object.keys(trainingData), // Training types on Y-axis
+        show: false, // Hide X-axis labels
+      },
+      categories: Object.keys(trainingData), // Training types on Y-axis
     },
     yaxis: {
-    categories:allTrainingTypes,
+      categories: allTrainingTypes,
       title: {
         text: "",
       },

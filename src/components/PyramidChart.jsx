@@ -1,8 +1,8 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
- 
+
 const PyramidChart = ({ data = [], categories = [] }) => {
- 
+
   const chartOptions = {
     chart: {
       type: 'bar',
@@ -20,16 +20,7 @@ const PyramidChart = ({ data = [], categories = [] }) => {
         isFunnel: true,
       },
     },
-    colors: [
-      '#F44F5E',
-      '#E55A89',
-      '#D863B1',
-      '#CA6CD8',
-      '#B57BED',
-      '#8D95EB',
-      '#62ACEA',
-      '#4BC3E6',
-    ],
+    colors: ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"],
     dataLabels: {
       enabled: true,
       formatter: function (val, opt) {
@@ -46,7 +37,7 @@ const PyramidChart = ({ data = [], categories = [] }) => {
       show: false,
     },
   };
- 
+
   return (
     <div>
       <ReactApexChart
@@ -63,7 +54,6 @@ const PyramidChart = ({ data = [], categories = [] }) => {
     </div>
   );
 };
- 
+
 export default PyramidChart;
- 
- 
+

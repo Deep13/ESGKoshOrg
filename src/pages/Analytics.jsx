@@ -574,6 +574,61 @@ const Analytics = () => {
     return chartData;
   };
 
+  const mktPresenceTransform = (fetchedData) => {
+    // Initialize the chart data structure
+    const chartData = {
+      labels: [],
+      datasets: [
+        {
+          label: "Markets served by the entity internationally",
+          data: [],
+          backgroundColor: "#4ba9dd",
+          borderColor: "#4ba9dd",
+          borderWidth: 1,
+        },
+        {
+          label: "Markets served by the entity nationally",
+          data: [],
+          backgroundColor: "#ffae55",
+          borderColor: "#ffae55",
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    // Loop through fetched data entries
+    fetchedData?.forEach((yearData) => {
+      const year = yearData.year; // Extract year
+      if (!year) return; // Skip if year is missing
+
+      let totalTurnover = 0;
+      let totalRevenue = 0;
+
+      // Loop through the regions inside each year (10, 11, 01, etc.)
+      Object.keys(yearData).forEach((regionKey) => {
+        if (regionKey === "year" || regionKey === "type") return; // Skip non-region keys
+
+        const region = yearData[regionKey];
+
+        // Process each location inside the region
+        Object.values(region).forEach((regionData) => {
+          if (regionData) {
+            totalTurnover += parseFloat(regionData["Markets served by the entity internationally"]) || 0;
+            totalRevenue += parseFloat(regionData["Markets served by the entity nationally"]) || 0;
+          }
+        });
+      });
+
+      // Push year and aggregated values to chart data
+      chartData.labels.push(year);
+      chartData.datasets[0].data.push(totalTurnover);
+      chartData.datasets[1].data.push(totalRevenue);
+    });
+
+    console.log(chartData);
+    return chartData;
+  };
+
 
   const transformBubbleChartData = (backendDataArray) => {
     const bubbleData = { datasets: [] };
@@ -804,6 +859,44 @@ const Analytics = () => {
             let financialData = location;
             graphData.datasets[0].data[monthIndex] += parseFloat(financialData["Total turnover"] || 0);
             graphData.datasets[1].data[monthIndex] += parseFloat(financialData["Total Revenue"] || 0);
+            // graphData.datasets[2].data[monthIndex] += parseFloat(financialData["Net Worth"] || 0);
+          });
+        }
+      });
+    });
+
+    return graphData;
+  }
+  const processDataForMktPresence = (data) => {
+    const monthMap = {
+      "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
+      "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
+    };
+
+    // Initialize result structure
+    let graphData = {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      datasets: [
+        { label: "Markets served by the entity internationally", data: Array(12).fill(0), backgroundColor: "#4ba9dd", borderColor: "#4ba9dd", borderWidth: 1 },
+        { label: "Markets served by the entity nationally", data: Array(12).fill(0), backgroundColor: "#ffae55", borderColor: "#ffae55", borderWidth: 1 },
+        // { label: "Net Worth", data: Array(12).fill(0), backgroundColor: "#ffff55", borderColor: "#ffff55", borderWidth: 1 },
+      ]
+    };
+
+    console.log("this is what i got", data)
+
+    // Filter data by year
+    const filteredData = data?.filter(entry => entry.year == year);
+
+    filteredData?.forEach(entry => {
+      Object.keys(entry).forEach(key => {
+        if (monthMap[key]) {
+          let monthIndex = parseInt(key) - 1; // Convert to 0-based index
+
+          Object.values(entry[key]).forEach(location => {
+            let financialData = location;
+            graphData.datasets[0].data[monthIndex] += parseFloat(financialData["Markets served by the entity internationally"] || 0);
+            graphData.datasets[1].data[monthIndex] += parseFloat(financialData["Markets served by the entity nationally"] || 0);
             // graphData.datasets[2].data[monthIndex] += parseFloat(financialData["Net Worth"] || 0);
           });
         }
@@ -1374,8 +1467,8 @@ const Analytics = () => {
     transformedData.datasets.push({
       label: "Total Emissions",
       data: monthMap,
-      backgroundColor: "#4BA0B6",
-      borderColor: "#4BA0B6",
+      backgroundColor: "#fc8a6d",
+      borderColor: "#fc8a6d",
       borderWidth: 1,
     });
 
@@ -1420,8 +1513,8 @@ const Analytics = () => {
             {
               label: "Female",
               data: dataObj[entityType]?.Female ?? [],
-              backgroundColor: "#d72528",
-              borderColor: "#d72528",
+              backgroundColor: "#e4acc4",
+              borderColor: "#e4acc4",
               borderWidth: 1,
             },
             {
@@ -1474,8 +1567,8 @@ const Analytics = () => {
             {
               label: "Female",
               data: dataObj[entityType]?.Female ?? [],
-              backgroundColor: "#d72528",
-              borderColor: "#d72528",
+              backgroundColor: "#e4acc4",
+              borderColor: "#e4acc4",
               borderWidth: 1,
             },
             {
@@ -1527,8 +1620,8 @@ const Analytics = () => {
             {
               label: "Female",
               data: dataObj[entityType]?.Female ?? [],
-              backgroundColor: "#d72528",
-              borderColor: "#d72528",
+              backgroundColor: "#e4acc4",
+              borderColor: "#e4acc4",
               borderWidth: 1,
             },
             {
@@ -1564,7 +1657,16 @@ const Analytics = () => {
         var chartData = processDataForGraph(fetchedData);
         console.log(JSON.stringify(chartData), null, 2);
         monthData = chartData;
-        break
+        break;
+
+      case "Market Presence":
+        yearWiseData = mktPresenceTransform(fetchedData)
+        console.log("che", fetchedData)
+        var chartData = processDataForMktPresence(fetchedData);
+        console.log(JSON.stringify(chartData), null, 2);
+        monthData = chartData;
+        break;
+
       case "Training and Edu":
         yearWiseData = transformBubbleChartData(fetchedData)
         if (year) monthData = transformBubbleChartDataByMonth(fetchedData, year)
@@ -1647,8 +1749,8 @@ const Analytics = () => {
             {
               label: "Landfilled",
               data: dataObj[entityType]?.Landfilled ?? [],
-              backgroundColor: "#d72528",
-              borderColor: "#d72528",
+              backgroundColor: "#e4acc4",
+              borderColor: "#e4acc4",
               borderWidth: 1,
             },
             {
@@ -1773,6 +1875,7 @@ const Analytics = () => {
             {module == "CHS" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
             {module == "Social Benefits" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
             {module == "Eco. Performance" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Market Presence" && <SocialGraph data={yearData} setYear={setYear} />}
             {module == "Waste Disposal" && <SocialGraph data={yearData} setYear={setYear} />}
             {module == "Training and Edu" && <BubbleChart data={yearData} xLabel={"Years"} setYear={setYear} />}
             {module == "OH and S" && <BubbleChart data={yearData} xLabel={"Years"} setYear={setYear} />}
@@ -1830,6 +1933,7 @@ const Analytics = () => {
           {module == "CHS" && <SocialGraph data={monthWiseData} stacked={false} />}
           {module == "Social Benefits" && <SocialGraph data={monthWiseData} stacked={false} />}
           {module == "Eco. Performance" && <SocialGraph data={monthWiseData} />}
+          {module == "Market Presence" && <SocialGraph data={monthWiseData} />}
           {module == "Training and Edu" && <BubbleChart data={monthWiseData} xLabel={"Months"} />}
           {module == "OH and S" && <BubbleChart data={monthWiseData} xLabel={"Months"} />}
         </div>

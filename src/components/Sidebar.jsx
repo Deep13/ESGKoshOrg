@@ -68,7 +68,7 @@ export default function Sidebar({ onRaiseIncident }) {
       ],
     "Social":["Employment","Retention","OH and S","Training and Edu","Child Labor","Customer Privacy",
       "Mktg and Labelling","CHS","Social Benefits"] ,
-      "Governance":["Entity","Eco. Performance"],
+      "Governance":["Entity","Eco. Performance","Market Presence"],
       
   }
   console.log("Sheet data",sheets)

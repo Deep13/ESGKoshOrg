@@ -183,6 +183,7 @@ const Fuels = () => {
     let employmentEmissions = { EmploymentType: { All: { "Male": 0, "Female": 0, "Others": 0 } } };
     let retentionData = { EmployeeType: { All: { "Male": 0, "Female": 0, "Others": 0 } } };
     let ohsData = { InjuryType: {} }; // For OH and S module
+    let mktPresence={};
     //extra in waste disposal and buisness travel
     const checkValue = (value) => {
       return (value === undefined || value === "--") ? "Unknown" : value;
@@ -446,6 +447,11 @@ const Fuels = () => {
         return { totalEmissions: employmentEmissions, fullEmissions };
       }
 
+      case "Market Presence":{
+        mktPresence={"Markets served by the entity nationally":selectedVariant[6].Values,"Markets served by the entity internationally":selectedVariant[7].Values}
+        
+        return {totalEmissions:mktPresence}
+      }
 
 
       case "OH and S": {
@@ -591,7 +597,7 @@ const Fuels = () => {
 
       totalEmissions = selectedVariant.reduce((acc, obj) => {
         Object.keys(obj).forEach(key => {
-          if (!isNaN(obj[key])) {  // Only sum up numeric values
+          if (key !== "Program name" && !isNaN(obj[key])) {  // Skip "Program name"
             acc[key] = (acc[key] || 0) + Number(obj[key]);
           }
         });
@@ -14979,6 +14985,17 @@ const Fuels = () => {
       setModalText("Kindly Select Branch")
       return;
     }
+    const hasAmountFactorIssue = selectedVariant.some(obj => 
+      "Amount" in obj && "Factor" in obj && obj.Amount!="" && obj.Factor==0
+    );
+    
+    if (hasAmountFactorIssue) {
+      setShowModal(true);
+      setModalText("Amount is provided but Factor is missing");
+      return;
+    }
+
+    if(selectedVariant[''])
 
     if (dataStatus == 'Submitted') {
       setShowModal(true);
@@ -15052,6 +15069,7 @@ const Fuels = () => {
 
     }, { merge: true })
       .then(() => {
+        setDataStatus("Submitted")
         setDoc(doc(firestore, domain[1], "TransactionData", monthYear.month + "-" + monthYear.year, "Statistics"), {
           [branch]: {
             [checkKey(module)]: arrayUnion(module)
@@ -15463,7 +15481,7 @@ const Fuels = () => {
               </div>
               <div onClick={() => {
                 saveRecord()
-                setDataStatus("Submitted")
+                
               }} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
                 Save
               </div>

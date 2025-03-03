@@ -1,28 +1,28 @@
-import { Bar,Line } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const SocialGraph = ({ data={labels:[],datasets:[]}, stacked = false, setYear=null }) => {
+const SocialGraph = ({ data = { labels: [], datasets: [] }, stacked = false, setYear = null }) => {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display:true, position: "top" },
+      legend: { display: true, position: "top" },
     },
     scales: {
-      y: { 
+      y: {
         beginAtZero: true,
-        stacked: stacked, 
+        stacked: stacked,
       },
-      x: { 
+      x: {
         grid: { display: false },
-        stacked: stacked, 
+        stacked: stacked,
       },
     },
     elements: {
       bar: {
-        borderRadius: 10, 
+        borderRadius: 10,
       },
     },
     onClick: (event, elements) => {
@@ -38,15 +38,15 @@ const SocialGraph = ({ data={labels:[],datasets:[]}, stacked = false, setYear=nu
     ...data,
     datasets: data.datasets.map(dataset => ({
       ...dataset,
-      data: dataset.data.map(value => 
+      data: dataset.data.map(value =>
         value === null || isNaN(value) ? 0 : value // Replace null/NaN with 0
       ),
     })),
   };
-  
+
   console.log("Original Data:", data);
   console.log("Transformed Data:", cleanedData);
-  
+
   return (
     <div className="w-full h-[200px]">
       {/* <Bar data={data} options={options} /> */}

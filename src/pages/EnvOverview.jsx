@@ -1,6 +1,6 @@
-import flight from "../assets/flight.png"
-import road from "../assets/Road.png"
-import ship from "../assets/ship.png"
+import flight from "../assets/flight_orange.png"
+import road from "../assets/Road_green.png"
+import ship from "../assets/ship_blue.png"
 import tower from "../assets/tower.png"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -539,11 +539,11 @@ const EnvOverview = () => {
             </div>
           </div>
 
-          <div className="bg-white flex flex-col w-[26rem] h-[15rem] p-2 border rounded-xl bg-[#127a41] text-white">
+          <div className="flex flex-col w-[26rem] h-[15rem] p-2 border rounded-xl bg-[#fff] text-black">
             <div className="">
               EMISSION FROM BUISNESS TRAVEL
             </div>
-            <div className=" mt-3 flex items-center justify-between">
+            <div className=" mt-3 flex items-center justify-between text-black">
               <div className="flex flex-col justify-center items-center">
                 <div className="w-24 h-24">
                   <img src={flight} alt="flight-img"></img>
@@ -593,7 +593,7 @@ const EnvOverview = () => {
             <div className="flex mt-1 items-center">
               <div className=" text-slate-600">
                 <div className="">
-                  {filteredOverview?.["Elec heat cooling"]?.toFixed(2) || "NA"} kWh
+                  {filteredOverview?.["Elec heat cooling"]?.toFixed(2) || "NA"} kgCO2e
                 </div>
                 {/* <div className="">
                   CONSUMPTION<br/> value

@@ -1,4 +1,4 @@
-import seeding from '../assets/seeding.png';
+import seeding from '../assets/seeding_black.png';
 import social from '../assets/social.png';
 import governance from '../assets/governance.png';
 // import { FaArrowRight } from 'react-icons/fa';
@@ -6,21 +6,21 @@ import ProgressBar from '../components/ProgressBar';
 import RecentTicketsTable from '../components/RecentTicketsTable';
 import { useSidebar } from '../context/SidebarContext';
 import { useEffect } from 'react';
-import {getDoc, doc} from "firebase/firestore";
+import { getDoc, doc } from "firebase/firestore";
 import { firestore } from '../firebase';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const navigate =useNavigate();
-  const { expanded,userData,master,sheets,fullTotalPercentage,setFullTotalPercentage} = useSidebar();
-  
+  const navigate = useNavigate();
+  const { expanded, userData, master, sheets, fullTotalPercentage, setFullTotalPercentage } = useSidebar();
+
   const [avgEmissionsPercentage, setAvgEmissionsPercentage] = useState("");
   const [avgSocialPercentage, setAvgSocialPercentage] = useState("");
   const [avgGovernancePercentage, setAvgGovernancePercentage] = useState("");
- 
 
-  const calculateCompletion = (statistics, reports, branches)=> {
+
+  const calculateCompletion = (statistics, reports, branches) => {
     console.log("stats here", statistics, "and branch", branches)
     let result = {};
     let totalPercentage = 0;
@@ -108,54 +108,54 @@ const Dashboard = () => {
       avgGovernancePercentage
     };
   }
-  
-  console.log("user",userData)
-  
-  const getCalculatedPercentage=async(domain,monthYear)=>{ 
-    await getDoc(doc(firestore,domain[1], "TransactionData",monthYear.month+"-"+monthYear.year,"Statistics"))
-  .then((doc)=>{
-    if (doc.exists && doc.data()) {
-      var calculations = calculateCompletion(doc.data(), sheets, userData.branches);
-      
-            // Update state with calculated values
-      setFullTotalPercentage(calculations.fullTotalPercentage);
-      setAvgEmissionsPercentage(calculations.avgEmissionsPercentage);
-      setAvgSocialPercentage(calculations.avgSocialPercentage);
-      setAvgGovernancePercentage(calculations.avgGovernancePercentage);
-      
 
-      //console.log("Statistics",result, fullTotalPercentage, avgEmissionsPercentage, avgSocialPercentage, avgGovernancePercentage);
-    } else {
-      // console.log("error")
-      setFullTotalPercentage("0.00%");
-      setAvgEmissionsPercentage("0.00%");
-      setAvgSocialPercentage("0.00%");
-      setAvgGovernancePercentage("0.00%");
-      
-    }
-    
-      // setSheets(doc);
-                               
-             
-  
-})
-  .catch((error)=>{
-    console.log(error);
-    navigate('/login');
-  })
+  console.log("user", userData)
+
+  const getCalculatedPercentage = async (domain, monthYear) => {
+    await getDoc(doc(firestore, domain[1], "TransactionData", monthYear.month + "-" + monthYear.year, "Statistics"))
+      .then((doc) => {
+        if (doc.exists && doc.data()) {
+          var calculations = calculateCompletion(doc.data(), sheets, userData.branches);
+
+          // Update state with calculated values
+          setFullTotalPercentage(calculations.fullTotalPercentage);
+          setAvgEmissionsPercentage(calculations.avgEmissionsPercentage);
+          setAvgSocialPercentage(calculations.avgSocialPercentage);
+          setAvgGovernancePercentage(calculations.avgGovernancePercentage);
+
+
+          //console.log("Statistics",result, fullTotalPercentage, avgEmissionsPercentage, avgSocialPercentage, avgGovernancePercentage);
+        } else {
+          // console.log("error")
+          setFullTotalPercentage("0.00%");
+          setAvgEmissionsPercentage("0.00%");
+          setAvgSocialPercentage("0.00%");
+          setAvgGovernancePercentage("0.00%");
+
+        }
+
+        // setSheets(doc);
+
+
+
+      })
+      .catch((error) => {
+        console.log(error);
+        navigate('/login');
+      })
   }
 
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     var domain = userData?.username.split("@");
     var monthYear = master?.currentReportingCycle;
-    if(domain && monthYear && sheets){
-      getCalculatedPercentage(domain,monthYear)
+    if (domain && monthYear && sheets) {
+      getCalculatedPercentage(domain, monthYear)
     }
-  },[userData,master,sheets])
+  }, [userData, master, sheets])
 
 
-  console.log("avg ",avgEmissionsPercentage)
+  console.log("avg ", avgEmissionsPercentage)
 
   return (
     <div className="p-5 w-full h-screen bg-slate-100">
@@ -164,47 +164,37 @@ const Dashboard = () => {
         <div className={`flex flex-wrap gap-3 ${expanded ? 'justify-cenetr' : 'justify-between'}`}>
           {/* Card 1 */}
           <div
-            className={`${
-              expanded ? 'w-full sm:w-[19.5rem]' : 'w-full sm:w-[20rem]'
-            } h-[11rem] bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl text-white p-5`}
+            className={`${expanded ? 'w-full sm:w-[19.5rem]' : 'w-full sm:w-[20rem]'
+              } h-[11rem] border rounded-xl text-white p-5  bg-gradient-to-r from-[#fff] to-[#fff] hover:from-[#3d9f86]   hover:to-[#29C472]`}
           >
             <div className="flex justify-between items-center">
-              <span className="text-xl font-semibold">Environment</span>
+              <span className="text-xl font-semibold text-[#000]">Environment</span>
               <div>
                 <img src={seeding} alt="seeding icon" />
               </div>
             </div>
-            <div className="mt-2 text-[2.5rem]">
-              {avgEmissionsPercentage?
-              (avgEmissionsPercentage.split('.')[0]+"%"):
-              ("_")
+            <div className="mt-2 text-[2.5rem] text-[#000]">
+              {avgEmissionsPercentage ?
+                (avgEmissionsPercentage.split('.')[0] + "%") :
+                ("_")
               }
             </div>
-            {/* <div
-              className={`${
-              expanded ? 'w-full sm:w-[18rem]' : 'w-full sm:w-[20rem]'
-            } flex justify-between items-center rounded-b-[1rem] border-t bg-gradient-to-r from-[#30a36a] to-[#29C472] p-3 ml-[-1.25rem]`}
-            >
-              <span>Enter Reports</span>
-              <FaArrowRight />
-            </div> */}
           </div>
 
           {/* Card 2 */}
           <div
-            className={`${
-              expanded ? 'w-full sm:w-[19.5rem]' : 'w-full sm:w-[20rem]'
-            } h-[11rem] border rounded-xl p-5 bg-white`}
+            className={`${expanded ? 'w-full sm:w-[19.5rem]' : 'w-full sm:w-[20rem]'
+              } h-[11rem] border rounded-xl p-5 bg-gradient-to-r from-[#fff] to-[#fff] hover:from-[#3d9f86]   hover:to-[#29C472]`}
           >
             <div className="flex justify-between items-center">
-              <span className="text-xl font-semibold text-[#718EBF]">Social</span>
+              <span className="text-xl font-semibold text-[#000]">Social</span>
               <div>
                 <img src={social} alt="social icon" />
               </div>
             </div>
             <div className="mt-2 text-[2.5rem]">
-              {avgSocialPercentage?(
-                avgSocialPercentage.split('.')[0]+"%"):
+              {avgSocialPercentage ? (
+                avgSocialPercentage.split('.')[0] + "%") :
                 ("_")
               }
             </div>
@@ -218,23 +208,22 @@ const Dashboard = () => {
 
           {/* Card 3 */}
           <div
-            className={`${
-              expanded ? 'w-full sm:w-[19.5rem]' : 'w-full sm:w-[20rem]'
-            } h-[11rem] border rounded-xl p-5 bg-white`}
+            className={`${expanded ? 'w-full sm:w-[19.5rem]' : 'w-full sm:w-[20rem]'
+              } h-[11rem] border rounded-xl p-5 bg-gradient-to-r from-[#fff] to-[#fff] hover:from-[#3d9f86]   hover:to-[#29C472]`}
           >
             <div className="flex justify-between items-center">
-              <span className="text-xl font-semibold text-[#718EBF]">Governance</span>
+              <span className="text-xl font-semibold text-[#000]">Governance</span>
               <div>
                 <img src={governance} alt="governance icon" />
               </div>
             </div>
             <div className="mt-2 text-[2.5rem]">
-              {avgGovernancePercentage?(
-                avgGovernancePercentage.split('.')[0]+"%"
-              ):(
+              {avgGovernancePercentage ? (
+                avgGovernancePercentage.split('.')[0] + "%"
+              ) : (
                 "_"
               )
-            }
+              }
             </div>
             {/* <div
               className={`flex justify-between items-center rounded-b-[1rem] border-t text-[#718EBF] p-3 ml-[-1.25rem]`}
@@ -259,14 +248,14 @@ const Dashboard = () => {
         <div className={`${expanded ? 'w-full sm:w-[60%]' : 'w-full sm:w-[63%]'} rounded-lg`}>
           <div className='flex justify-between items-center pr-1'>
             <div className="mb-3 font-semibold">Recent Tickets</div>
-            <button onClick={()=>{
+            <button onClick={() => {
               navigate('/support')
               setPage('support')
-              }} className='bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-2 py-1 mb-2 rounded-lg'>
+            }} className='bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-2 py-1 mb-2 rounded-lg'>
               View All
             </button>
           </div>
-          
+
           <div className="bg-white h-[20rem] w-full rounded-lg">
             <RecentTicketsTable />
           </div>

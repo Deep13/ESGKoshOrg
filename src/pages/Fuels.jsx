@@ -15294,11 +15294,29 @@ const Fuels = () => {
 
         // Convert worksheet to JSON
         const data = XLSX.utils.sheet_to_json(worksheet);
+        const headerData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        const headerDataRow = headerData[0];
+        var headerColumn = getColumns(module)?.map(item => item.title);
+        if (headerColumn && headerDataRow) {
 
-        // Set the data to your table
-        console.log("func is running", data)
-        setSelectedVariant([...data]);
-        setTempSelectedVariant([...data]);
+          const isExactMatch = JSON.stringify(headerDataRow) === JSON.stringify(headerColumn);
+          if (isExactMatch) {
+            // Set the data to your table
+            console.log("func is running", data)
+            setSelectedVariant([...data]);
+            setTempSelectedVariant([...data]);
+          }
+          else {
+            setShowModal(true);
+            setModalText('The file you uploaded is not compatible. Kindly download the correct template and upload again.');
+          }
+        }
+        else {
+          setShowModal(true);
+          setModalText('The file you uploaded is not compatible. Kindly download the correct template and upload again.');
+        }
+
+
       };
       reader.readAsBinaryString(file);
     }
@@ -15415,58 +15433,82 @@ const Fuels = () => {
               Create Variants
             </div>}
         </div>
-        {(tab == 'recorded' && master?.currentReportingCycle?.status) ?
-          <div className="flex gap-10">
-            <div onClick={() => saveDraft()} className="border-2 rounded-xl px-3 py-2 cursor-pointer">
-              Save as Draft
-            </div>
-            <div onClick={() => {
-              saveRecord()
-              setDataStatus("Submitted")
-            }} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
-              Save
-            </div>
-          </div>
-          :
-          <>
-            {(tab === 'variant' && userData?.role == 'Admin') ? (
-              <div
-                onClick={() => deleteVariant()}
-                className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer"
+        <div className="flex items-center justify-end gap-5 rounded-lg">
+          {tempSelectedVariant &&
+            <div className="flex items-center justify-end gap-5 rounded-lg">
+              <div className="flex items-center">
+                <label className="flex items-center cursor-pointer bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-3 py-2 rounded-lg ">
+                  <span className="mx-auto">Upload Excel</span>
+                  <input
+                    type="file"
+                    accept=".xls, .xlsx"
+                    className="hidden"
+                    onChange={(event) => handleUpload(event)}
+                  />
+                </label>
+              </div>
+
+              <button
+                className="flex items-center bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-3 py-2 rounded-lg "
+                onClick={() => downloadTableAsExcel()}
               >
-                Delete
+                Download Excel
+              </button>
+            </div>
+          }
+          {(tab == 'recorded' && master?.currentReportingCycle?.status) ?
+            <div className="flex gap-5">
+              <div onClick={() => saveDraft()} className="border-2 rounded-xl px-3 py-2 cursor-pointer">
+                Save as Draft
               </div>
-            ) : tab === 'create' ? (
-
-              <div className="flex gap-4 mt-4">
+              <div onClick={() => {
+                saveRecord()
+                setDataStatus("Submitted")
+              }} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
+                Save
+              </div>
+            </div>
+            :
+            <>
+              {(tab === 'variant' && userData?.role == 'Admin') ? (
                 <div
-                  onClick={() => onSaveVariant()}
-                  className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer"
+                  onClick={() => deleteVariant()}
+                  className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#901616] to-[#fb6060] py-2 cursor-pointer"
                 >
-                  Save
+                  Delete
                 </div>
+              ) : tab === 'create' ? (
 
-                <div
-                  onClick={() => {
-                    selectedIndexes.current = [];
-                    document.querySelectorAll(".table-checkbox").forEach((checkbox) => {
-                      checkbox.checked = false;
-                    });
-                  }}
-                  className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#d9534f] to-[#c9302c]
+                <div className="flex gap-4 mt-4">
+                  <div
+                    onClick={() => onSaveVariant()}
+                    className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer"
+                  >
+                    Save
+                  </div>
+
+                  <div
+                    onClick={() => {
+                      selectedIndexes.current = [];
+                      document.querySelectorAll(".table-checkbox").forEach((checkbox) => {
+                        checkbox.checked = false;
+                      });
+                    }}
+                    className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#d9534f] to-[#c9302c]
  py-2 cursor-pointer"
-                >
-                  Clear
+                  >
+                    Clear
+                  </div>
                 </div>
-              </div>
 
 
-            ) : (
-              <div></div>
-            )}
+              ) : (
+                <div></div>
+              )}
 
-          </>
-        }
+            </>
+          }
+        </div>
       </div>
 
       {tab != "create" ?
@@ -15526,26 +15568,7 @@ const Fuels = () => {
 
               </div>
 
-              {/* <div className="flex items-center justify-end gap-5  mt-2 rounded-lg">
-  <div className="flex items-center">
-    <label className="flex items-center cursor-pointer bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-3 py-2 rounded-lg ">
-      <span className="mx-auto">Upload Excel</span>
-      <input
-        type="file"
-        accept=".xls, .xlsx"
-        className="hidden"
-        onChange={(event) => handleUpload(event)}
-      />
-    </label>
-  </div>
 
-  <button
-    className="flex items-center bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-3 py-2 rounded-lg "
-    onClick={() => downloadTableAsExcel()}
-  >
-    Download Excel
-  </button>
-</div> */}
 
 
               {(module == "Flight" || module == "Accommodation" || module == "Child Labor") &&

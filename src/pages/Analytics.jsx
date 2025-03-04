@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { firestore } from '../firebase';
 import { getDocs, collection, query, where } from "firebase/firestore";
 import LineChart from "../components/LineChart";
-import SocialGraph from "../components/SocialGraph";
+// import SocialGraph from "../components/SocialGraph";
 import BubbleChart from "../components/BubbleChart";
 import { useSidebar } from "../context/SidebarContext";
 import Spinner from '../components/Spinner';
+import BarChartApex from '../components/BarChartApex';
+import BarStacked from '../components/BarStacked';
 
 const Analytics = () => {
   const { module, userData, master } = useSidebar();
@@ -24,24 +26,25 @@ const Analytics = () => {
   console.log(module);
 
   useEffect(() => {
-    setYear(null)
+    setYear(null) 
     setMonthWiseData({ labels: [], datasets: [] })
   }, [module])
 
   function transformDataForGraph(backendData, selectedYear) {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const colorMap = {
-      "No. of complaints received": "#4ba9dd",
-      "No. of complaints solved": "#ffae55",
-      "No. of non-compliance Incidents": "#4ba9dd",
-      "No. of times regulation violated": "#ffae55",
-      "Customers Impacted": "#ffae55",
-      "No. of Benefeciaries": "#4ba9dd",
-      "Expenditure": "#ffae55",
-    }
+        "No. of complaints received": "#4ba9dd",
+        "No. of complaints solved": "#ffae55",
+        "No. of non-compliance Incidents": "#4ba9dd",
+        "No. of times regulation violated": "#ffae55",
+        "Customers Impacted": "#ffae55",
+        "No. of Beneficiaries": "#4ba9dd",
+        "Expenditure": "#ffae55"
+    };
+
     const monthWiseData = {
-      labels: months,
-      datasets: []
+        labels: months,
+        datasets: []
     };
 
     // Find the entry for the selected year
@@ -51,46 +54,55 @@ const Analytics = () => {
     const metricsMap = {}; // Store data for each metric
 
     Object.entries(yearData).forEach(([key, monthData]) => {
-      if (key === "year" || key === "type") return;
+        if (key === "year" || key === "type") return;
 
-      const monthIndex = parseInt(key, 10) - 1; // Convert month number to index
-      if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) return;
+        const monthIndex = parseInt(key, 10) - 1; // Convert month number to index
+        if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) return;
 
-      Object.values(monthData).forEach((locationData) => {
-        Object.entries(locationData).forEach(([metric, value]) => {
-          if (!metricsMap[metric]) {
-            metricsMap[metric] = new Array(12).fill(0);
-          }
-          metricsMap[metric][monthIndex] += Number(value) || 0;
+        Object.values(monthData).forEach((locationData) => {
+            Object.entries(locationData).forEach(([metric, value]) => {
+                // Skip non-numeric fields like "Program name"
+                if (!(metric in colorMap)) return;
+
+                if (!metricsMap[metric]) {
+                    metricsMap[metric] = new Array(12).fill(0);
+                }
+
+                // Convert value to a valid number
+                const numValue = typeof value === "number" ? value : Number(value) || 0;
+
+                metricsMap[metric][monthIndex] += numValue;
+            });
         });
-      });
     });
 
     Object.entries(metricsMap).forEach(([metric, data]) => {
-      monthWiseData.datasets.push({
-        label: metric,
-        data: data,
-        backgroundColor: colorMap[metric],
-        borderColor: colorMap[metric],
-        borderWidth: 1,
-      });
+        monthWiseData.datasets.push({
+            label: metric,
+            data: data,
+            backgroundColor: colorMap[metric],
+            borderColor: colorMap[metric],
+            borderWidth: 1,
+        });
     });
 
     return monthWiseData;
-  }
+}
+
   function transformDataForGraphByYear(backendData) {
     const colorMap = {
-      "No. of complaints received": "#4ba9dd",
-      "No. of complaints solved": "#ffae55",
-      "No. of non-compliance Incidents": "#4ba9dd",
-      "No. of times regulation violated": "#ffae55",
-      "Customers Impacted": "#ffae55",
-      "No. of Beneficiaries": "#4ba9dd",
-      "Expenditure": "#ffae55",
-    }
+        "No. of complaints received": "#4ba9dd",
+        "No. of complaints solved": "#ffae55",
+        "No. of non-compliance Incidents": "#4ba9dd",
+        "No. of times regulation violated": "#ffae55",
+        "Customers Impacted": "#ffae55",
+        "No. of Beneficiaries": "#4ba9dd",
+        "Expenditure": "#ffae55"
+    };
+
     const yearWiseData = {
-      labels: [],
-      datasets: []
+        labels: [],
+        datasets: []
     };
 
     const metricsMap = {}; // Store metric data grouped by year
@@ -100,41 +112,46 @@ const Analytics = () => {
     yearWiseData.labels = uniqueYears;
 
     backendData?.forEach(yearData => {
-      const year = yearData.year;
-      const yearIndex = yearWiseData.labels.indexOf(year);
+        const year = yearData.year;
+        const yearIndex = yearWiseData.labels.indexOf(year);
 
-      Object.entries(yearData).forEach(([key, monthData]) => {
-        if (key === "year" || key === "type") return;
+        Object.entries(yearData).forEach(([key, monthData]) => {
+            if (key === "year" || key === "type") return; // Skip metadata fields
 
-        Object.values(monthData).forEach(locationData => {
-          Object.entries(locationData).forEach(([rawMetric, value]) => {
-            const metric = rawMetric; // Normalize metric names
+            Object.values(monthData).forEach(locationData => {
+                Object.entries(locationData).forEach(([metric, value]) => {
+                    // Skip non-numeric fields like "Program name"
+                    if (!(metric in colorMap)) return;
 
-            if (!metricsMap[metric]) {
-              // Ensure all datasets align with all years
-              metricsMap[metric] = new Array(uniqueYears.length).fill(0);
-            }
+                    // Ensure dataset alignment
+                    if (!metricsMap[metric]) {
+                        metricsMap[metric] = new Array(uniqueYears.length).fill(0);
+                    }
 
-            // Assign correct year index
-            metricsMap[metric][yearIndex] += Number(value) || 0;
-          });
+                    // Convert value to a valid number
+                    const numValue = typeof value === "number" ? value : Number(value) || 0;
+
+                    // Assign correct year index
+                    metricsMap[metric][yearIndex] += numValue;
+                });
+            });
         });
-      });
     });
 
     // Convert metricsMap into dataset format
     Object.entries(metricsMap).forEach(([metric, data]) => {
-      yearWiseData.datasets.push({
-        label: metric,
-        data: data, // Aligned with sorted years
-        backgroundColor: colorMap[metric],
-        borderColor: colorMap[metric],
-        borderWidth: 1
-      });
+        yearWiseData.datasets.push({
+            label: metric,
+            data: data, // Aligned with sorted years
+            backgroundColor: colorMap[metric],
+            borderColor: colorMap[metric],
+            borderWidth: 1
+        });
     });
 
     return yearWiseData;
-  }
+}
+
 
 
   function entityTransform(inputData) {
@@ -629,6 +646,61 @@ const Analytics = () => {
     return chartData;
   };
 
+  const OHSTransform = (fetchedData) => {
+    // Initialize the chart data structure
+    const chartData = {
+      labels: [],
+      datasets: [
+        {
+          label: "Incidents",
+          data: [],
+          backgroundColor: "#4ba9dd",
+          borderColor: "#4ba9dd",
+          borderWidth: 1,
+        },
+        {
+          label: "Headcount",
+          data: [],
+          backgroundColor: "#ffae55",
+          borderColor: "#ffae55",
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    // Loop through fetched data entries
+    fetchedData?.forEach((yearData) => {
+      const year = yearData.year; // Extract year
+      if (!year) return; // Skip if year is missing
+
+      let totalTurnover = 0;
+      let totalRevenue = 0;
+
+      // Loop through the regions inside each year (10, 11, 01, etc.)
+      Object.keys(yearData).forEach((regionKey) => {
+        if (regionKey === "year" || regionKey === "type") return; // Skip non-region keys
+
+        const region = yearData[regionKey];
+
+        // Process each location inside the region
+        Object.values(region).forEach((regionData) => {
+          if (regionData) {
+            totalTurnover += parseFloat(regionData["Incidents"]) || 0;
+            totalRevenue += parseFloat(regionData["Headcount"]) || 0;
+          }
+        });
+      });
+
+      // Push year and aggregated values to chart data
+      chartData.labels.push(year);
+      chartData.datasets[0].data.push(totalTurnover);
+      chartData.datasets[1].data.push(totalRevenue);
+    });
+
+    console.log(chartData);
+    return chartData;
+  };
+
 
   const transformBubbleChartData = (backendDataArray) => {
     const bubbleData = { datasets: [] };
@@ -758,8 +830,8 @@ const Analytics = () => {
             // Add data point
             dataset.data.push({
               x: year, // Year on x-axis
-              y: avgHours, // Avg hours on y-axis
-              r: avgHours, // Scale head count for bubble size
+              y: headCount, // Avg hours on y-axis
+              r: headCount, // Scale head count for bubble size
             });
           });
         });
@@ -944,7 +1016,7 @@ const Analytics = () => {
 
     // Convert metrics map into datasets dynamically
     Object.entries(metricsMap).forEach(([fuelType, data], index) => {
-      const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+      const colors = ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"]
 
       transformedData.datasets.push({
         label: fuelType,
@@ -957,6 +1029,126 @@ const Analytics = () => {
 
     return transformedData;
   }
+
+  function OHSDataForGraphByYear(backendData) {
+    const transformedData = {
+        labels: [],
+        datasets: [],
+    };
+
+    const metricsMap = {
+        "Incidents": [], 
+        "HeadCount": []
+    };
+
+    // Extract unique years and sort them before processing
+    const uniqueYears = [...new Set(backendData?.map(entry => entry.year))].sort();
+    transformedData.labels = uniqueYears;
+
+    // Initialize metricsMap with zero arrays for each year
+    uniqueYears.forEach(() => {
+        metricsMap["Incidents"].push(0);
+        metricsMap["HeadCount"].push(0);
+    });
+
+    backendData?.forEach(yearEntry => {
+        const year = yearEntry.year;
+        const yearIndex = transformedData.labels.indexOf(year);
+
+        Object.entries(yearEntry).forEach(([key, monthData]) => {
+            if (key === "year" || key === "type") return;
+
+            Object.values(monthData).forEach(locationData => {
+                if (!locationData.InjuryType) return;
+
+                Object.values(locationData.InjuryType).forEach(injury => {
+                    metricsMap["Incidents"][yearIndex] += injury.Incidents || 0;
+                    metricsMap["HeadCount"][yearIndex] += injury.HeadCount || 0;
+                });
+            });
+        });
+    });
+
+    // Assign colors for each dataset
+    const colors = { 
+        "Incidents": "#f26c35", 
+        "HeadCount": "#109ad8" 
+    };
+
+    // Convert metricsMap into datasets
+    Object.entries(metricsMap).forEach(([label, data]) => {
+        transformedData.datasets.push({
+            label: label,
+            data: data,
+            backgroundColor: colors[label],
+            borderColor: colors[label],
+            borderWidth: 1,
+        });
+    });
+
+    return transformedData;
+}
+
+function TrainingDataForGraphByYear(backendData) {
+  const transformedData = {
+      labels: [],
+      datasets: []
+  };
+
+  const metricsMap = {
+      "Head Count": [],
+      "Avg Hours per batch": []
+  };
+
+  // Extract unique years and sort them
+  const uniqueYears = [...new Set(backendData?.map(entry => entry.year))].sort();
+  transformedData.labels = uniqueYears;
+
+  // Initialize metricsMap with zero arrays for each year
+  uniqueYears.forEach(() => {
+      metricsMap["Head Count"].push(0);
+      metricsMap["Avg Hours per batch"].push(0);
+  });
+
+  backendData?.forEach(yearEntry => {
+      const year = yearEntry.year;
+      const yearIndex = transformedData.labels.indexOf(year);
+
+      Object.entries(yearEntry).forEach(([key, monthData]) => {
+          if (key === "year" || key === "type") return;
+
+          Object.values(monthData).forEach(locationData => {
+              if (!locationData.Segment) return; // Ensure "Segment" exists
+
+              Object.values(locationData.Segment).forEach(segment => {
+                  metricsMap["Head Count"][yearIndex] += segment["Head Count"] || 0;
+                  metricsMap["Avg Hours per batch"][yearIndex] += segment["Avg Hours per batch"] || 0;
+              });
+          });
+      });
+  });
+
+  // Assign colors for each dataset
+  const colors = { 
+      "Head Count": "#109ad8", 
+      "Avg Hours per batch": "#f26c35" 
+  };
+
+  // Convert metricsMap into datasets
+  Object.entries(metricsMap).forEach(([label, data]) => {
+      transformedData.datasets.push({
+          label: label,
+          data: data,
+          backgroundColor: colors[label],
+          borderColor: colors[label],
+          borderWidth: 1,
+      });
+  });
+
+  return transformedData;
+}
+
+
 
   function transformEnvDataForGraphByMonth(backendData, selectedYear) {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -993,7 +1185,7 @@ const Analytics = () => {
 
     // Convert metrics map into datasets dynamically
     Object.entries(metricsMap).forEach(([fuelType, data], index) => {
-      const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+      const colors = ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"]
       transformedData.datasets.push({
         label: fuelType,
         data: data,
@@ -1005,6 +1197,113 @@ const Analytics = () => {
 
     return transformedData;
   }
+
+  function OHSDataForGraphByMonth(backendData, selectedYear) {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    const transformedData = {
+        labels: months,
+        datasets: []
+    };
+
+    const metricsMap = {
+        "Incidents": new Array(12).fill(0),
+        "HeadCount": new Array(12).fill(0)
+    };
+
+    // Find the entry for the selected year
+    const yearData = backendData.find(entry => entry.year == selectedYear);
+    if (!yearData) return transformedData; // Return empty if year not found
+
+    Object.entries(yearData).forEach(([monthKey, monthData]) => {
+        if (monthKey === "year" || monthKey === "type") return;
+
+        const monthIndex = parseInt(monthKey, 10) - 1; // Convert month number to index
+        if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) return;
+
+        Object.values(monthData).forEach(locationData => {
+            if (!locationData.InjuryType) return; // Ensure "InjuryType" exists
+
+            Object.values(locationData.InjuryType).forEach(injury => {
+                metricsMap["Incidents"][monthIndex] += injury.Incidents || 0;
+                metricsMap["HeadCount"][monthIndex] += injury.HeadCount || 0;
+            });
+        });
+    });
+
+    // Define a color palette
+    const colors = {
+        "Incidents": "#f26c35",
+        "HeadCount": "#109ad8"
+    };
+
+    // Convert metrics map into datasets dynamically
+    Object.entries(metricsMap).forEach(([label, data]) => {
+        transformedData.datasets.push({
+            label: label,
+            data: data,
+            backgroundColor: colors[label],
+            borderColor: colors[label],
+            borderWidth: 1,
+        });
+    });
+
+    return transformedData;
+}
+
+function TrainingDataForGraphByMonth(backendData, selectedYear) {
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const transformedData = {
+      labels: months,
+      datasets: []
+  };
+
+  const metricsMap = {
+      "Head Count": new Array(12).fill(0),
+      "Financial Investment": new Array(12).fill(0)
+  };
+
+  // Find the entry for the selected year
+  const yearData = backendData.find(entry => entry.year == selectedYear);
+  if (!yearData) return transformedData; // Return empty if the year is not found
+
+  Object.entries(yearData).forEach(([monthKey, monthData]) => {
+      if (monthKey === "year" || monthKey === "type") return;
+
+      const monthIndex = parseInt(monthKey, 10) - 1; // Convert month number to index
+      if (isNaN(monthIndex) || monthIndex < 0 || monthIndex >= 12) return;
+
+      Object.values(monthData).forEach(locationData => {
+          if (!locationData.Segment) return; // Ensure "Segment" exists
+
+          Object.values(locationData.Segment).forEach(segment => {
+              metricsMap["Head Count"][monthIndex] += segment["Head Count"] || 0;
+              metricsMap["Financial Investment"][monthIndex] += segment["Financial investment"] || 0;
+          });
+      });
+  });
+
+  // Define colors
+  const colors = {
+      "Head Count": "#109ad8",
+      "Financial Investment": "#f26c35"
+  };
+
+  // Convert metricsMap into datasets dynamically
+  Object.entries(metricsMap).forEach(([label, data]) => {
+      transformedData.datasets.push({
+          label: label,
+          data: data,
+          backgroundColor: colors[label],
+          borderColor: colors[label],
+          borderWidth: 1,
+      });
+  });
+
+  return transformedData;
+}
+
 
   function transformVehicleDataForGraphByYear(backendData) {
     const transformedData = {
@@ -1043,7 +1342,7 @@ const Analytics = () => {
 
     // Convert metrics map into datasets dynamically
     Object.entries(metricsMap).forEach(([fuelType, data], index) => {
-      const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+      const colors = ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"]
 
       transformedData.datasets.push({
         label: fuelType,
@@ -1092,7 +1391,7 @@ const Analytics = () => {
 
     // Convert metrics map into datasets dynamically
     Object.entries(metricsMap).forEach(([fuelType, data], index) => {
-      const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+      const colors = ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"]
       transformedData.datasets.push({
         label: fuelType,
         data: data,
@@ -1189,7 +1488,7 @@ const Analytics = () => {
 
     // Convert metrics map into datasets dynamically
     Object.entries(metricsMap).forEach(([fuelType, data], index) => {
-      const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+      const colors = ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"]
 
       transformedData.datasets.push({
         label: fuelType,
@@ -1238,7 +1537,7 @@ const Analytics = () => {
 
     // Convert metrics map into datasets dynamically
     Object.entries(metricsMap).forEach(([fuelType, data], index) => {
-      const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+      const colors = ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"]
       transformedData.datasets.push({
         label: fuelType,
         data: data,
@@ -1288,7 +1587,7 @@ const Analytics = () => {
 
     // Convert metrics map into datasets dynamically
     Object.entries(metricsMap).forEach(([fuelType, data], index) => {
-      const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+      const colors = ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"]
 
       transformedData.datasets.push({
         label: fuelType,
@@ -1390,7 +1689,7 @@ const Analytics = () => {
 
     // Convert metrics map into datasets dynamically
     Object.entries(metricsMap).forEach(([fuelType, data], index) => {
-      const colors = ["#4BA0B6", "#FF6384", "#36A2EB", "#FFCE56", "#8BC34A"]; // Define a color palette
+      const colors = ["#109ad8", "#45bf34", "#f26c35", "#4bc0c0", "#9966ff", "#ff9f40", "#fc8a6d", "#304dff", "#bbdbeb", "#e4acc4", "#ffd0a6", "#9cc079"]
       transformedData.datasets.push({
         label: fuelType,
         data: data,
@@ -1479,6 +1778,44 @@ const Analytics = () => {
     return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
   }
 
+  function transformDataForApexCharts(data) {
+    const transformedData = {};
+
+    data.forEach(entry => {
+        const year = entry.year;
+        if (!transformedData[year]) {
+            transformedData[year] = { incidents: 0, headcount: 0 };
+        }
+
+        Object.values(entry).forEach(region => {
+            if (typeof region === "object") {
+                Object.values(region).forEach(location => {
+                    if (location.InjuryType) {
+                        Object.values(location.InjuryType).forEach(injury => {
+                            transformedData[year].incidents += injury.Incidents || 0;
+                            transformedData[year].headcount += injury.HeadCount || 0;
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    return {
+        categories: Object.keys(transformedData),
+        series: [
+            {
+                name: "Incidents",
+                data: Object.values(transformedData).map(entry => entry.incidents)
+            },
+            {
+                name: "Headcount",
+                data: Object.values(transformedData).map(entry => entry.headcount)
+            }
+        ]
+    };
+}
+
   const updateData = () => {
 
     setFilterList(null)
@@ -1506,8 +1843,8 @@ const Analytics = () => {
             {
               label: "Male",
               data: dataObj[entityType]?.Male ?? [],
-              backgroundColor: "#2586d6",
-              borderColor: "#2586d6",
+              backgroundColor: "#109ad8",
+              borderColor: "#109ad8",
               borderWidth: 1,
             },
             {
@@ -1520,8 +1857,8 @@ const Analytics = () => {
             {
               label: "Others",
               data: dataObj[entityType]?.Others ?? [],
-              backgroundColor: "#8b24d7",
-              borderColor: "#8b24d7",
+              backgroundColor: "#f26c35",
+              borderColor: "#f26c35",
               borderWidth: 1,
             },
           ],
@@ -1532,13 +1869,15 @@ const Analytics = () => {
           console.log("Processing month-wise data...");
           let data = monthEntityTransform(fetchedData, year);
           setFilterList(data.entityTypes)
+          let colorMap={"Male":"#109ad8", "Others":"#f26c35", "Female":"#e4acc4"};
+          
           monthData = {
             labels: data.labels,
             datasets: Object.keys(data.dataObj[entityType] || {}).map(gender => ({
               label: gender,
               data: data.dataObj[entityType]?.[gender] ?? [],
-              backgroundColor: getRandomColor(),
-              borderColor: getRandomColor(),
+              backgroundColor:colorMap[gender] ,
+              borderColor:colorMap[gender],
               borderWidth: 1,
             }))
           }
@@ -1668,8 +2007,8 @@ const Analytics = () => {
         break;
 
       case "Training and Edu":
-        yearWiseData = transformBubbleChartData(fetchedData)
-        if (year) monthData = transformBubbleChartDataByMonth(fetchedData, year)
+        yearWiseData = TrainingDataForGraphByYear(fetchedData)
+        if (year) monthData = TrainingDataForGraphByMonth(fetchedData, year)
         console.log("ey", yearWiseData)
         break
 
@@ -1689,6 +2028,11 @@ const Analytics = () => {
         yearWiseData = transformEnvDataForGraphByYear(fetchedData)
         console.log("C", yearWiseData)
         if (year) monthData = transformEnvDataForGraphByMonth(fetchedData, year)
+        break;
+      
+      case "OH and S":
+        yearWiseData=OHSDataForGraphByYear(fetchedData)
+        if (year) monthData = OHSDataForGraphByMonth(fetchedData, year)
         break;
 
       case "Materials":
@@ -1720,12 +2064,12 @@ const Analytics = () => {
         console.log("C", yearWiseData)
         if (year) monthData = transformUnfilteredDataForGraphByMonth(fetchedData, year)
         break;
-      case "OH and S":
-        yearWiseData = transformOHSChartData(fetchedData)
-        if (year) monthData = transformOHSChartDataByMonth(fetchedData, year)
+      
+        // yearWiseData = fetchedData
+        // if (year) monthData = transformOHSChartDataByMonth(fetchedData, year)
 
-        console.log(monthData)
-        break;
+        // console.log(monthData)
+        // break;
 
       case "Waste Disposal":
         var { labels, dataObj, entityTypes } = wasteTransform(fetchedData);
@@ -1846,39 +2190,39 @@ const Analytics = () => {
           )
         ) : (
           <>
-            {module == "Fuel" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Bioenergy" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "WTT- fuels" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Water" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Food" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Accommodation" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Flight" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Home Office" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Refrigerant and other" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Owned Vehicles" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Materials" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Freighting goods" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Employees commuting" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Fuel" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Bioenergy" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "WTT- fuels" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Water" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Food" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Accommodation" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Flight" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Home Office" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Refrigerant and other" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Owned Vehicles" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Materials" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Freighting goods" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Employees commuting" && <BarChartApex data={yearData} setYear={setYear} />}
 
-            {module == "Business travel - land and sea" && <SocialGraph data={yearData} setYear={setYear} />}
+            {module == "Business travel - land and sea" && <BarChartApex data={yearData} setYear={setYear} />}
             {module == "Retention" && (
               <LineChart data={yearData} lines={linesConfig} xKey="year" yLabel="Number of People" setYear={setYear} />
             )}
             {module == "Employment" && (
               <LineChart data={yearData} lines={linesConfig} xKey="year" yLabel="Number of People" setYear={setYear} />
             )}
-            {module == "Entity" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
-            {module == "Elec heat cooling" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
-            {module == "Mktg and Labelling" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
-            {module == "Customer Privacy" && <SocialGraph data={yearData} stacked={true} setYear={setYear} />}
-            {module == "Child Labor" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
-            {module == "CHS" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
-            {module == "Social Benefits" && <SocialGraph data={yearData} stacked={false} setYear={setYear} />}
-            {module == "Eco. Performance" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Market Presence" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Waste Disposal" && <SocialGraph data={yearData} setYear={setYear} />}
-            {module == "Training and Edu" && <BubbleChart data={yearData} xLabel={"Years"} setYear={setYear} />}
-            {module == "OH and S" && <BubbleChart data={yearData} xLabel={"Years"} setYear={setYear} />}
+            {module == "Entity" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Elec heat cooling" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Mktg and Labelling" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Customer Privacy" && <BarChartApex data={yearData} stacked={true} setYear={setYear} />}
+            {module == "Child Labor" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
+            {module == "CHS" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Social Benefits" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
+            {module == "Eco. Performance" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Market Presence" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Waste Disposal" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Training and Edu" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "OH and S" && <BarChartApex data={yearData} xLabel={"Years"} setYear={setYear} />}
           </>
         )}
       </div>
@@ -1904,38 +2248,38 @@ const Analytics = () => {
               }
             </div>
           </div>
-          {module == "Fuel" && <SocialGraph data={monthWiseData} />}
-          {module == "Bioenergy" && <SocialGraph data={monthWiseData} />}
-          {module == "WTT- fuels" && <SocialGraph data={monthWiseData} />}
-          {module == "Water" && <SocialGraph data={monthWiseData} />}
-          {module == "Materials" && <SocialGraph data={monthWiseData} />}
-          {module == "Freighting goods" && <SocialGraph data={monthWiseData} />}
-          {module == "Food" && <SocialGraph data={monthWiseData} />}
-          {module == "Accommodation" && <SocialGraph data={monthWiseData} />}
-          {module == "Flight" && <SocialGraph data={monthWiseData} />}
-          {module == "Home Office" && <SocialGraph data={monthWiseData} />}
-          {module == "Refrigerant and other" && <SocialGraph data={monthWiseData} />}
-          {module == "Employees commuting" && <SocialGraph data={monthWiseData} />}
-          {module == "Business travel - land and sea" && <SocialGraph data={monthWiseData} />}
-          {module == "Owned Vehicles" && <SocialGraph data={monthWiseData} />}
+          {module == "Fuel" && <BarChartApex data={monthWiseData} />}
+          {module == "Bioenergy" && <BarChartApex data={monthWiseData} />}
+          {module == "WTT- fuels" && <BarChartApex data={monthWiseData} />}
+          {module == "Water" && <BarChartApex data={monthWiseData} />}
+          {module == "Materials" && <BarChartApex data={monthWiseData} />}
+          {module == "Freighting goods" && <BarChartApex data={monthWiseData} />}
+          {module == "Food" && <BarChartApex data={monthWiseData} />}
+          {module == "Accommodation" && <BarChartApex data={monthWiseData} />}
+          {module == "Flight" && <BarChartApex data={monthWiseData} />}
+          {module == "Home Office" && <BarChartApex data={monthWiseData} />}
+          {module == "Refrigerant and other" && <BarChartApex data={monthWiseData} />}
+          {module == "Employees commuting" && <BarChartApex data={monthWiseData} />}
+          {module == "Business travel - land and sea" && <BarChartApex data={monthWiseData} />}
+          {module == "Owned Vehicles" && <BarChartApex data={monthWiseData} />}
           {module == "Retention" && (
             <LineChart data={monthWiseData} lines={linesConfig} xKey="month" yLabel="Number of People" />
           )}
           {module == "Employment" && (
             <LineChart data={monthWiseData} lines={linesConfig} xKey="month" yLabel="Number of People" />
           )}
-          {module == "Entity" && <SocialGraph data={monthWiseData} stacked={false} />}
-          {module == "Waste Disposal" && <SocialGraph data={monthWiseData} stacked={false} />}
-          {module == "Elec heat cooling" && <SocialGraph data={monthWiseData} stacked={false} />}
-          {module == "Mktg and Labelling" && <SocialGraph data={monthWiseData} stacked={false} />}
-          {module == "Customer Privacy" && <SocialGraph data={monthWiseData} stacked={true} />}
-          {module == "Child Labor" && <SocialGraph data={monthWiseData} stacked={false} />}
-          {module == "CHS" && <SocialGraph data={monthWiseData} stacked={false} />}
-          {module == "Social Benefits" && <SocialGraph data={monthWiseData} stacked={false} />}
-          {module == "Eco. Performance" && <SocialGraph data={monthWiseData} />}
-          {module == "Market Presence" && <SocialGraph data={monthWiseData} />}
-          {module == "Training and Edu" && <BubbleChart data={monthWiseData} xLabel={"Months"} />}
-          {module == "OH and S" && <BubbleChart data={monthWiseData} xLabel={"Months"} />}
+          {module == "Entity" && <BarChartApex data={monthWiseData} stacked={false} />}
+          {module == "Waste Disposal" && <BarChartApex data={monthWiseData} stacked={false} />}
+          {module == "Elec heat cooling" && <BarChartApex data={monthWiseData} stacked={false} />}
+          {module == "Mktg and Labelling" && <BarChartApex data={monthWiseData} stacked={false} />}
+          {module == "Customer Privacy" && <BarChartApex data={monthWiseData} stacked={true} />}
+          {module == "Child Labor" && <BarChartApex data={monthWiseData} stacked={false} />}
+          {module == "CHS" && <BarChartApex data={monthWiseData} stacked={false} />}
+          {module == "Social Benefits" && <BarChartApex data={monthWiseData} stacked={false} />}
+          {module == "Eco. Performance" && <BarChartApex data={monthWiseData} />}
+          {module == "Market Presence" && <BarChartApex data={monthWiseData} />}
+          {module == "Training and Edu" && <BarChartApex data={monthWiseData} />}
+          {module == "OH and S" && <BarChartApex data={monthWiseData} />}
         </div>
       )}
 

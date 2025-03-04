@@ -16,6 +16,7 @@ import { firestore } from "../firebase";
 import { getDocs, doc, collection, query, where } from "firebase/firestore";
 import { useSidebar } from "../context/SidebarContext";
 import BarApex from "../components/BarApex";
+import BarChartApex from "../components/BarChartApex";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -562,7 +563,7 @@ const SocialOverview = () => {
           <div className="mt-2">
             {
               employeeChart ?
-                <SocialGraph data={employeeChart} />
+                <BarChartApex data={employeeChart} />
                 :
                 <div className="h-48 mx-auto flex items-center justify-center">
                   No data available for analytics

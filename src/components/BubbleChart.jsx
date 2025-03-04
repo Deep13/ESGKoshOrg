@@ -1,58 +1,85 @@
-import { Bubble } from "react-chartjs-2";
-import { 
-  Chart as ChartJS, 
-  CategoryScale, 
-  LinearScale, 
-  PointElement, 
-  Title, 
-  Tooltip, 
-  Legend 
-} from "chart.js";
+import React from "react";
+import Chart from "react-apexcharts";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
+const transformDataForApex = (data) => {
+  return data.map((dataset) => ({
+    name: dataset.label,
+    data: dataset.data.map((point) => ({
+      x: point?.x?.toString(), // Convert x to string for categorical axis
+      y: point.y,
+      z: point.r*10, // Scale bubble size and ensure a minimum
+    })),
+  }));
+};
 
-const BubbleChart = ({ data={labels:[],datasets:[]},xLabel, setYear=null }) => {
+const BubbleChart = ({ data = { datasets: [] }, xLabel, setYear = null }) => {
+  const series = transformDataForApex(data.datasets);
+
   const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: true, position: "top" },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Average Hours',
+    chart: {
+      type: "bubble",
+      height: 350,
+      zoom:{
+        enabled:true,
+        allowMouseWheelZoom: true,
+      },
+      tools: {
+        show:true,
+        download: true,
+        selection: true,
+        zoom: true,
+        zoomin: true,
+        zoomout: true,
+        pan: true,
+        // reset: true | '<img src="/static/icons/reset.png" width="20">',
+        customIcons: []
+      },
+      selection:{enabled:true},
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          if (setYear) {
+            const selectedYear = config.w.config.series[config.seriesIndex].data[config.dataPointIndex].x;
+            setYear(selectedYear);
+          }
         },
       },
-      x: {
-        type: 'category', // Ensure that x-axis is treated as categorical
-        offset:0.5,
-        labels: Array.from(new Set(data?.datasets?.flatMap(dataset => dataset.data.map(item => item.x)))), // Dynamically fetch the years
-        beginAtZero:false,
-        title: {
-          display: true,
-          text: xLabel,
-        },
-        ticks: {
-          autoSkip: false, // Disable auto skip to ensure all years are displayed
-        },
+    },
+    xaxis: {
+      tickPlacement:"between",
+      tickAmount:12,
+      type: "category",
+      title: {
+        text: xLabel,
+      },
+      labels: {
+        rotate: -45,
       },
     },
-    onClick: (event, elements) => {
-      if (elements.length > 0) {
-        const clickedIndex = elements[0].index; // Get index of clicked point
-        console.log(data.datasets[clickedIndex].data[0].x)
-        const selectedYear = data.datasets[clickedIndex].data[0].x; // Get x-axis value (year) based on index
-        setYear(selectedYear); // Update state with selected year
-      }
+    yaxis: {
+      title: {
+        text: "Average Hours",
+      },
+      min:1,
     },
+    
+    tooltip: {
+      enabled: true,
+    },
+    legend: {
+      position: "top",
+    },
+    fill: {
+      type: 'gradient',
+    },
+    toolbar:{
+      show:true,
+      tools: {        download: true,           selection: true,           zoom: true,           zoomin: true,           zoomout: true,           pan: true,           reset: true | '<img src="/static/icons/reset.png" width="20">',           customIcons: []         },
+    }
   };
 
   return (
-    <div className="w-full h-[300px]">
-      <Bubble data={data} options={options} />
+    <div className="w-full h-[400px]">
+      <Chart options={options} series={series} type="bubble" height={400} />
     </div>
   );
 };

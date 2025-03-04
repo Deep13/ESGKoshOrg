@@ -1,77 +1,84 @@
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,  // Import the Filler plugin
-} from "chart.js";
+import React from "react";
+import Chart from "react-apexcharts";
 
-// Register all components, including Filler
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler // Register the Filler plugin
-);
+const LineChart = ({ data = { labels: [], datasets: [] }, setYear = null, fillVal = false }) => {
+  // Ensure data exists
+  if (!data || !data.datasets || data.datasets.length === 0) {
+    return (
+      <div className="h-48 mx-auto flex items-center justify-center">
+        No Data available for analytics
+      </div>
+    );
+  }
 
-const LineChart = ({ data={labels:[],datasets:[]}, lines, xKey, yLabel="", fillVal = false,setYear }) => {
-  // Prepare datasets for Chart.js
-  // const datasets = lines.map((line) => ({
-  //   label: line.label,
-  //   data: data.map((item) => item[line.dataKey]),
-  //   borderColor: line.color,
-  //   backgroundColor: fillVal ? `${line.color}80` : 'transparent', // Use transparent if no fill
-  //   tension: 0.4,
-  //   fill: fillVal ? 'origin' : false, // Use 'origin' for area chart, false for line chart
-  // }));
+  // Convert Chart.js format to ApexCharts format
+  const series = data.datasets.map(dataset => ({
+    name: dataset.label || "Dataset",
+    data: dataset.data.map(value => {
+      // Convert empty strings or non-numeric values to null
+      const numValue = parseFloat(value);
+      return isNaN(numValue) ? null : numValue;
+    }) // Ensure valid numbers
+  }));
 
-  // const chartData = {
-  //   labels: data.map((item) => item[xKey]),
-  //   datasets: datasets,
-  // };
+  const options = {
+    chart: {
+      type: fillVal ? "area" : "line",
+      toolbar: { show: true },
+      zoom: { enabled: false },
+      selection: { enabled: false },
+      animations: { enabled: false },
+      events: {
+        click: (event, chartContext, config) => {
+          console.log("Chart Clicked", { event, config });
+        },
+        markerClick: (event, chartContext, { seriesIndex, dataPointIndex }) => {
+          console.log("Marker Clicked", { seriesIndex, dataPointIndex });
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display:true, position: "top" },
+          if (dataPointIndex !== undefined) {
+            const selectedYear = data.labels[dataPointIndex];
+            console.log("Selected Year:", selectedYear);
+            if (setYear) setYear(selectedYear);
+          }
+        },
+        dataPointSelection: (event, chartContext, { seriesIndex, dataPointIndex }) => {
+          console.log("Data Point Clicked", { seriesIndex, dataPointIndex });
+
+          if (dataPointIndex !== undefined) {
+            const selectedYear = data.labels[dataPointIndex];
+            console.log("Selected Year:", selectedYear);
+            if (setYear) setYear(selectedYear);
+          }
+        }
+      }
     },
-    scales: {
-      y: { 
-        beginAtZero: true,
-        stacked: false, 
-      },
-      x: { 
-        grid: { display: false },
-        stacked: false, 
-      },
+    fill: {
+      type: fillVal ? "solid" : "none",
+      opacity: fillVal ? 0.3 : 1
     },
-    elements: {
-      bar: {
-        borderRadius: 10, 
-      },
+    stroke: {
+      curve: "smooth" // Makes line smoother
     },
-    onClick: (event, elements) => {
-      if (elements.length > 0) {
-        const index = elements[0].index; // Get clicked bar index
-        const xValue = data.labels[index]; // Get x-axis value
-        setYear(xValue); // Update year state
+    markers: {
+      size: 6, // Ensure clickable markers
+      hover: { size: 8 }
+    },
+    xaxis: {
+      categories: data.labels,
+      labels: {
+        rotate: -45
+      }
+    },
+    yaxis: {
+      labels: {
+        formatter: (value) => Math.floor(value)
       }
     }
   };
 
   return (
-    <div className="p-4 rounded-2xl bg-white w-full h-[300px]">
-      <Line data={data} options={chartOptions}/>
+    <div className="w-full h-[300px]">
+      <Chart options={options} series={series} type={fillVal ? "area" : "line"} height={300} />
     </div>
   );
 };

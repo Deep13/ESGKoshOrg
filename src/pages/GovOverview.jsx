@@ -402,9 +402,7 @@ const GovOverview = () => {
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState, selectedDistrict]);
   //code by Deepak end////
 
-
-  console.log("f", filteredOverview)
-  console.log("v", overviewObj)
+console.log("chart2",areaChart2)
   return (
     <div className='flex flex-col gap-2'>
       <div className="bg-white px-4 py-3 rounded-xl flex gap-4 items-center">
@@ -513,9 +511,7 @@ const GovOverview = () => {
             {areaChart1 ?
               <LineChart
                 data={areaChart1}
-                lines={linesConfig}
-                xKey=""
-                yLabel=""
+                // lines={linesConfig}
                 fillVal={true}
               /> :
               <div className="h-48 mx-auto flex items-center justify-center">

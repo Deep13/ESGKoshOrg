@@ -1,41 +1,71 @@
-import { Doughnut } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  Title,
-} from "chart.js";
+import React from "react";
+import Chart from "react-apexcharts";
 
-// Register the necessary Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend, Title);
+const DoughnutChart = ({ data = { labels: [], datasets: [] } }) => {
+  // Transform Chart.js data format to ApexCharts format
+  const series = data.datasets?.length > 0 ? data.datasets?.[0].data : [];
+  const labels = data.labels || [];
 
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: true,
-      position: "bottom", // Move legend below the chart
-      align: "center", // Align legend items in a single line
-      labels: {
-        boxWidth: 20, // Adjust box size for better spacing
-        font: {
-          size: 10, // Improve readability
+  const options = {
+    chart: {
+      type: "donut",
+      toolbar: {
+        show: true, // Enable the toolbar
+        tools: {
+          download: true, // Show download button
+          selection: false,
+          zoom: false,
+          zoomin: false,
+          zoomout: false,
+          pan: false,
+          reset: false,
+        },
+        export: {
+          csv: {
+            filename: "chart-data",
+            columnDelimiter: ",",
+            headerCategory: "Category",
+            headerValue: "Value",
+          },
+          svg: {
+            filename: "chart-svg",
+          },
+          png: {
+            filename: "chart-png",
+          },
         },
       },
     },
-    title: {
-      display: false,
-      text: "Sales Distribution",
+    labels: labels,
+    legend: {
+      position: "bottom",
+      horizontalAlign: "center",
+      fontSize: "10px",
+      markers: {
+        width: 12,
+        height: 12,
+      },
     },
-  },
-};
+    responsive: [
+      {
+        breakpoint: 600,
+        options: {
+          chart: { width: "100%" },
+          legend: { position: "bottom" },
+        },
+      },
+    ],
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: (value) => value.toLocaleString(), // Format numbers
+      },
+    },
+  };
 
-const DoughnutChart = ({ data={labels:[],datasets:[]}}) => {
   return (
     <div className="flex justify-center items-center w-[30rem] h-[15rem]">
-      <Doughnut data={data} options={options}/>
+      <Chart options={options} series={series} type="donut" height={250} />
     </div>
   );
 };

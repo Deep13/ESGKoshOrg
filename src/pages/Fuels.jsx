@@ -419,7 +419,7 @@ const Fuels = () => {
       }
 
       case "Employment": {
-        fullEmissions = { "50+": { "Male": 0, "Female": 0, "LGBTQ": 0 }, "35 to 50": { "Male": 0, "Female": 0, "LGBTQ": 0 }, "22 to 35": { "Male": 0, "Female": 0, "LGBTQ": 0 }, "Less than 22": { "Male": 0, "Female": 0, "LGBTQ": 0 } }
+        fullEmissions = { "50+": { "Male": 0, "Female": 0, "LGBTQ": 0 }, "35 to 50": { "Male": 0, "Female": 0, "LGBTQ": 0 }, "22 to 35": { "Male": 0, "Female": 0, "LGBTQ": 0 }, "Less than 22": { "Male": 0, "Female": 0, "LGBTQ": 0 }, "Overall": { "Male": 0, "Female": 0, "LGBTQ": 0 } }
         selectedVariant.forEach(item => {
           const entityType = checkValue(item["Employment Type"]);
           const gender = checkValue(item["Gender"]);

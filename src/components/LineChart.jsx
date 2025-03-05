@@ -27,7 +27,7 @@ const LineChart = ({ data = { labels: [], datasets: [] }, setYear = null, fillVa
       toolbar: { show: true },
       zoom: { enabled: false },
       selection: { enabled: false },
-      animations: { enabled: false },
+      animations: { enabled: true },
       events: {
         click: (event, chartContext, config) => {
           console.log("Chart Clicked", { event, config });

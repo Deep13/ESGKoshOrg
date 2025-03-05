@@ -27,12 +27,12 @@ const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, se
         show: true, // Enables the toolbar
         tools: {
           download: true, // Enable download button
-          selection: false,
-          zoom: false,
-          zoomin: false,
-          zoomout: false,
-          pan: false,
-          reset: false
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
         },
         export: {
           csv: {

@@ -2214,7 +2214,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
             {module == "Entity" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
             {module == "Elec heat cooling" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
             {module == "Mktg and Labelling" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
-            {module == "Customer Privacy" && <BarChartApex data={yearData} stacked={true} setYear={setYear} />}
+            {module == "Customer Privacy" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
             {module == "Child Labor" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
             {module == "CHS" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
             {module == "Social Benefits" && <BarChartApex data={yearData} stacked={false} setYear={setYear} />}
@@ -2272,7 +2272,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
           {module == "Waste Disposal" && <BarChartApex data={monthWiseData} stacked={false} />}
           {module == "Elec heat cooling" && <BarChartApex data={monthWiseData} stacked={false} />}
           {module == "Mktg and Labelling" && <BarChartApex data={monthWiseData} stacked={false} />}
-          {module == "Customer Privacy" && <BarChartApex data={monthWiseData} stacked={true} />}
+          {module == "Customer Privacy" && <BarChartApex data={monthWiseData} stacked={false} />}
           {module == "Child Labor" && <BarChartApex data={monthWiseData} stacked={false} />}
           {module == "CHS" && <BarChartApex data={monthWiseData} stacked={false} />}
           {module == "Social Benefits" && <BarChartApex data={monthWiseData} stacked={false} />}

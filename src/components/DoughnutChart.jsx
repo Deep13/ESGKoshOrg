@@ -2,7 +2,6 @@ import React from "react";
 import Chart from "react-apexcharts";
 
 const DoughnutChart = ({ data = { labels: [], datasets: [] } }) => {
-  // Transform Chart.js data format to ApexCharts format
   const series = data.datasets?.length > 0 ? data.datasets?.[0].data : [];
   const labels = data.labels || [];
 
@@ -10,29 +9,15 @@ const DoughnutChart = ({ data = { labels: [], datasets: [] } }) => {
     chart: {
       type: "donut",
       toolbar: {
-        show: true, // Enable the toolbar
+        show: true,
         tools: {
-          download: true, // Show download button
+          download: true,
           selection: false,
           zoom: false,
           zoomin: false,
           zoomout: false,
           pan: false,
           reset: false,
-        },
-        export: {
-          csv: {
-            filename: "chart-data",
-            columnDelimiter: ",",
-            headerCategory: "Category",
-            headerValue: "Value",
-          },
-          svg: {
-            filename: "chart-svg",
-          },
-          png: {
-            filename: "chart-png",
-          },
         },
       },
     },
@@ -58,7 +43,25 @@ const DoughnutChart = ({ data = { labels: [], datasets: [] } }) => {
     tooltip: {
       enabled: true,
       y: {
-        formatter: (value) => value.toLocaleString(), // Format numbers
+        formatter: (value) => value.toLocaleString(),
+      },
+    },
+    plotOptions: {
+      pie: {
+        dataLabels: {
+          offset: 35, // Move labels outside
+        },
+      },
+    },
+    dataLabels: {
+      enabled: true, // Ensure labels are visible
+      style: {
+        fontSize: "14px",
+        fontWeight: "bold",
+        colors: ["#000"], // Set text color to black
+      },
+      dropShadow: {
+        enabled: false, // Remove shadows for better visibility
       },
     },
   };

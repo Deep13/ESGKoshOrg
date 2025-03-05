@@ -26,10 +26,7 @@ const DoughnutChart = ({ data = { labels: [], datasets: [] } }) => {
       position: "bottom",
       horizontalAlign: "center",
       fontSize: "10px",
-      markers: {
-        width: 12,
-        height: 12,
-      },
+      offsetY: 35,
     },
     responsive: [
       {
@@ -46,10 +43,17 @@ const DoughnutChart = ({ data = { labels: [], datasets: [] } }) => {
         formatter: (value) => value.toLocaleString(),
       },
     },
+
     plotOptions: {
       pie: {
+        startAngle: 0,
+        endAngle: 360,
+        expandOnClick: true,
+        offsetX: 0,
+        offsetY: 30,
+        customScale: 1,
         dataLabels: {
-          offset: 35, // Move labels outside
+          offset: 35,
         },
       },
     },
@@ -67,8 +71,8 @@ const DoughnutChart = ({ data = { labels: [], datasets: [] } }) => {
   };
 
   return (
-    <div className="flex justify-center items-center w-[30rem] h-[15rem]">
-      <Chart options={options} series={series} type="donut" height={250} />
+    <div className="flex justify-center items-center flex-1">
+      <Chart options={options} series={series} type="donut" height={300} width="100%" />
     </div>
   );
 };

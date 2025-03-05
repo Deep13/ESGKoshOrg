@@ -586,9 +586,9 @@ const EnvOverview = () => {
           </div>
 
         </div>
-        <div className="flex items-center gap-5">
-          <div className="bg-white w-[12rem] h-[19rem] overflow-y-hidden p-2 border rounded-xl flex flex-col">
-            <div className="font-semibold text-lg">
+        <div className="flex items-stretch gap-5">
+          <div className="bg-white w-[12rem] overflow-y-hidden p-2 border rounded-xl flex flex-col">
+            <div className="font-semibold text-lg h-[100%]">
               EMISSION FROM ELECTRICITY CONSUMPTION
             </div>
             <div className="flex mt-1 items-center">
@@ -613,16 +613,16 @@ const EnvOverview = () => {
                 {/* <PieApex data={pieChartData} /> */}
                 {pieChartData?.series?.length != 0 ?
                   // <PieApex data={pieChartData} />
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ position: 'relative' }} className="flex">
                     <div
                       style={{
                         position: "absolute",
-                        top: "40%",
+                        top: "45%",
                         left: "50%",
                         transform: "translate(-50%, -50%)",
                       }}
                     >
-                      <img src={dustbin} alt="Icon" width="50" height="50" />
+                      <img src={dustbin} alt="Icon" width="70" height="70" />
                     </div>
                     <DoughnutChart data={pieChartData} />
                   </div>
@@ -634,7 +634,7 @@ const EnvOverview = () => {
               </div>
             </div>
           </div>
-          <div className=" flex-1 bg-white flex flex-col w-[26rem] p-2 border rounded-xl ">
+          <div className="bg-white flex flex-col w-[25rem] p-2 border rounded-xl ">
             <div className="font-semibold text-lg mb-6"> WASTE DISPOSAL</div>
             <div className=" mt-1 flex flex-col items-center justify- p-3 gap-[0.1rem]">
               {/* {Array.from({ length: levels }, (_, i) => (

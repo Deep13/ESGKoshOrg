@@ -4,7 +4,7 @@ import Chart from "react-apexcharts";
 const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, setYear = null }) => {
   // Check if there's no data available
   const hasData = data?.datasets?.length > 0 && data.datasets?.some(dataset => dataset?.data?.length > 0);
-  
+
   if (!hasData && setYear === null) {
     return (
       <div className="w-full h-[200px] flex items-center justify-center text-gray-500">
@@ -68,8 +68,8 @@ const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, se
         formatter: (value) => Math.floor(value), // Ensure only integer values are displayed
       }
     },
-    grid:{
-      show:false
+    grid: {
+      show: false
     },
     legend: { position: "top" },
     plotOptions: {
@@ -77,6 +77,14 @@ const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, se
         borderRadius: 5,
         borderRadiusApplication: "end",
         horizontal: false
+      }
+    },
+    fill: {
+      type: 'pattern',
+      opacity: 1,
+      pattern: {
+        style: ['circles', 'slantedLines', 'verticalLines', 'horizontalLines'], // string or array of strings
+
       }
     },
     colors: data?.datasets?.map(dataset => dataset.backgroundColor), // Maintain Chart.js colors

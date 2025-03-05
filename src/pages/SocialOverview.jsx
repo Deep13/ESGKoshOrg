@@ -1,5 +1,6 @@
 import { useState } from "react";
-import retention from '../assets/retention.png'
+import retention from '../assets/trio.png'
+import lead from '../assets/lead.png'
 import { useMemo, useEffect } from "react";
 
 import {
@@ -476,7 +477,7 @@ const SocialOverview = () => {
 
   return (
     <div className="p-2 flex flex-col gap-3 items-center">
-      <div className="flex justify-end mb-[20px]" >
+      <div className="flex justify-end mb-[20px] w-[100%]" >
         <select value={selectedYear} onChange={(event) => {
           setSelectedYear(event.target.value);
           if (event.target.value == "All") {
@@ -550,15 +551,10 @@ const SocialOverview = () => {
           })}
         </select>
       </div>
-      <div className=" flex items-center justify-between gap-2 w-full">
+      <div className=" flex items-stretch justify-between gap-2 w-full">
         <div className=" bg-white rounded-xl border w-[40rem] px-3 py-2 flex-1">
           <div className="flex justify-between items-center">
-            <div className="font-semibold text-[#343C6A]">EMPLOYEE</div>
-            {/* <select className="bg-transparent">
-                        <option className="text-black">A</option>
-                        <option className="text-black">A</option>
-                        <option className="text-black">A</option>
-                    </select> */}
+            <div className="text-lg font-semibold mb-4">EMPLOYEE</div>
           </div>
           <div className="mt-2">
             {
@@ -571,15 +567,17 @@ const SocialOverview = () => {
             }
           </div>
         </div>
-        <div className="flex flex-col justify-between rounded-xl p-2 w-[23rem] h-[15.5rem] bg-gradient-to-r from-[#43729F] to-[#008397] text-white">
-          <div className=" flex justify-center items-center gap-5">
-            <div className=" flex flex-col justify-between items-center gap-[3rem]">
-              <div className="font-bold text-2xl">Retention</div>
-              <di className="text-3xl mx-auto text-center">{ret == "NA" ? "Select Year" : ret + "%"}</di>
-            </div>
-            <div className="ml-3">
-              <img src={retention} alt="retention Icon" />
-            </div>
+        <div className="flex flex-col justify-between rounded-xl p-2 w-[23rem] bg-[white] text-black">
+          <div className="flex justify-between flex-col flex-1">
+            {/* <div className=" flex flex-col justify-between items-center gap-[3rem]"> */}
+            <div className="text-lg font-semibold text-left w-[100%]">RETENTION</div>
+
+            {/* </div> */}
+            {/* <div className="ml-3"> */}
+
+            {/* </div> */}
+            <div className="text-4xl text-center">{ret == "NA" ? "Select a Year" : ret + "%"}</div>
+            <img src={lead} alt="retention Icon" width="100%" />
           </div>
           {/* <div className=" w-full rounded-lg p-3 border flex items-center justify-between">
                     <div>Type</div>
@@ -592,7 +590,7 @@ const SocialOverview = () => {
         </div>
       </div>
       <div className="bg-white rounded-xl w-full px-3 py-2">
-        <div className=" font-semibold text-[#343C6A]">
+        <div className="text-lg font-semibold mb-4">
           TRAINING AND EDUCATION (Head Count by Segment)
         </div>
 

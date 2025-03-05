@@ -407,9 +407,9 @@ const GovOverview = () => {
   console.log("chart2", areaChart2)
   return (
     <div className='flex flex-col gap-2'>
-      <div className="bg-white px-4 py-3 rounded-xl flex gap-4 items-center">
+      <div className="px-4 py-3 rounded-xl flex gap-4 items-center">
         {/* Branch Filter */}
-        <div className="flex justify-end mb-[20px]" >
+        <div className="flex justify-end mb-[20px] w-[100%]" >
           <select value={selectedYear} onChange={(event) => {
             setSelectedYear(event.target.value);
             if (event.target.value == "All") {
@@ -485,20 +485,20 @@ const GovOverview = () => {
         </div>
 
       </div>
-      <div className=" flex items-center gap-2 w-full">
+      <div className="flex items-stretch gap-2 w-full">
         <div className="flex flex-col justify-between rounded-xl p-3 w-[30rem] bg-white">
-          <div className='font-semibold text-xl text-[#343C6A]'>ENTITY</div>
+          <div className='text-lg font-semibold mb-4'>ENTITY</div>
           {chartData ?
             <div style={{ position: 'relative' }}>
               <div
                 style={{
                   position: "absolute",
-                  top: "37%",
-                  left: "53%",
+                  top: "45%",
+                  left: "50%",
                   transform: "translate(-50%, -50%)",
                 }}
               >
-                <img src={ceo} alt="Icon" width="50" height="50" />
+                <img src={ceo} alt="Icon" width="70" height="70" />
               </div>
               <DoughnutChart data={chartData} />
             </div>
@@ -508,13 +508,13 @@ const GovOverview = () => {
             </div>
           }
         </div>
-        <div className=" bg-white rounded-xl border w-[40rem] h-[18rem] px-3 py-2 flex-1">
-          <div className=' font-semibold mb-2 text-xl text-[#343C6A]'>MARKET PRESENCE</div>
+        <div className=" bg-white rounded-xl border flex-1 px-3 py-2 flex flex-1 flex-col">
+          <div className='flex text-lg font-semibold mb-4'>MARKET PRESENCE</div>
           <MapComponent />
         </div>
       </div>
       <div className='bg-white rounded-xl border w-full px-3 py-2 '>
-        <div className='font-semibold text-xl text-[#343C6A]'>ECONOMIC PERFORMANCE</div>
+        <div className='text-lg font-semibold mb-4'>ECONOMIC PERFORMANCE</div>
         <div className='flex justify-between mt-5'>
           <div className='flex-1 '>
             {/* <div className='flex items-center gap-2 ml-10'>

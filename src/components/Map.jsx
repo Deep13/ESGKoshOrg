@@ -36,7 +36,7 @@ const MapComponent = () => {
   //   }
 
   return (
-    <div className="bg-white rounded-xl border w-full h-[14rem]">
+    <div className="bg-white rounded-xl border w-full flex-1">
       <MapContainer
         center={[
           branchData?.[0]?.latitude ?? 0,

@@ -33,20 +33,14 @@ const LineChart = ({ data = { labels: [], datasets: [] }, setYear = null, fillVa
           console.log("Chart Clicked", { event, config });
         },
         markerClick: (event, chartContext, { seriesIndex, dataPointIndex }) => {
-          console.log("Marker Clicked", { seriesIndex, dataPointIndex });
-
           if (dataPointIndex !== undefined) {
             const selectedYear = data.labels[dataPointIndex];
-            console.log("Selected Year:", selectedYear);
             if (setYear) setYear(selectedYear);
           }
         },
         dataPointSelection: (event, chartContext, { seriesIndex, dataPointIndex }) => {
-          console.log("Data Point Clicked", { seriesIndex, dataPointIndex });
-
           if (dataPointIndex !== undefined) {
             const selectedYear = data.labels[dataPointIndex];
-            console.log("Selected Year:", selectedYear);
             if (setYear) setYear(selectedYear);
           }
         }
@@ -57,24 +51,32 @@ const LineChart = ({ data = { labels: [], datasets: [] }, setYear = null, fillVa
       opacity: fillVal ? 0.3 : 1
     },
     stroke: {
-      curve: "smooth" // Makes line smoother
+      curve: "smooth"
     },
     markers: {
-      size: 6, // Ensure clickable markers
+      size: 6,
       hover: { size: 8 }
     },
     xaxis: {
       categories: data.labels,
       labels: {
         rotate: -45
-      }
+      },
+      axisBorder: { show: false }, // Hides x-axis border
+      axisTicks: { show: false } // Hides x-axis ticks
     },
     yaxis: {
       labels: {
         formatter: (value) => Math.floor(value)
-      }
+      },
+      axisBorder: { show: false }, // Hides y-axis border
+      axisTicks: { show: false } // Hides y-axis ticks
+    },
+    grid: {
+      show: false // Completely hides grid lines
     }
   };
+  
 
   return (
     <div className="w-full h-[300px]">

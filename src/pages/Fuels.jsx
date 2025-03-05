@@ -15455,16 +15455,25 @@ const Fuels = () => {
           {tempSelectedVariant &&
             <div className="flex items-center justify-end gap-5 rounded-lg">
               <div className="flex items-center">
-                <label className="flex items-center cursor-pointer bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-3 py-2 rounded-lg ">
-                  <span className="mx-auto">Upload Excel</span>
-                  <input
-                    type="file"
-                    accept=".xls, .xlsx"
-                    className="hidden"
-                    onChange={(event) => handleUpload(event)}
-                  />
-                </label>
-              </div>
+  <label
+    className={`flex items-center cursor-pointer px-3 py-2 rounded-lg text-white 
+      ${
+        dataStatus === "Submitted"
+          ? "bg-transparent cursor-not-allowed" // Disabled styles
+          : "bg-gradient-to-r from-[#3d9f86] to-[#29C472]" // Normal styles
+      }`}
+  >
+    <span className="mx-auto">Upload Excel</span>
+    <input
+      type="file"
+      accept=".xls, .xlsx"
+      className="hidden"
+      disabled={dataStatus === "Submitted"} // Disables the input
+      onChange={(event) => handleUpload(event)}
+    />
+  </label>
+</div>
+
 
               <button
                 className="flex items-center bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white px-3 py-2 rounded-lg "

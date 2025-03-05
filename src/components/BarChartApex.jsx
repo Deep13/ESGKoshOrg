@@ -68,6 +68,9 @@ const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, se
         formatter: (value) => Math.floor(value), // Ensure only integer values are displayed
       }
     },
+    grid:{
+      show:false
+    },
     legend: { position: "top" },
     plotOptions: {
       bar: {

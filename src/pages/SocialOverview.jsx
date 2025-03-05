@@ -62,15 +62,15 @@ const SocialOverview = () => {
           {
             label: "Male",
             data: maleData,
-            backgroundColor: "#2563EB",
-            borderColor: "#2563EB",
+            backgroundColor: "#109ad8",
+            borderColor: "#109ad8",
             borderWidth: 1,
           },
           {
             label: "Female",
             data: femaleData,
-            backgroundColor: "#fb00ff",
-            borderColor: "#fb00ff",
+            backgroundColor: "#45bf34",
+            borderColor: "#45bf34",
             borderWidth: 1,
           },
           {
@@ -575,7 +575,7 @@ const SocialOverview = () => {
           <div className=" flex justify-center items-center gap-5">
             <div className=" flex flex-col justify-between items-center gap-[3rem]">
               <div className="font-bold text-2xl">Retention</div>
-              <di className="text-4xl">{ret == "NA" ? ret : ret + "%"}</di>
+              <di className="text-3xl mx-auto text-center">{ret == "NA" ? "Select Year" : ret + "%"}</di>
             </div>
             <div className="ml-3">
               <img src={retention} alt="retention Icon" />

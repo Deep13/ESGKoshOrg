@@ -501,7 +501,7 @@ const EnvOverview = () => {
         <div className="flex items-center gap-5">
 
           <div className="bg-white rounded-xl flex-1 p-3 w-full h-[15rem]">
-            <h2 className="text-lg font-semibold text-gray-700 mb-4">SCOPE-WISE EMISSION</h2>
+            <h2 className="text-lg font-semibold mb-4">SCOPE-WISE EMISSION</h2>
             <div className="flex justify-between">
               {scopeData.length > 0 ? (
                 scopeData.map((scope, index) => (
@@ -526,7 +526,7 @@ const EnvOverview = () => {
                     </div>
 
                     {/* Labels */}
-                    <p className="text-sm font-medium mt-2">{scope.label}</p>
+                    <p className="text-sm font-bold mt-2">{scope.label}</p>
                     <p className="text-sm font-semibold text-gray-700">{scope.emission}</p>
                     <p className="text-sm font-semibold text-gray-700">kgCO2e</p>
                   </div>
@@ -541,7 +541,7 @@ const EnvOverview = () => {
           </div>
 
           <div className="flex flex-col w-[26rem] h-[15rem] p-2 border rounded-xl bg-[#fff] text-black">
-            <div className="">
+            <div className="text-lg font-semibold">
               EMISSION FROM BUISNESS TRAVEL
             </div>
             <div className=" mt-3 flex items-center justify-between text-black">
@@ -549,7 +549,7 @@ const EnvOverview = () => {
                 <div className="w-24 h-24">
                   <img src={flight} alt="flight-img"></img>
                 </div>
-                <div>Flight</div>
+                <div className='font-bold'>Flight</div>
                 <div>{filteredOverview?.Flight?.toFixed(2) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>
@@ -557,7 +557,7 @@ const EnvOverview = () => {
                 <div className="w-24 h-24">
                   <img src={road} alt="flight-img"></img>
                 </div>
-                <div>Road</div>
+                <div className='font-bold'>Road</div>
                 <div>{filteredOverview?.land?.toFixed(2) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>
@@ -565,7 +565,7 @@ const EnvOverview = () => {
                 <div className="w-24 h-24">
                   <img src={ship} alt="flight-img"></img>
                 </div>
-                <div>Sea</div>
+                <div className='font-bold'>Sea</div>
                 <div>{filteredOverview?.sea?.toFixed(2) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>
@@ -574,7 +574,7 @@ const EnvOverview = () => {
         </div>
         <div className=" flex gap-3 items-center">
           <div className="bg-white flex-1 p-2 border rounded-xl">
-            <div className="font-semibold text-xl text-[#343C6A] mb-1">EMISSION BY CATEGORIES</div>
+            <div className="font-semibold text-lg mb-1">EMISSION BY CATEGORIES</div>
             {/* {treeMapData?
            <TreemapChart data={treeMapData} />
            :
@@ -588,7 +588,7 @@ const EnvOverview = () => {
         </div>
         <div className="flex items-center gap-5">
           <div className="bg-white w-[12rem] h-[19rem] overflow-y-hidden p-2 border rounded-xl flex flex-col">
-            <div className="font-semibold text-lg text-[#343C6A]">
+            <div className="font-semibold text-lg">
               EMISSION FROM ELECTRICITY CONSUMPTION
             </div>
             <div className="flex mt-1 items-center">
@@ -606,7 +606,7 @@ const EnvOverview = () => {
             </div>
           </div>
           <div className="bg-white flex-1 flex flex-col p-2 border rounded-xl">
-            <div className="font-semibold text-xl text-[#343C6A] mb-1"> WASTE EMISSION SOURCES</div>
+            <div className="font-semibold text-lg mb-1"> WASTE EMISSION SOURCES</div>
             <div className="flex justify-between items-center px-2">
               <div className=""></div>
               <div className=" flex items-center justify-center w-full">
@@ -635,7 +635,7 @@ const EnvOverview = () => {
             </div>
           </div>
           <div className=" flex-1 bg-white flex flex-col w-[26rem] p-2 border rounded-xl ">
-            <div className="font-semibold text-xl text-[#343C6A] mb-6"> WASTE DISPOSAL</div>
+            <div className="font-semibold text-lg mb-6"> WASTE DISPOSAL</div>
             <div className=" mt-1 flex flex-col items-center justify- p-3 gap-[0.1rem]">
               {/* {Array.from({ length: levels }, (_, i) => (
           <div

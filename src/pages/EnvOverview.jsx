@@ -1,6 +1,7 @@
 import flight from "../assets/flight_orange.png"
 import road from "../assets/Road_green.png"
 import ship from "../assets/ship_blue.png"
+import dustbin from "../assets/dustbin.png"
 import tower from "../assets/tower.png"
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -612,7 +613,19 @@ const EnvOverview = () => {
                 {/* <PieApex data={pieChartData} /> */}
                 {pieChartData?.series?.length != 0 ?
                   // <PieApex data={pieChartData} />
-                  <DoughnutChart data={pieChartData} />
+                  <div style={{ position: 'relative' }}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "40%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                      }}
+                    >
+                      <img src={dustbin} alt="Icon" width="50" height="50" />
+                    </div>
+                    <DoughnutChart data={pieChartData} />
+                  </div>
                   :
                   <div className="flex justify-center items-center w-full h-64 text-gray-500 text-lg font-medium">
                     No data available for analytics

@@ -6,6 +6,8 @@ import { getDocs, doc, collection, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useSidebar } from '../context/SidebarContext';
 import { useMemo } from 'react';
+import ceo from "../assets/ceo.png"
+
 
 const sampleData = [
   { year: 2001, men: 75, women: 50, others: 25 },
@@ -402,7 +404,7 @@ const GovOverview = () => {
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState, selectedDistrict]);
   //code by Deepak end////
 
-console.log("chart2",areaChart2)
+  console.log("chart2", areaChart2)
   return (
     <div className='flex flex-col gap-2'>
       <div className="bg-white px-4 py-3 rounded-xl flex gap-4 items-center">
@@ -487,7 +489,19 @@ console.log("chart2",areaChart2)
         <div className="flex flex-col justify-between rounded-xl p-3 w-[30rem] bg-white">
           <div className='font-semibold text-xl text-[#343C6A]'>ENTITY</div>
           {chartData ?
-            <DoughnutChart data={chartData} />
+            <div style={{ position: 'relative' }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "37%",
+                  left: "53%",
+                  transform: "translate(-50%, -50%)",
+                }}
+              >
+                <img src={ceo} alt="Icon" width="50" height="50" />
+              </div>
+              <DoughnutChart data={chartData} />
+            </div>
             :
             <div className="h-48 mx-auto flex items-center justify-center">
               No data available for analytics

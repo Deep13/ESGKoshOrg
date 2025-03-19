@@ -1,7 +1,7 @@
 import React from "react";
 import Chart from "react-apexcharts";
 
-const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, setYear = null }) => {
+const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, setYear = null, fill=false }) => {
   // Check if there's no data available
   const hasData = data?.datasets?.length > 0 && data.datasets?.some(dataset => dataset?.data?.length > 0);
 
@@ -79,14 +79,17 @@ const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, se
         horizontal: false
       }
     },
-    fill: {
-      type: 'pattern',
-      opacity: 1,
-      pattern: {
-        style: ['circles', 'slantedLines', 'verticalLines', 'horizontalLines'], // string or array of strings
-
+    ...(fill && {
+      fill: {
+        type: 'pattern',
+        opacity: 1,
+        pattern: {
+          style: ['circles', 'slantedLines', 'verticalLines', 'horizontalLines'], // string or array of strings
+  
+        }
       }
-    },
+    }),
+    
     colors: data?.datasets?.map(dataset => dataset.backgroundColor), // Maintain Chart.js colors
     dataLabels: {
       enabled: false // Completely hide numbers inside bars

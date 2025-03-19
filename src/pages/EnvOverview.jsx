@@ -542,7 +542,7 @@ const EnvOverview = () => {
 
           <div className="flex flex-col w-[26rem] h-[15rem] p-2 border rounded-xl bg-[#fff] text-black">
             <div className="text-lg font-semibold">
-              EMISSION FROM BUISNESS TRAVEL
+              EMISSION FROM BUSINESS TRAVEL
             </div>
             <div className=" mt-3 flex items-center justify-between text-black">
               <div className="flex flex-col justify-center items-center">

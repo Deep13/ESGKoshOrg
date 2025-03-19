@@ -75,7 +75,7 @@ const Header = () => {
         <div className=" font-bold ">
             
             {                 
-                tooltipData[module] ? (
+                (tooltipData[module] && page=="fuels")? (
                   <div className="flex gap-2 items-center">
                     {values[page]}
                     <div className="group cursor-pointer">

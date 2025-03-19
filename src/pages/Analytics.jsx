@@ -2107,8 +2107,14 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
           ],
         };
 
+        
         // Month-wise data handling
         if (year) {
+          let colorMap={
+            "Recycled":"#2586d6",
+            "Landfilled":"#e4acc4",
+            "Combusted":"#8b24d7"
+          }
           console.log("Processing month-wise data...");
           let data = wasteTransformByMonth(fetchedData, year);
           monthData = {
@@ -2116,8 +2122,8 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
             datasets: Object.keys(data.dataObj[entityType] || {}).map(gender => ({
               label: gender,
               data: data.dataObj[entityType]?.[gender] ?? [],
-              backgroundColor: getRandomColor(),
-              borderColor: getRandomColor(),
+              backgroundColor: colorMap[gender],
+              borderColor: colorMap[gender],
               borderWidth: 1,
             }))
           }
@@ -2194,11 +2200,11 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
             {module == "Bioenergy" && <BarChartApex data={yearData} setYear={setYear} />}
             {module == "WTT- fuels" && <BarChartApex data={yearData} setYear={setYear} />}
             {module == "Water" && <BarChartApex data={yearData} setYear={setYear} />}
-            {module == "Food" && <BarChartApex data={yearData} setYear={setYear} />}
-            {module == "Accommodation" && <BarChartApex data={yearData} setYear={setYear} />}
-            {module == "Flight" && <BarChartApex data={yearData} setYear={setYear} />}
-            {module == "Home Office" && <BarChartApex data={yearData} setYear={setYear} />}
-            {module == "Refrigerant and other" && <BarChartApex data={yearData} setYear={setYear} />}
+            {module == "Food" && <BarChartApex data={yearData} setYear={setYear} fill={true} />}
+            {module == "Accommodation" && <BarChartApex data={yearData} setYear={setYear} fill={true} />}
+            {module == "Flight" && <BarChartApex data={yearData} setYear={setYear} fill={true}  />}
+            {module == "Home Office" && <BarChartApex data={yearData} setYear={setYear} fill={true} />}
+            {module == "Refrigerant and other" && <BarChartApex data={yearData} setYear={setYear} fill={true} />}
             {module == "Owned Vehicles" && <BarChartApex data={yearData} setYear={setYear} />}
             {module == "Materials" && <BarChartApex data={yearData} setYear={setYear} />}
             {module == "Freighting goods" && <BarChartApex data={yearData} setYear={setYear} />}
@@ -2254,11 +2260,11 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
           {module == "Water" && <BarChartApex data={monthWiseData} />}
           {module == "Materials" && <BarChartApex data={monthWiseData} />}
           {module == "Freighting goods" && <BarChartApex data={monthWiseData} />}
-          {module == "Food" && <BarChartApex data={monthWiseData} />}
-          {module == "Accommodation" && <BarChartApex data={monthWiseData} />}
-          {module == "Flight" && <BarChartApex data={monthWiseData} />}
-          {module == "Home Office" && <BarChartApex data={monthWiseData} />}
-          {module == "Refrigerant and other" && <BarChartApex data={monthWiseData} />}
+          {module == "Food" && <BarChartApex data={monthWiseData} fill={true}/>}
+          {module == "Accommodation" && <BarChartApex data={monthWiseData} fill={true} />}
+          {module == "Flight" && <BarChartApex data={monthWiseData} fill={true} />}
+          {module == "Home Office" && <BarChartApex data={monthWiseData} fill={true} />}
+          {module == "Refrigerant and other" && <BarChartApex data={monthWiseData} fill={true} />}
           {module == "Employees commuting" && <BarChartApex data={monthWiseData} />}
           {module == "Business travel - land and sea" && <BarChartApex data={monthWiseData} />}
           {module == "Owned Vehicles" && <BarChartApex data={monthWiseData} />}

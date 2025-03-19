@@ -1,6 +1,6 @@
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai"; // Import eye icons
-import logo from "../assets/logo.png";
+import logo from "../assets/logo2.png";
 import modalIcon from '../assets/modalIcon.png'
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
@@ -38,7 +38,7 @@ const Login = () => {
           {/* Logo Section */}
           <div className="flex items-center justify-center mb-6 mt-4">
             <img src={logo} alt="Logo" className="mb-2" />
-            <h2 className="text-2xl font-bold text-gray-800">ESG Koshish</h2>
+            {/* <h2 className="text-2xl font-bold text-gray-800">ESG Koshish</h2> */}
           </div>
 
           {/* Title */}
@@ -93,7 +93,7 @@ const Login = () => {
 
           {/* Terms and Conditions */}
           <p className="text-sm text-gray-500 mt-6 text-center">
-            <a href="/terms" className="text-green-500 hover:underline">
+            <a href="https://www.sustrack.com/Terms-and-Conditions/" className="text-green-500 hover:underline">
               Terms & Conditions
             </a>
           </p>

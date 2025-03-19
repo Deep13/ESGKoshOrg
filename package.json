@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "/sustrack/client/v3",
+  "homepage": "/dashboard",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

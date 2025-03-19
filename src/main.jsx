@@ -8,7 +8,7 @@ import { SidebarProvider } from './context/SidebarContext.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <SidebarProvider>
-      <BrowserRouter basename='/sustrack/client/v3/'>
+      <BrowserRouter basename='/dashboard'>
         <App />
       </BrowserRouter>
     </SidebarProvider>

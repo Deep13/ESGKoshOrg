@@ -14979,20 +14979,160 @@ const Fuels = () => {
     })
 
   }
+
+  const validateSelectedVariant = () => {
+    let hasIssue = false;
+    let errorMessage = "";
+  
+    switch (module) {
+      case "Elec heat cooling":
+        hasIssue = selectedVariant?.some(
+          (obj) =>
+            "Amount" in obj &&
+            obj.Amount !== null &&
+            (obj["T&D Factors"] === undefined ||
+              obj["T&D Factors"] === "" ||
+              obj["GEF Factors"] === undefined ||
+              obj["GEF Factors"] === "")
+        );
+        if (hasIssue) errorMessage = "Amount is provided, but T&D Factors or GEF Factors are missing.";
+        break;
+  
+      case "Owned Vehicles":
+        hasIssue = selectedVariant?.some(
+          (obj) =>
+            "Distance (km)" in obj &&
+            obj["Distance (km)"] !== "" &&
+            obj["Distance (km)"] !== null &&
+            (obj["Factor"] === undefined || obj["Factor"] === "" || obj["Factor"] == 0)
+        );
+        if (hasIssue) errorMessage = "Distance (km) is provided, but Factor or Fuel is missing.";
+        break;
+
+        case "Business travel - land and sea":
+          hasIssue = selectedVariant?.some(
+            (obj) =>
+              "Total distance" in obj &&
+              obj["Total distance"] !== "" &&
+              obj["Total distance"] !== null &&
+              (obj["Factor"] === undefined || obj["Factor"] === "" || obj["Factor"] == 0)
+          );
+          if (hasIssue) errorMessage = "Total distance is provided, but Factor or Fuel is missing.";
+          break;
+
+          case "Freighting goods":
+            hasIssue = selectedVariant?.some(
+                (obj) =>
+                    ("Weight (tonnes)" in obj && obj["Weight (tonnes)"] !== "" && obj["Weight (tonnes)"] !== null) ||
+                    ("Distance (km)" in obj && obj["Distance (km)"] !== "" && obj["Distance (km)"] !== null)
+                        ? obj["Factor"] === undefined || obj["Factor"] === "" || obj["Factor"] == 0
+                        : false
+            );
+            if (hasIssue) errorMessage = "Weight or Distance (km) is provided, but Factor is missing.";
+            break;
+      
+        case "Materials":
+          hasIssue = selectedVariant?.some(
+            (obj) =>
+              "Amount (tonnes)" in obj &&
+              obj["Amount (tonnes)"] !== "" &&
+              obj["Amount (tonnes)"] !== null &&
+              (obj["Factor"] === undefined || obj["Factor"] === "" || obj["Factor"] == 0)
+          );
+          if (hasIssue) errorMessage = "Distance (km) is provided, but Factor or Fuel is missing.";
+          break;
+
+          case "Waste Disposal":
+            hasIssue = selectedVariant?.some(
+              (obj) =>
+                ("Weight" in obj && obj.Weight !== "" && obj.Weight !== null) ||
+                ("Source Description" in obj && obj["Source Description"] !== "" && obj["Source Description"] !== null)
+                  ? obj["Factor"] === undefined || obj["Factor"] === "" || obj["Factor"] == 0
+                  : false
+            );
+            if (hasIssue) errorMessage = "Weight or Source Description is provided, but Factor is missing.";
+            break;
+
+            case "Home Office":
+              hasIssue = selectedVariant?.some(
+                  (obj) =>
+                      ("Number of employees" in obj && obj["Number of employees"] !== "" && obj["Number of employees"] !== null) ||
+                      ("Working regime (For full-time)" in obj && obj["Working regime (For full-time)"] !== "" && obj["Working regime (For full-time)"] !== null) ||
+                      ("Working from home" in obj && obj["Working from home"] !== "" && obj["Working from home"] !== null)
+                          ? obj["Factor"] === undefined || obj["Factor"] === "" || obj["Factor"] == 0
+                          : false
+              );
+              if (hasIssue) errorMessage = "Number of employees, Working regime, or Working hours is provided, but Factor is missing.";
+              break;
+
+              case "Accommodation":
+                hasIssue = selectedVariant?.some(
+                    (obj) =>
+                        ("Number of nights per room" in obj && obj["Number of nights per room"] !== "" && obj["Number of nights per room"] !== null) ||
+                        ("Number of occupied rooms" in obj && obj["Number of occupied rooms"] !== "" && obj["Number of occupied rooms"] !== null)
+                            ? obj["Factor"] === undefined || obj["Factor"] === "" || obj["Factor"] == 0
+                            : false
+                );
+                if (hasIssue) errorMessage = "Number of nights per room or Number of occupied rooms is provided, but Factor is missing.";
+                break;
+
+                case "Flight":
+                  hasIssue = selectedVariant?.some(
+                      (obj) =>
+                          ("Single way / return" in obj && obj["Single way / return"] !== "" && obj["Single way / return"] !== null) ||
+                          ("Class" in obj && obj.Class !== "" && obj.Class !== null) ||
+                          ("Direct / Indirect" in obj && obj["Direct / Indirect"] !== "" && obj["Direct / Indirect"] !== null) ||
+                          ("Destination (city or IATA code)" in obj && obj["Destination (city or IATA code)"] !== "" && obj["Destination (city or IATA code)"] !== null) ||
+                          ("Origin (city or IATA code)" in obj && obj["Origin (city or IATA code)"] !== "" && obj["Origin (city or IATA code)"] !== null)
+                              ? obj["kg CO2e"] === undefined || obj["kg CO2e"] === "" || obj["kg CO2e"] == 0
+                              : false
+                  );
+                  if (hasIssue) errorMessage = "Flight details are provided, but kg CO2e is missing.";
+                  break;
+  
+      default:
+        hasIssue = selectedVariant?.some(
+          (obj) =>
+            "Amount" in obj &&
+            obj.Amount !== "" &&
+            obj.Amount !== null &&
+            (!("Factor" in obj) || obj.Factor === "" || obj.Factor == 0)
+        );
+        if (hasIssue) errorMessage = "Amount is provided, but Factor is missing.";
+        break;
+    }
+  
+    if (hasIssue) {
+      // setShowModal(true);
+      // setModalText(errorMessage);
+      return true;
+    }
+  
+    return false;
+  };
+  
+  
   const saveRecord = async () => {
     if (!branch) {
       setShowModal(true);
       setModalText("Kindly Select Branch")
       return;
     }
-    const hasAmountFactorIssue = selectedVariant.some(obj => 
-      "Amount" in obj && "Factor" in obj && obj.Amount!="" && obj.Factor==0
-    );
+    // const hasAmountFactorIssue = selectedVariant.some(obj => 
+    //   "Amount" in obj && "Factor" in obj && obj.Amount!="" && obj.Factor==0
+    // );
     
-    if (hasAmountFactorIssue) {
+    // if (hasAmountFactorIssue) {
+    //   setShowModal(true);
+    //   setModalText("Amount is provided but Factor is missing");
+    //   return;
+    // }
+
+    const hasIssues=validateSelectedVariant();
+    if(hasIssues){
       setShowModal(true);
       setModalText("Amount is provided but Factor is missing");
-      return;
+      return ;
     }
 
     if(selectedVariant[''])
@@ -15463,7 +15603,7 @@ const Fuels = () => {
           : "bg-gradient-to-r from-[#3d9f86] to-[#29C472]" // Normal styles
       }`}
   >
-    <span className="mx-auto">Upload Excel</span>
+    <span className={`mx-auto ${dataStatus==="Submitted" && "hidden"}`}>Upload Excel</span>
     <input
       type="file"
       accept=".xls, .xlsx"

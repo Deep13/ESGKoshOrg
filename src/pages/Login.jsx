@@ -42,9 +42,9 @@ const Login = () => {
           </div>
 
           {/* Title */}
-          <h3 className="text-xl font-semibold text-gray-700 mb-2 text-center">
+          {/* <h3 className="text-xl font-semibold text-gray-700 mb-2 text-center">
             Sustrack Dashboard
-          </h3>
+          </h3> */}
 
           
 

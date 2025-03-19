@@ -32,6 +32,7 @@ const Fuels = () => {
   useEffect(() => {
     setSelectedVariant(null);
     setOffice("")
+    setBranch("")
     let ele = document.getElementById("branchSelect")
     if (ele) ele.value = "Select branch";
 
@@ -44,7 +45,9 @@ const Fuels = () => {
 
   useEffect(() => {
     setTempSelectedVariant([]);
+    setDataStatus(false)
     setOffice("")
+    setBranch("")
     let ele = document.getElementById("branchSelect")
     if (ele) ele.value = "Select branch";
 
@@ -15592,7 +15595,7 @@ const Fuels = () => {
             </div>}
         </div>
         <div className="flex items-center justify-end gap-5 rounded-lg">
-          {tempSelectedVariant &&
+          {(tempSelectedVariant && tab=='recorded' && branch && branch!="") &&
             <div className="flex items-center justify-end gap-5 rounded-lg">
               <div className="flex items-center">
   <label

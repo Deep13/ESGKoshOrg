@@ -594,7 +594,7 @@ const EnvOverview = () => {
             <div className="flex mt-1 items-center">
               <div className=" text-slate-600">
                 <div className="">
-                  {filteredOverview?.["Elec heat cooling"]?.toFixed(2) || "NA"} kgCO2e
+                  {filteredOverview?.["Elec heat cooling"]?.toFixed(2) || "NA"} kWh
                 </div>
                 {/* <div className="">
                   CONSUMPTION<br/> value

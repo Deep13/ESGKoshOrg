@@ -5,6 +5,7 @@ import { getDoc, doc, collection,getDocs,setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import modalIcon from "../assets/modalIcon.png"
+import generateDocx from "../components/DocxStruct"
 
 const Admin = () => {
   const [tableInfo, setTableInfo] = useState();
@@ -812,37 +813,37 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     });
     // Round off TotalEmissions to two decimal places for every branch
     // Object.keys(branchWiseData).forEach(branch => {
-    //     branchWiseData[branch].Overview.TotalEmissions = parseFloat(branchWiseData[branch].Overview.TotalEmissions.toFixed(2));
-    //     branchWiseData[branch].Environment.Overview.TotalEmissions = parseFloat(branchWiseData[branch].Overview.TotalEmissions.toFixed(2));
+    //     branchWiseData[branch].Overview.TotalEmissions = parseFloat(branchWiseData[branch].Overview.TotalEmissions.toFixed(4));
+    //     branchWiseData[branch].Environment.Overview.TotalEmissions = parseFloat(branchWiseData[branch].Overview.TotalEmissions.toFixed(4));
     //     delete branchWiseData[branch].modules;
     //     const totalEmissions = branchWiseData[branch].Overview.TotalEmissions;
     //     if (totalEmissions > 0) {
     //         const scopeData = { ...branchWiseData[branch].Overview.Scope };
     //         Object.keys(scopeData).forEach(scope => {
     //             // Convert scope emissions to percentage of total emissions
-    //             branchWiseData[branch].Overview.Scope[scope] = parseFloat(((scopeData[scope] / totalEmissions) * 100).toFixed(2));
-    //             branchWiseData[branch].Environment.Overview.Scope[scope] = parseFloat(((scopeData[scope] / totalEmissions) * 100).toFixed(2));
-    //             branchWiseData[branch].Environment.Overview[scope] = scopeData[scope].toFixed(2);
+    //             branchWiseData[branch].Overview.Scope[scope] = parseFloat(((scopeData[scope] / totalEmissions) * 100).toFixed(4));
+    //             branchWiseData[branch].Environment.Overview.Scope[scope] = parseFloat(((scopeData[scope] / totalEmissions) * 100).toFixed(4));
+    //             branchWiseData[branch].Environment.Overview[scope] = scopeData[scope].toFixed(4);
     //             if (scope == "Scope 1") {
-    //                 branchWiseData[branch].Environment["Scope 1"]["Scope 1"] = scopeData[scope].toFixed(2);
+    //                 branchWiseData[branch].Environment["Scope 1"]["Scope 1"] = scopeData[scope].toFixed(4);
     //             }
     //             if (scope == "Scope 3") {
-    //                 branchWiseData[branch].Environment["Scope 3"]["Scope 3"] = scopeData[scope].toFixed(2);
+    //                 branchWiseData[branch].Environment["Scope 3"]["Scope 3"] = scopeData[scope].toFixed(4);
     //                 Object.keys(branchWiseData[branch].Environment["Scope 3"].Emission).map(val => {
-    //                     branchWiseData[branch].Environment["Scope 3"].Emission[val] = parseFloat(((branchWiseData[branch].Environment["Scope 3"].Emission[val] / scopeData[scope]) * 100).toFixed(2));
+    //                     branchWiseData[branch].Environment["Scope 3"].Emission[val] = parseFloat(((branchWiseData[branch].Environment["Scope 3"].Emission[val] / scopeData[scope]) * 100).toFixed(4));
     //                 }
     //                 )
     //             }
     //             if (scope == "Scope 2") {
-    //                 branchWiseData[branch].Environment["Scope 2"]["Scope 2"] = scopeData[scope].toFixed(2);
+    //                 branchWiseData[branch].Environment["Scope 2"]["Scope 2"] = scopeData[scope].toFixed(4);
     //                 Object.keys(branchWiseData[branch].Environment["Scope 2"].Activities).map(val => {
-    //                     branchWiseData[branch].Environment["Scope 2"].Activities[val] = parseFloat(((branchWiseData[branch].Environment["Scope 2"].Activities[val] / scopeData[scope]) * 100).toFixed(2));
+    //                     branchWiseData[branch].Environment["Scope 2"].Activities[val] = parseFloat(((branchWiseData[branch].Environment["Scope 2"].Activities[val] / scopeData[scope]) * 100).toFixed(4));
     //                 }
     //                 )
     //             }
 
     //         });
-    //         branchWiseData[branch].Social["Overview"]["Retention"] = parseFloat((branchWiseData[branch].Social["Overview"]["Attrition"] / branchWiseData[branch].Social["Overview"].Headcount).toFixed(2));
+    //         branchWiseData[branch].Social["Overview"]["Retention"] = parseFloat((branchWiseData[branch].Social["Overview"]["Attrition"] / branchWiseData[branch].Social["Overview"].Headcount).toFixed(4));
     //     }
     // });
     return branchWiseData;
@@ -891,6 +892,21 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
 
   const handleInitiate = async() => {
     console.log("Initiating cycle with:", { year, month });
+    const selectedYear = parseInt(year, 10);
+    const selectedMonth = parseInt(month, 10);
+
+    // Get current date
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1; // getMonth() is 0-based
+    if (selectedYear < currentYear || (selectedYear === currentYear && selectedMonth < currentMonth)) {
+        setShowModal(false)
+        setNoticeModal(true);
+        setNoticeModalText("You cannot initiate a cycle for a past date. Please verify your selected month and year values and try again.");
+        
+        console.log("Error: Selected month/year is in the past.");
+        return;
+    }
     // Add your logic for initiating a new cycle here
     if (year && month) {
         setDoc(doc(firestore,userData.domain,"Master Data"),{
@@ -1000,6 +1016,58 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     setTerminateModal(false);
   }
 
+  function sumMonthlyData(data, month) {
+    if (!data[month]) {
+        console.log("No data available for this month.");
+        return {};
+    }
+
+    const monthData = data[month];
+    const totals = {};
+
+    function addToTotal(key, value) {
+        if (typeof value === "number") {
+            totals[key] = parseFloat(((totals[key] || 0) + value).toFixed(4)); // Round off to 2 decimals
+        } else if (typeof value === "object") {
+            // Recursively sum nested objects
+            Object.entries(value).forEach(([subKey, subValue]) => {
+                addToTotal(key, subValue);
+            });
+        }
+    }
+
+    Object.values(monthData).forEach((branchData) => {
+        Object.entries(branchData).forEach(([key, value]) => {
+            addToTotal(key, value);
+        });
+    });
+
+    return totals;
+}
+
+
+  const handleDownload = async(monthYear) => {
+    const month=monthYear.split("-")[0];
+    const year=monthYear.split("-")[1];
+    var domain = userData?.username.split("@");
+    const env="Environment-Overview-2024"
+    const docRef = doc(firestore,
+         domain[1],
+         "AnalyticsData", 
+         "Reporting Data",
+         env
+       );
+    const docSnapshot = await getDoc(docRef);
+    if(docSnapshot.exists() && docSnapshot.data()){
+        console.log(docSnapshot.data());
+        console.log("check",sumMonthlyData(docSnapshot.data(),10))
+        let emissionData=sumMonthlyData(docSnapshot.data(),10);
+        let transformedData=Object.entries(emissionData).map(([category, emission]) => ({ category, emission }))
+        console.log(transformedData)
+        generateDocx(transformedData,transformedData,transformedData,master,year)
+    }
+  }
+
   console.log(action)
   return (
     <div className="bg-slate-100 flex flex-col w-full h-screen p-2">
@@ -1059,19 +1127,30 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
             <>
                 <table className="w-full border-collapse rounded-[1rem] py-5">
             <thead>
-                <tr className="text-left text-[#718EBF] text-md rounded-lg border-b">
+                <tr className="text-[#718EBF] text-md rounded-lg border-b">
                 <th className="py-2 px-3">Month-Year</th>
                 <th className="py-2 px-3">Start Date</th>
                 <th className="py-2 px-3">End date</th>
+                <th className="py-2 px-3">Download Report</th>
                 </tr>
             </thead>
 
             <tbody className="rounded-lg">
                 {tableInfo?.map((tableData, index) => (
-                <tr key={index} className="text-gray-700 text-sm border-b mx-auto px-20">
+                <tr key={index} className="text-gray-700 text-center text-sm border-b mx-auto px-20">
                     <td className="py-3 px-3">{tableData.monthYear}</td>
                     <td className="py-3 px-3">{tableData.startDate}</td>
                     <td className="py-3 px-3">{tableData.endDate}</td>
+                    <td className="py-3 px-3">
+                    <button
+                        onClick={() => handleDownload(tableData.monthYear)}
+                        className={`px-7 py-2 bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl ${
+                            action === "Initiate" ? "opacity-50" : ""
+                        } text-white`}
+                        >
+                        Download
+                        </button>
+                    </td>
                 </tr>
                 ))}
             </tbody>
@@ -1141,7 +1220,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
             <h2 className="text-lg font-semibold mb-2">Terminate Existing Cycle</h2>
             
             <div className="mb-4">
-              Are you sure you wan to close the existing cycle ?
+              Are you sure you want to close the existing cycle ?
             </div>
             <div className="flex justify-end gap-3">
               <button
@@ -1183,3 +1262,6 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
 };
 
 export default Admin;
+
+
+

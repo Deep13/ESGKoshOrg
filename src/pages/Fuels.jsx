@@ -110,6 +110,8 @@ const Fuels = () => {
     "District cooling": "Air conditioning from chilled water within a centralized energy plants and underground pipes distribution.",
     "Petrol": "Small Car - Engine size < 1.4 Liters\nMedium Car - Engine size 1.4 – 2.0 Liters\nLarge Car - Engine size > 2.0 Liters",
     "Diesel": "Small Car - Engine size > 1.7 Liters\nMedium Car - Engine size 1.7 – 2.0 Liters\nLarge Car - Engine size > 2.0 Liters",
+    "Markets served by the entity nationally":"Add no. of States",
+    "Markets served by the entity internationally":"Add no. of Countries",
   }
 
   const addRow = (param = 'recorded') => {
@@ -14252,7 +14254,7 @@ const Fuels = () => {
         { "title": "Activity", "editable": false },
         { "title": "Country-Type", "editable": false },
         { "title": "Unit", "editable": false },
-        { "title": "Amount", "editable": true, "type": "Number" },
+        { "title": "Consumption of Electricity", "editable": true, "type": "Number" },
         { "title": "GEF Factors", "editable": true, "type": "Number" },
         { "title": "T&D Factors", "editable": true, "type": "Number" }
       ],
@@ -15926,10 +15928,10 @@ const Fuels = () => {
                                     if (module == "Market Presence" && index < 4) {
 
                                       if (updatedVariant[0].Values != '' && updatedVariant[2].Values != '') {
-                                        updatedVariant[4].Values = (parseInt(updatedVariant[0].Values) / parseInt(updatedVariant[2].Values)).toFixed(2)
+                                        updatedVariant[4].Values = (parseInt(updatedVariant[0].Values) / parseInt(updatedVariant[2].Values)).toFixed(4)
                                       }
                                       if (updatedVariant[1].Values != '' && updatedVariant[3].Values != '') {
-                                        updatedVariant[5].Values = (parseInt(updatedVariant[1].Values) / parseInt(updatedVariant[3].Values)).toFixed(2)
+                                        updatedVariant[5].Values = (parseInt(updatedVariant[1].Values) / parseInt(updatedVariant[3].Values)).toFixed(4)
                                       }
                                     }
                                     setSelectedVariant(updatedVariant);
@@ -15957,7 +15959,7 @@ const Fuels = () => {
                                   <span>{ticket[column.title]}</span>
                                   <div className="group flex mt-2 cursor-pointer gap-2">
                                     <FaExclamationCircle size={12} />
-                                    <div className="hidden group-hover:block z-40 absolute w-56 p-2 bg-black opacity-70 text-white rounded-lg whitespace-pre-wrap">
+                                    <div className="hidden group-hover:block z-40 absolute max-w-56 p-2 bg-black opacity-70 text-white rounded-lg whitespace-pre-wrap">
                                       {tooltipData[ticket[column.title]]}
                                     </div>
                                   </div>

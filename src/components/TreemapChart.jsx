@@ -23,10 +23,13 @@ const TreemapChart = ({ data = [] }) => {
       },
       dataLabels: {
         enabled: true,
+        formatter: function (text, opts) {
+          return `${text} (${opts.value}%)`; // Show category + value in brackets
+        },
         style: {
-          fontSize: "12px",
+          fontSize: "14px",
           fontWeight: "bold",
-          colors: ["#fff"]
+          colors: ["#000"] // Set all text to black
         }
       },
       tooltip: {

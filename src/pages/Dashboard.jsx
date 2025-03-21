@@ -53,7 +53,7 @@ const Dashboard = () => {
 
           // Calculate the percentage
           let percentage = (matches / totalInReport) * 100;
-          locationResult[category] = percentage.toFixed(2) + "%";
+          locationResult[category] = percentage.toFixed(4) + "%";
 
           // Accumulate percentage for the location
           locationPercentageSum += percentage;
@@ -70,7 +70,7 @@ const Dashboard = () => {
         });
 
         // Calculate total percentage for the location
-        let locationTotalPercentage = (locationPercentageSum / categoryCount).toFixed(2) + "%";
+        let locationTotalPercentage = (locationPercentageSum / categoryCount).toFixed(4) + "%";
         locationResult["Total"] = locationTotalPercentage;
 
         // Add to overall percentage calculation
@@ -93,12 +93,12 @@ const Dashboard = () => {
     });
 
     // Calculate full total percentage across all branches
-    let fullTotalPercentage = (totalPercentage / totalCategories).toFixed(2) + "%";
+    let fullTotalPercentage = (totalPercentage / totalCategories).toFixed(4) + "%";
 
     // Calculate overall category-specific percentages
-    let avgEmissionsPercentage = (totalEmissionsPercentage / branchesWithData).toFixed(2) + "%";
-    let avgSocialPercentage = (totalSocialPercentage / branchesWithData).toFixed(2) + "%";
-    let avgGovernancePercentage = (totalGovernancePercentage / branchesWithData).toFixed(2) + "%";
+    let avgEmissionsPercentage = (totalEmissionsPercentage / branchesWithData).toFixed(4) + "%";
+    let avgSocialPercentage = (totalSocialPercentage / branchesWithData).toFixed(4) + "%";
+    let avgGovernancePercentage = (totalGovernancePercentage / branchesWithData).toFixed(4) + "%";
 
     return {
       result,

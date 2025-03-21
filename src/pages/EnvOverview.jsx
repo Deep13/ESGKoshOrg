@@ -103,7 +103,7 @@ const EnvOverview = () => {
       // Convert to required format with percentage calculation
       formattedData = Object.entries(data).map(([key, value]) => ({
         x: key,
-        y: parseFloat(((value / total) * 100).toFixed(2)) // Percentage calculation
+        y: parseFloat(((value / total) * 100).toFixed(4)) // Percentage calculation
       }));
       // formattedData = [];
 
@@ -167,7 +167,7 @@ const EnvOverview = () => {
     // Convert to required format
     const scopeDataObj = Object.keys(scopeTotals).map(scope => ({
       label: scope,
-      percentage: totalEmissions ? ((scopeTotals[scope] / totalEmissions) * 100).toFixed(2) : 0,
+      percentage: totalEmissions ? ((scopeTotals[scope] / totalEmissions) * 100).toFixed(4) : 0,
       color: scopeColors[scope],
       emission: Math.round(scopeTotals[scope]) // Rounding emissions for cleaner output
     }))
@@ -549,16 +549,16 @@ const EnvOverview = () => {
                 <div className="w-24 h-24">
                   <img src={flight} alt="flight-img"></img>
                 </div>
-                <div className='font-bold'>Flight</div>
-                <div>{filteredOverview?.Flight?.toFixed(2) || "NA"}</div>
+                <div className='font-bold'>Air</div>
+                <div>{filteredOverview?.Flight?.toFixed(4) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>
               <div className="flex flex-col justify-center items-center">
                 <div className="w-24 h-24">
                   <img src={road} alt="flight-img"></img>
                 </div>
-                <div className='font-bold'>Road</div>
-                <div>{filteredOverview?.land?.toFixed(2) || "NA"}</div>
+                <div className='font-bold'>Land</div>
+                <div>{filteredOverview?.land?.toFixed(4) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>
               <div className="flex flex-col justify-center items-center">
@@ -566,7 +566,7 @@ const EnvOverview = () => {
                   <img src={ship} alt="flight-img"></img>
                 </div>
                 <div className='font-bold'>Sea</div>
-                <div>{filteredOverview?.sea?.toFixed(2) || "NA"}</div>
+                <div>{filteredOverview?.sea?.toFixed(4) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>
             </div>
@@ -594,7 +594,7 @@ const EnvOverview = () => {
             <div className="flex mt-1 items-center">
               <div className=" text-slate-600">
                 <div className="">
-                  {filteredOverview?.["Elec heat cooling"]?.toFixed(2) || "NA"} kWh
+                  {filteredOverview?.["Elec heat cooling"]?.toFixed(4) || "NA"} kWh
                 </div>
                 {/* <div className="">
                   CONSUMPTION<br/> value

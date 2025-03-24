@@ -1,5 +1,5 @@
 import flight from "../assets/flight_orange.png"
-import road from "../assets/Road_green.png"
+import road from "../assets/train-car.png"
 import ship from "../assets/ship_blue.png"
 import dustbin from "../assets/dustbin.png"
 import tower from "../assets/tower.png"

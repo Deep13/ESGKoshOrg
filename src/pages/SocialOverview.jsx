@@ -1,6 +1,6 @@
 import { useState } from "react";
 import retention from '../assets/trio.png'
-import lead from '../assets/lead.png'
+import lead from '../assets/lead_1.png'
 import { useMemo, useEffect } from "react";
 
 import {
@@ -53,6 +53,7 @@ const SocialOverview = () => {
 
   useEffect(() => {
     if (filteredOverview && filteredOverview["Employment"]) {
+      filteredOverview['Employment'] = arrange(filteredOverview['Employment'])
       const labels = Object.keys(filteredOverview["Employment"])
       const maleData = labels.map(ageGroup => filteredOverview["Employment"][ageGroup].Male || 0);
       const femaleData = labels.map(ageGroup => filteredOverview["Employment"][ageGroup].Female || 0);
@@ -472,6 +473,18 @@ const SocialOverview = () => {
     return result;
   };
 
+  const arrange = (originalObject) => {
+    const desiredOrder = ['Overall', 'Less than 22', '22 to 35', '35 to 50', '50+'];
+
+    const sortedObject = {};
+
+    desiredOrder.forEach(key => {
+      if (originalObject.hasOwnProperty(key)) {
+        sortedObject[key] = originalObject[key];
+      }
+    });
+    return sortedObject;
+  }
   console.log("ah", transformData(overviewObj))
   console.log("employye", employeeChart)
 
@@ -576,8 +589,10 @@ const SocialOverview = () => {
             {/* <div className="ml-3"> */}
 
             {/* </div> */}
-            <div className="text-4xl text-center">{ret == "NA" ? "Select a Year" : ret + "%"}</div>
-            <img src={lead} alt="retention Icon" width="100%" />
+            <div className="flex items-center flex-col">
+              <div className="text-4xl text-center mb-5">{ret == "NA" ? "Select a Year" : ret + "%"}</div>
+              <img src={lead} alt="retention Icon" width="70%" />
+            </div>
           </div>
           {/* <div className=" w-full rounded-lg p-3 border flex items-center justify-between">
                     <div>Type</div>

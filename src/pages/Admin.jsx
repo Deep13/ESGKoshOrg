@@ -1050,7 +1050,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     const month=monthYear.split("-")[0];
     const year=monthYear.split("-")[1];
     var domain = userData?.username.split("@");
-    const env="Environment-Overview-2024"
+    const env=`Environment-Overview-${year}`
     const docRef = doc(firestore,
          domain[1],
          "AnalyticsData", 
@@ -1060,8 +1060,8 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     const docSnapshot = await getDoc(docRef);
     if(docSnapshot.exists() && docSnapshot.data()){
         console.log(docSnapshot.data());
-        console.log("check",sumMonthlyData(docSnapshot.data(),10))
-        let emissionData=sumMonthlyData(docSnapshot.data(),10);
+        console.log("check",sumMonthlyData(docSnapshot.data(),month))
+        let emissionData=sumMonthlyData(docSnapshot.data(),month);
         let transformedData=Object.entries(emissionData).map(([category, emission]) => ({ category, emission }))
         console.log(transformedData)
         generateDocx(transformedData,transformedData,transformedData,master,year)

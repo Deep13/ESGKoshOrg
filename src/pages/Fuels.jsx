@@ -430,24 +430,23 @@ const Fuels = () => {
           const gender = checkValue(item["Gender"]);
           const headCount = parseInt(item["Head Count"]) || 0;
           const age = item["Age"] || "0";
-          fullEmissions[age][gender] += headCount
-
+        
+          // Update by age group
+          fullEmissions[age][gender] += headCount;
+        
+          // ✅ Also add to "Overall"
+          fullEmissions["Overall"][gender] += headCount;
+        
           // Group by Entity Type
           if (!employmentEmissions.EmploymentType[entityType]) {
             employmentEmissions.EmploymentType[entityType] = { "Male": 0, "Female": 0, "Others": 0 };
-            employmentEmissions.EmploymentType[entityType][gender] = headCount
           }
-          else {
-            employmentEmissions.EmploymentType[entityType][gender] += headCount;
-          }
+          employmentEmissions.EmploymentType[entityType][gender] += headCount;
+        
+          // Update "All" category
           employmentEmissions.EmploymentType["All"][gender] += headCount;
-
-          // Group by Gender
-          // if (!entityEmissions.Gender[gender]) {
-          //     entityEmissions.Gender[gender] = 0;
-          // }
-          // entityEmissions.Gender[gender] += headCount;
         });
+        
 
         return { totalEmissions: employmentEmissions, fullEmissions };
       }
@@ -9215,13 +9214,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "New Hires - Disabled",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
@@ -9250,31 +9249,31 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "New Hires - Disabled",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Head Count": ""
-        },
-        {
-          "Employment Type": "Employees",
-          "Category": "New Hires - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "35 to 50",
           "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
+          "Age": "35 to 50",
+          "Head Count": ""
+        },
+        {
+          "Employment Type": "Employees",
+          "Category": "New Hires - Disabled",
+          "Gender": "LGBTQ",
           "Age": "22 to 35",
           "Head Count": ""
         },
@@ -9285,13 +9284,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "New Hires - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
@@ -9320,13 +9319,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "New Hires",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "New Hires",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
@@ -9355,13 +9354,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "New Hires",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "New Hires",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "New Hires",
@@ -9390,13 +9389,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "New Hires",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "New Hires",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
@@ -9425,13 +9424,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "Existing",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "Existing",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
@@ -9460,13 +9459,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "Existing",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "Existing",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "Existing",
@@ -9495,13 +9494,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "Existing",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "Existing",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
@@ -9530,31 +9529,31 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "Existing - Disabled",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "Existing - Disabled",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Female",
           "Age": "50+",
-          "Head Count": ""
-        },
-        {
-          "Employment Type": "Employees",
-          "Category": "Existing - Disabled",
-          "Gender": "Female",
-          "Age": "35 to 50",
           "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "Female",
+          "Age": "35 to 50",
+          "Head Count": ""
+        },
+        {
+          "Employment Type": "Employees",
+          "Category": "Existing - Disabled",
+          "Gender": "Female",
           "Age": "22 to 35",
           "Head Count": ""
         },
@@ -9565,31 +9564,31 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "Existing - Disabled",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "Existing - Disabled",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Head Count": ""
-        },
-        {
-          "Employment Type": "Employees",
-          "Category": "Existing - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "35 to 50",
           "Head Count": ""
         },
         {
           "Employment Type": "Employees",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
+          "Age": "35 to 50",
+          "Head Count": ""
+        },
+        {
+          "Employment Type": "Employees",
+          "Category": "Existing - Disabled",
+          "Gender": "LGBTQ",
           "Age": "22 to 35",
           "Head Count": ""
         },
@@ -9600,13 +9599,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Employees",
-          "Category": "Existing - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Employees",
+        //   "Category": "Existing - Disabled",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
@@ -9635,13 +9634,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "New Hires - Disabled",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
@@ -9670,31 +9669,31 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "New Hires - Disabled",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Head Count": ""
-        },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "New Hires - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "35 to 50",
           "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
+          "Age": "35 to 50",
+          "Head Count": ""
+        },
+        {
+          "Employment Type": "Temporary Employee",
+          "Category": "New Hires - Disabled",
+          "Gender": "LGBTQ",
           "Age": "22 to 35",
           "Head Count": ""
         },
@@ -9705,13 +9704,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "New Hires - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
@@ -9740,13 +9739,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "New Hires",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "New Hires",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
@@ -9775,13 +9774,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "New Hires",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "New Hires",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "New Hires",
@@ -9810,13 +9809,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "New Hires",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "New Hires",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
@@ -9845,13 +9844,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "Existing",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "Existing",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
@@ -9880,13 +9879,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "Existing",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "Existing",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing",
@@ -9915,31 +9914,31 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "Existing",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "Existing - Disabled",
-          "Gender": "Male",
-          "Age": "50+",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "Existing",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Male",
-          "Age": "35 to 50",
+          "Age": "50+",
           "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "Male",
+          "Age": "35 to 50",
+          "Head Count": ""
+        },
+        {
+          "Employment Type": "Temporary Employee",
+          "Category": "Existing - Disabled",
+          "Gender": "Male",
           "Age": "22 to 35",
           "Head Count": ""
         },
@@ -9950,13 +9949,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "Existing - Disabled",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "Existing - Disabled",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
@@ -9985,31 +9984,31 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "Existing - Disabled",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "Existing - Disabled",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Head Count": ""
-        },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "Existing - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "35 to 50",
           "Head Count": ""
         },
         {
           "Employment Type": "Temporary Employee",
           "Category": "Existing - Disabled",
           "Gender": "LGBTQ",
+          "Age": "35 to 50",
+          "Head Count": ""
+        },
+        {
+          "Employment Type": "Temporary Employee",
+          "Category": "Existing - Disabled",
+          "Gender": "LGBTQ",
           "Age": "22 to 35",
           "Head Count": ""
         },
@@ -10020,13 +10019,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Employee",
-          "Category": "Existing - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Employee",
+        //   "Category": "Existing - Disabled",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
@@ -10055,13 +10054,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Workers",
-          "Category": "New Hires - Disabled",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Workers",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
@@ -10090,31 +10089,31 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Workers",
-          "Category": "New Hires - Disabled",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Workers",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Head Count": ""
-        },
-        {
-          "Employment Type": "Workers",
-          "Category": "New Hires - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "35 to 50",
           "Head Count": ""
         },
         {
           "Employment Type": "Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
+          "Age": "35 to 50",
+          "Head Count": ""
+        },
+        {
+          "Employment Type": "Workers",
+          "Category": "New Hires - Disabled",
+          "Gender": "LGBTQ",
           "Age": "22 to 35",
           "Head Count": ""
         },
@@ -10125,13 +10124,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Workers",
-          "Category": "New Hires - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Workers",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
@@ -10160,13 +10159,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Workers",
-          "Category": "New Hires",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Workers",
+        //   "Category": "New Hires",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
@@ -10195,13 +10194,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Workers",
-          "Category": "New Hires",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Workers",
+        //   "Category": "New Hires",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Workers",
           "Category": "New Hires",
@@ -10230,13 +10229,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Workers",
-          "Category": "New Hires",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Workers",
+        //   "Category": "New Hires",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
@@ -10265,13 +10264,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Workers",
-          "Category": "Existing",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Workers",
+        //   "Category": "Existing",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
@@ -10300,13 +10299,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Workers",
-          "Category": "Existing",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Workers",
+        //   "Category": "Existing",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Workers",
           "Category": "Existing",
@@ -10335,13 +10334,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Workers",
-          "Category": "Existing",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Workers",
+        //   "Category": "Existing",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
 
 
 
@@ -10373,13 +10372,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "New Hires - Disabled",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Workers",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
@@ -10408,31 +10407,31 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "New Hires - Disabled",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Workers",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
           "Age": "50+",
-          "Head Count": ""
-        },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "New Hires - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "35 to 50",
           "Head Count": ""
         },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires - Disabled",
           "Gender": "LGBTQ",
+          "Age": "35 to 50",
+          "Head Count": ""
+        },
+        {
+          "Employment Type": "Temporary Workers",
+          "Category": "New Hires - Disabled",
+          "Gender": "LGBTQ",
           "Age": "22 to 35",
           "Head Count": ""
         },
@@ -10443,13 +10442,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "New Hires - Disabled",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Workers",
+        //   "Category": "New Hires - Disabled",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
@@ -10478,13 +10477,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "New Hires",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Workers",
+        //   "Category": "New Hires",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
@@ -10513,13 +10512,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "New Hires",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Workers",
+        //   "Category": "New Hires",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Workers",
           "Category": "New Hires",
@@ -10548,13 +10547,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "New Hires",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Workers",
+        //   "Category": "New Hires",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
@@ -10583,13 +10582,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "Existing",
-          "Gender": "Male",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Workers",
+        //   "Category": "Existing",
+        //   "Gender": "Male",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
@@ -10618,13 +10617,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "Existing",
-          "Gender": "Female",
-          "Age": "Overall",
-          "Head Count": ""
-        },
+        // {
+        //   "Employment Type": "Temporary Workers",
+        //   "Category": "Existing",
+        //   "Gender": "Female",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // },
         {
           "Employment Type": "Temporary Workers",
           "Category": "Existing",
@@ -10653,13 +10652,13 @@ const Fuels = () => {
           "Age": "Less than 22",
           "Head Count": ""
         },
-        {
-          "Employment Type": "Temporary Workers",
-          "Category": "Existing",
-          "Gender": "LGBTQ",
-          "Age": "Overall",
-          "Head Count": ""
-        }
+        // {
+        //   "Employment Type": "Temporary Workers",
+        //   "Category": "Existing",
+        //   "Gender": "LGBTQ",
+        //   "Age": "Overall",
+        //   "Head Count": ""
+        // }
       ]
       ,
       "Leave": [

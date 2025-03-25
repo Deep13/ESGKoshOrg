@@ -565,7 +565,7 @@ const EnvOverview = () => {
                 <div className="w-24 h-24">
                   <img src={ship} alt="flight-img"></img>
                 </div>
-                <div className='font-bold'>Sea</div>
+                <div className='font-bold'>Water</div>
                 <div>{filteredOverview?.sea?.toFixed(4) || "NA"}</div>
                 <div>kgCO2e</div>
               </div>

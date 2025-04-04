@@ -10,10 +10,11 @@ import { getDoc, doc } from "firebase/firestore";
 import { firestore } from '../firebase';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaExclamationTriangle } from "react-icons/fa";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { expanded, userData, master, sheets, fullTotalPercentage, setFullTotalPercentage } = useSidebar();
+  const { expanded, userData, master, sheets, fullTotalPercentage, setFullTotalPercentage, setPage } = useSidebar();
 
   const [avgEmissionsPercentage, setAvgEmissionsPercentage] = useState("");
   const [avgSocialPercentage, setAvgSocialPercentage] = useState("");
@@ -21,7 +22,6 @@ const Dashboard = () => {
 
 
   const calculateCompletion = (statistics, reports, branches) => {
-    console.log("stats here", statistics, "and branch", branches)
     let result = {};
     let totalPercentage = 0;
     let totalCategories = 0;
@@ -109,7 +109,6 @@ const Dashboard = () => {
     };
   }
 
-  console.log("user", userData)
 
   const getCalculatedPercentage = async (domain, monthYear) => {
     await getDoc(doc(firestore, domain[1], "TransactionData", monthYear.month + "-" + monthYear.year, "Statistics"))
@@ -154,12 +153,19 @@ const Dashboard = () => {
     }
   }, [userData, master, sheets])
 
-
-  console.log("avg ", avgEmissionsPercentage)
+console.log(master)
 
   return (
     <div className="p-5 w-full h-screen bg-slate-100">
       <div>
+      {!master?.currentReportingCycle?.status && 
+  <div className='bg-gradient-to-r from-[#3d9f86] to-[#29C472] w-full rounded-xl p-3 text-white mx-auto text-xl font-semibold flex gap-5 items-center text-center mb-5'>
+    <FaExclamationTriangle/>
+    <p>You need to initiate a reporting cycle to submit data.</p>
+    {/* <p className="text-sm mt-1">Only an admin can initiate a new cycle. If you are an admin, go to the "Initiate/Terminate Cycle" section to start a cycle. Otherwise, ask your company admin.</p> */}
+  </div>
+}
+
         <div className="font-semibold mb-3">My Cards</div>
         <div className={`flex flex-wrap gap-3 ${expanded ? 'justify-cenetr' : 'justify-between'}`}>
           {/* Card 1 */}

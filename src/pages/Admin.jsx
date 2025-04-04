@@ -19,6 +19,8 @@ const Admin = () => {
   const { master, userData, sheets,module,fullTotalPercentage,setMaster } = useSidebar();
   const [action, setAction] = useState(master?.currentReportingCycle?.status);
   const [noData,setNoData] = useState(false);
+  const [type,setType]=useState("year");
+  const [dropdown,setDropdown]=useState(false);
   
 
   const getData = async (domain) => {
@@ -899,14 +901,14 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     const today = new Date();
     const currentYear = today.getFullYear();
     const currentMonth = today.getMonth() + 1; // getMonth() is 0-based
-    if (selectedYear < currentYear || (selectedYear === currentYear && selectedMonth < currentMonth)) {
-        setShowModal(false)
-        setNoticeModal(true);
-        setNoticeModalText("You cannot initiate a cycle for a past date. Please verify your selected month and year values and try again.");
+    // if (selectedYear < currentYear || (selectedYear === currentYear && selectedMonth < currentMonth)) {
+    //     setShowModal(false)
+    //     setNoticeModal(true);
+    //     setNoticeModalText("You cannot initiate a cycle for a past date. Please verify your selected month and year values and try again.");
         
-        console.log("Error: Selected month/year is in the past.");
-        return;
-    }
+    //     console.log("Error: Selected month/year is in the past.");
+    //     return;
+    // }
     // Add your logic for initiating a new cycle here
     if (year && month) {
         setDoc(doc(firestore,userData.domain,"Master Data"),{
@@ -1045,26 +1047,142 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     return totals;
 }
 
+const transformAndSumDataGov = (data, selectedMonth) => {
+    if (!data[selectedMonth]) {
+        console.log("Data for selected month not found.");
+        return [];
+    }
 
-  const handleDownload = async(monthYear) => {
+    const monthData = data[selectedMonth]; // Get the selected month data
+    const aggregatedData = {}; // Store summed values
+
+    // Loop through each location
+    Object.keys(monthData).forEach(location => {
+        const locationData = monthData[location];
+
+        // Loop through each object (e.g., "Eco. Performance", "Entity")
+        Object.keys(locationData).forEach(objectKey => {
+            const objectData = locationData[objectKey];
+
+            // Loop through each sub-key (e.g., "Direct economic value generated", "BOD")
+            Object.entries(objectData).forEach(([subKey, value]) => {
+                // Convert value to a number if possible, otherwise set to 0
+                const numericValue = parseFloat(value) || 0;
+
+                // Initialize object structure if not present
+                if (!aggregatedData[objectKey]) {
+                    aggregatedData[objectKey] = {};
+                }
+                if (!aggregatedData[objectKey][subKey]) {
+                    aggregatedData[objectKey][subKey] = 0;
+                }
+
+                // Sum up values
+                aggregatedData[objectKey][subKey] += numericValue;
+            });
+        });
+    });
+
+    // Convert aggregated data into the required array format
+    const result = [];
+    Object.entries(aggregatedData).forEach(([objectKey, subData]) => {
+        Object.entries(subData).forEach(([subKey, totalValue]) => {
+            result.push([objectKey, subKey, totalValue]);
+        });
+    });
+
+    return result;
+};
+const transformAndClubSocialData = (data, selectedMonth) => {
+    if (!data[selectedMonth]) {
+        return []; // Return empty array if no data for selected month
+    }
+
+    let transformedData = [];
+    const monthData = data[selectedMonth];
+
+    let totalRetention = 0;
+    let employmentSummary = {};
+
+    for (const location in monthData) {
+        const locationData = monthData[location];
+
+        // Aggregate Retention
+        if (locationData.Retention !== undefined) {
+            totalRetention += locationData.Retention;
+        }
+
+        // Aggregate Employment
+        if (locationData.Employment) {
+            for (const ageGroup in locationData.Employment) {
+                for (const category in locationData.Employment[ageGroup]) {
+                    let value = locationData.Employment[ageGroup][category];
+
+                    if (value !== null) {
+                        if (!employmentSummary[ageGroup]) {
+                            employmentSummary[ageGroup] = { Male: 0, Female: 0, LGBTQ: 0 };
+                        }
+                        employmentSummary[ageGroup][category] += value;
+                    }
+                }
+            }
+        }
+    }
+
+    // Push aggregated retention data
+    transformedData.push(["Retention", totalRetention]);
+
+    // Push aggregated employment data
+    for (const ageGroup in employmentSummary) {
+        for (const category in employmentSummary[ageGroup]) {
+            transformedData.push(["Employment", ageGroup, category, employmentSummary[ageGroup][category]]);
+        }
+    }
+
+    return transformedData;
+};
+
+
+
+
+
+  const handleDownload = async(monthYear,type) => {
     const month=monthYear.split("-")[0];
     const year=monthYear.split("-")[1];
     var domain = userData?.username.split("@");
-    const env=`Environment-Overview-${year}`
+    const env=`Environment-Overview-${year}`;
+    // const social=`Social-Overview-${year}`;
+    // const gov=`Governance-Overview-${year}`;
     const docRef = doc(firestore,
          domain[1],
          "AnalyticsData", 
          "Reporting Data",
          env
        );
+    // const docRef2 = doc(firestore,
+    //     domain[1],
+    //     "AnalyticsData", 
+    //     "Reporting Data",
+    //     social
+    //   );
+    // const docRef3 = doc(firestore,
+    //     domain[1],
+    //     "AnalyticsData", 
+    //     "Reporting Data",
+    //     gov
+    //   );
     const docSnapshot = await getDoc(docRef);
+    // const docSnapshot2 = await getDoc(docRef2);
+    // const docSnapshot3 = await getDoc(docRef3);
+//    let socialData=transformAndClubSocialData(docSnapshot2.data(),month);
+//     let govData=transformAndSumDataGov(docSnapshot3.data(),month)
     if(docSnapshot.exists() && docSnapshot.data()){
         console.log(docSnapshot.data());
         console.log("check",sumMonthlyData(docSnapshot.data(),month))
         let emissionData=sumMonthlyData(docSnapshot.data(),month);
         let transformedData=Object.entries(emissionData).map(([category, emission]) => ({ category, emission }))
         console.log(transformedData)
-        generateDocx(transformedData,transformedData,transformedData,master,year)
+        generateDocx(transformedData,master,year,userData,type,month)
     }
   }
 
@@ -1142,15 +1260,37 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
                     <td className="py-3 px-3">{tableData.startDate}</td>
                     <td className="py-3 px-3">{tableData.endDate}</td>
                     <td className="py-3 px-3">
-                    <button
-                        onClick={() => handleDownload(tableData.monthYear)}
-                        className={`px-7 py-2 bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl ${
-                            action === "Initiate" ? "opacity-50" : ""
-                        } text-white`}
-                        >
-                        Download
-                        </button>
-                    </td>
+    <div className="relative inline-block text-left">
+        <button
+            className={`px-7 py-2 bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl text-white ${
+                action === "Initiate" ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={action === "Initiate"}
+            onClick={()=>{setDropdown(index)}}
+        >
+            Download 
+        </button>
+
+        {/* Dropdown Menu */}
+        {dropdown==index && <div className="absolute mt-2 w-32 rounded-md shadow-lg bg-white z-10 border">
+            <div className="py-1">
+                <button
+                    onClick={() => handleDownload(tableData.monthYear,"month")}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                    Month
+                </button>
+                <button
+                    onClick={() => handleDownload(tableData.monthYear,"year")}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                    Year
+                </button>
+            </div>
+        </div>}
+    </div>
+</td>
+
                 </tr>
                 ))}
             </tbody>

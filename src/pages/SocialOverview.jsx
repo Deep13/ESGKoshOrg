@@ -38,6 +38,53 @@ const SocialOverview = () => {
   const [lowestlevelData, setlowestlevelData] = useState(null);
   const [barData, setBarData] = useState();
   const [ret, setRet] = useState("NA");
+  const [retDuration,setRetDuration]=useState("");
+
+
+  useEffect(() => {
+    let val = "";
+
+    if (selectedYear !== "All") {
+        val += selectedYear;
+    } else {
+        setRetDuration(val);
+        return;
+    }
+
+    if (selectedMonth !== "All") {
+        val += "-" + selectedMonth;
+    } else {
+        setRetDuration(val);
+        return;
+    }
+
+    if (selectedCountry !== "All") {
+        val += "-" + selectedCountry;
+    } else {
+        setRetDuration(val);
+        return;
+    }
+
+    if (selectedState !== "All") {
+        val += "-" + selectedState;
+    } else {
+        setRetDuration(val);
+        return;
+    }
+
+    if (selectedDistrict !== "All") {
+        val += "-" + selectedDistrict;
+    } else {
+        setRetDuration(val);
+        return;
+    }
+
+    if (selectedBlock !== "All") {
+        val += "-" + selectedBlock;
+    }
+
+    setRetDuration(val);
+}, [selectedYear, selectedMonth, selectedCountry, selectedState, selectedDistrict, selectedBlock]);
 
   useEffect(() => {
     fetchAnalyticsData()
@@ -87,7 +134,7 @@ const SocialOverview = () => {
 
       };
 
-      console.log("a", JSON.stringify(monthWiseData))
+      // console.log("a", JSON.stringify(monthWiseData))
       setEmployeeChart(monthWiseData)
 
     }
@@ -98,7 +145,7 @@ const SocialOverview = () => {
 
   }, [filteredOverview])
 
-  console.log("e", employeeChart)
+  // console.log("e", employeeChart)
 
   // Extract unique filter options
   const years = useMemo(() => ["All", ...new Set(filterlist.map(entry => entry.year))], [filterlist]);
@@ -135,10 +182,10 @@ const SocialOverview = () => {
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState, selectedDistrict]);
   //code by Deepak end////
 
-  console.log("test", overviewObj)
+  // console.log("test", overviewObj)
 
 
-  console.log("does it work?", filteredOverview)
+  // console.log("does it work?", filteredOverview)
 
   // function calculateRetention(data, country, state, district, branch) {
   //     // Find data for the current year and selected month
@@ -213,11 +260,11 @@ const SocialOverview = () => {
     { "AOD": [{ "KG": 20, "4G": 20, "2DG": 20, "pG": 20, "UG": 20, "kG": 20, }, "#e34444"] },
   ]
 
-  dummyData.map((data) => {
-    console.log(Object.keys(data))
-    console.log(data[Object.keys(data)[0]][0])
-    console.log(data[Object.keys(data)[0]][1])
-  })
+  // dummyData.map((data) => {
+  //   console.log(Object.keys(data))
+  //   console.log(data[Object.keys(data)[0]][0])
+  //   console.log(data[Object.keys(data)[0]][1])
+  // })
 
   const monthNames = {
     "01": "Jan",
@@ -249,7 +296,7 @@ const SocialOverview = () => {
       })
     }
     setFilteredOverview(obj)
-    console.log(obj)
+    // console.log(obj)
 
 
     if (selection) {
@@ -296,7 +343,7 @@ const SocialOverview = () => {
         }
       })
     }
-    console.log(obj)
+    // console.log(obj)
     return obj
 
 
@@ -354,7 +401,7 @@ const SocialOverview = () => {
 
           })
           setlowestlevelData(branches)
-          console.log("branches", branches)
+          // console.log("branches", branches)
           const parsedData = Object.keys(branches).map(entry => {
             const [year, month, country, state, district, block] = entry.split("-");
             return {
@@ -367,9 +414,9 @@ const SocialOverview = () => {
             };
           });
           setfilterlist(parsedData)
-          console.log("parsedData", parsedData)
+          // console.log("parsedData", parsedData)
 
-          console.log("Analytics", data);
+          // console.log("Analytics", data);
 
           // setLoading(false)
         } else {
@@ -417,11 +464,11 @@ const SocialOverview = () => {
       });
     }
 
-    console.log(result);
+    // console.log(result);
   };
 
-  console.log("a", filteredOverview)
-  console.log("b", overviewObj)
+  // console.log("a", filteredOverview)
+  // console.log("b", overviewObj)
   // console.log("d",total("2024"))
 
   // useEffect(()=>{
@@ -434,7 +481,7 @@ const SocialOverview = () => {
 
 
   // console.log("prev",prevRet);
-  // console.log("curr",currRet)
+  console.log("curr")
 
   const transformData = (data) => {
     // Map for converting numerical month numbers to month names
@@ -485,8 +532,8 @@ const SocialOverview = () => {
     });
     return sortedObject;
   }
-  console.log("ah", transformData(overviewObj))
-  console.log("employye", employeeChart)
+  // console.log("ah", transformData(overviewObj))
+  // console.log("employye", employeeChart)
 
   return (
     <div className="p-2 flex flex-col gap-3 items-center">
@@ -583,14 +630,29 @@ const SocialOverview = () => {
         <div className="flex flex-col justify-between rounded-xl p-2 w-[23rem] bg-[white] text-black">
           <div className="flex justify-between flex-col flex-1">
             {/* <div className=" flex flex-col justify-between items-center gap-[3rem]"> */}
-            <div className="text-lg font-semibold text-left w-[100%]">RETENTION</div>
+            <div className="text-left w-[100%]">
+  <span className="text-lg font-semibold">RETENTION</span>
+  {retDuration !== "" && (() => {
+    const parts = retDuration.split("-");
+    const year = parseInt(parts[0]); // Extract the year
+    if (!isNaN(year)) {
+      const rest = parts.slice(1).join("-"); // Join remaining parts safely
+      return rest
+        ? ` (${year - 1}-${rest} to ${year}-${rest})`
+        : ` (${year - 1} to ${year})`;
+    }
+    return "";
+  })()}
+</div>
+
+
 
             {/* </div> */}
             {/* <div className="ml-3"> */}
 
             {/* </div> */}
             <div className="flex items-center flex-col">
-              <div className="text-4xl text-center mb-5">{ret == "NA" ? "Select a Year" : ret + "%"}</div>
+              <div className="text-4xl text-center mb-5">{ret == "NA" ? (selectedYear=="All"?"Select a Year":"No data available") : ret + "%"}</div>
               <img src={lead} alt="retention Icon" width="70%" />
             </div>
           </div>

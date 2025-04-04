@@ -115,15 +115,13 @@ const Fuels = () => {
   }
 
   const addRow = (param = 'recorded') => {
-    console.log("data got", getColumns(module))
-    console.log("selected", selectedVariant);
-    console.log("fetched", fetchedVariant);
+    
     const newRow = {};
     getColumns(module)?.forEach((col) => (newRow[col.title] = ""));
-    console.log("new Row", newRow, branch.split('-')[0])
+    
 
     if (param == 'recorded') {
-      newRow.Country = branch.split('-')[0];
+      // newRow.Country = branch.split('-')[0];
       setSelectedVariant([...selectedVariant, newRow]);
       setTempSelectedVariant([...selectedVariant, newRow]);
       setFetchedVariant({
@@ -454,7 +452,7 @@ const Fuels = () => {
       case "Market Presence":{
         mktPresence={"Markets served by the entity nationally":selectedVariant[6].Values,"Markets served by the entity internationally":selectedVariant[7].Values}
         
-        return {totalEmissions:mktPresence}
+        return {totalEmissions:mktPresence, fullEmissions:mktPresence}
       }
 
 
@@ -619,6 +617,261 @@ const Fuels = () => {
 
     return { totalEmissions, fullEmissions }
   };
+
+  const countryList = [
+    "India",
+    "Afghanistan",
+    "Albania",
+    "Algeria",
+    "American Samoa",
+    "Andorra",
+    "Angola",
+    "Anguilla",
+    "Antarctica",
+    "Antigua and Barbuda",
+    "Argentina",
+    "Armenia",
+    "Aruba",
+    "Australia",
+    "Austria",
+    "Azerbaijan",
+    "Bahamas (the)",
+    "Bahrain",
+    "Bangladesh",
+    "Barbados",
+    "Belarus",
+    "Belgium",
+    "Belize",
+    "Benin",
+    "Bermuda",
+    "Bhutan",
+    "Bolivia (Plurinational State of)",
+    "Bonaire, Sint Eustatius and Saba",
+    "Bosnia and Herzegovina",
+    "Botswana",
+    "Bouvet Island",
+    "Brazil",
+    "British Indian Ocean Territory (the)",
+    "Brunei Darussalam",
+    "Bulgaria",
+    "Burkina Faso",
+    "Burundi",
+    "Cabo Verde",
+    "Cambodia",
+    "Cameroon",
+    "Canada",
+    "Cayman Islands (the)",
+    "Central African Republic (the)",
+    "Chad",
+    "Chile",
+    "China",
+    "Christmas Island",
+    "Cocos (Keeling) Islands (the)",
+    "Colombia",
+    "Comoros (the)",
+    "Congo (the Democratic Republic of the)",
+    "Congo (the)",
+    "Cook Islands (the)",
+    "Costa Rica",
+    "Croatia",
+    "Cuba",
+    "Curaçao",
+    "Cyprus",
+    "Czechia",
+    "Côte d'Ivoire",
+    "Denmark",
+    "Djibouti",
+    "Dominica",
+    "Dominican Republic (the)",
+    "Ecuador",
+    "Egypt",
+    "El Salvador",
+    "Equatorial Guinea",
+    "Eritrea",
+    "Estonia",
+    "Eswatini",
+    "Ethiopia",
+    "Falkland Islands (the) [Malvinas]",
+    "Faroe Islands (the)",
+    "Fiji",
+    "Finland",
+    "France",
+    "French Guiana",
+    "French Polynesia",
+    "French Southern Territories (the)",
+    "Gabon",
+    "Gambia (the)",
+    "Georgia",
+    "Germany",
+    "Ghana",
+    "Gibraltar",
+    "Greece",
+    "Greenland",
+    "Grenada",
+    "Guadeloupe",
+    "Guam",
+    "Guatemala",
+    "Guernsey",
+    "Guinea",
+    "Guinea-Bissau",
+    "Guyana",
+    "Haiti",
+    "Heard Island and McDonald Islands",
+    "Holy See (the)",
+    "Honduras",
+    "Hong Kong",
+    "Hungary",
+    "Iceland",
+    "India",
+    "Indonesia",
+    "Iran (Islamic Republic of)",
+    "Iraq",
+    "Ireland",
+    "Isle of Man",
+    "Israel",
+    "Italy",
+    "Jamaica",
+    "Japan",
+    "Jersey",
+    "Jordan",
+    "Kazakhstan",
+    "Kenya",
+    "Kiribati",
+    "Korea (the Democratic People's Republic of)",
+    "Korea (the Republic of)",
+    "Kuwait",
+    "Kyrgyzstan",
+    "Lao People's Democratic Republic (the)",
+    "Latvia",
+    "Lebanon",
+    "Lesotho",
+    "Liberia",
+    "Libya",
+    "Liechtenstein",
+    "Lithuania",
+    "Luxembourg",
+    "Macao",
+    "Madagascar",
+    "Malawi",
+    "Malaysia",
+    "Maldives",
+    "Mali",
+    "Malta",
+    "Marshall Islands (the)",
+    "Martinique",
+    "Mauritania",
+    "Mauritius",
+    "Mayotte",
+    "Mexico",
+    "Micronesia (Federated States of)",
+    "Moldova (the Republic of)",
+    "Monaco",
+    "Mongolia",
+    "Montenegro",
+    "Montserrat",
+    "Morocco",
+    "Mozambique",
+    "Myanmar",
+    "Namibia",
+    "Nauru",
+    "Nepal",
+    "Netherlands (the)",
+    "New Caledonia",
+    "New Zealand",
+    "Nicaragua",
+    "Niger (the)",
+    "Nigeria",
+    "Niue",
+    "Norfolk Island",
+    "Northern Mariana Islands (the)",
+    "Norway",
+    "Oman",
+    "Pakistan",
+    "Palau",
+    "Palestine, State of",
+    "Panama",
+    "Papua New Guinea",
+    "Paraguay",
+    "Peru",
+    "Philippines (the)",
+    "Pitcairn",
+    "Poland",
+    "Portugal",
+    "Puerto Rico",
+    "Qatar",
+    "Republic of North Macedonia",
+    "Romania",
+    "Russian Federation (the)",
+    "Rwanda",
+    "Réunion",
+    "Saint Barthélemy",
+    "Saint Helena, Ascension and Tristan da Cunha",
+    "Saint Kitts and Nevis",
+    "Saint Lucia",
+    "Saint Martin (French part)",
+    "Saint Pierre and Miquelon",
+    "Saint Vincent and the Grenadines",
+    "Samoa",
+    "San Marino",
+    "Sao Tome and Principe",
+    "Saudi Arabia",
+    "Senegal",
+    "Serbia",
+    "Seychelles",
+    "Sierra Leone",
+    "Singapore",
+    "Sint Maarten (Dutch part)",
+    "Slovakia",
+    "Slovenia",
+    "Solomon Islands",
+    "Somalia",
+    "South Africa",
+    "South Georgia and the South Sandwich Islands",
+    "South Sudan",
+    "Spain",
+    "Sri Lanka",
+    "Sudan (the)",
+    "Suriname",
+    "Svalbard and Jan Mayen",
+    "Sweden",
+    "Switzerland",
+    "Syrian Arab Republic",
+    "Taiwan",
+    "Tajikistan",
+    "Tanzania, United Republic of",
+    "Thailand",
+    "Timor-Leste",
+    "Togo",
+    "Tokelau",
+    "Tonga",
+    "Trinidad and Tobago",
+    "Tunisia",
+    "Turkey",
+    "Turkmenistan",
+    "Turks and Caicos Islands (the)",
+    "Tuvalu",
+    "Uganda",
+    "Ukraine",
+    "United Arab Emirates (the)",
+    "United Kingdom of Great Britain and Northern Ireland (the)",
+    "United States Minor Outlying Islands (the)",
+    "United States of America (the)",
+    "Uruguay",
+    "Uzbekistan",
+    "Vanuatu",
+    "Venezuela (Bolivarian Republic of)",
+    "Viet Nam",
+    "Virgin Islands (British)",
+    "Virgin Islands (U.S.)",
+    "Wallis and Futuna",
+    "Western Sahara",
+    "Yemen",
+    "Zambia",
+    "Zimbabwe",
+    "Åland Islands"
+  ];
+
+  const riskList=["Low","Moderate","High","Uncertain"];
 
 
 
@@ -6480,24 +6733,36 @@ const Fuels = () => {
         {
           "Type of home office": "With cooling",
           "Number of employees": "",
-          "Working regime (For full-time)": "",
-          "Working from home": "",
+          "Working regime (For full-time:100%)": "",
+          "% Working from home(e.g. 50% from home)": "",
+          "kg CO2e":"",
+          "Consumption kWh/hour":"",
+          "Country":"",
+          "Units":"kWh",
           "Number of months": "",
           "Factor": "3.65"
         },
         {
           "Type of home office": "No heating/No cooling",
           "Number of employees": "",
-          "Working regime (For full-time)": "",
-          "Working from home": "",
+          "Working regime (For full-time:100%)": "",
+          "% Working from home(e.g. 50% from home)": "",
+          "kg CO2e":"",
+          "Consumption kWh/hour":"",
+          "Country":"",
+          "Units":"kWh",
           "Number of months": "",
           "Factor": "0.15"
         },
         {
           "Type of home office": "With heating",
           "Number of employees": "",
-          "Working regime (For full-time)": "",
-          "Working from home": "",
+          "Working regime (For full-time:100%)": "",
+          "% Working from home(e.g. 50% from home)": "",
+          "kg CO2e":"",
+          "Consumption kWh/hour":"",
+          "Country":"",
+          "Units":"kWh",
           "Number of months": "",
           "Factor": "5.15"
         }
@@ -14299,7 +14564,7 @@ const Fuels = () => {
         { "title": "kg CO2e", "editable": true, "type": "Number" },
       ],
       "Accommodation": [
-        { "title": "Country", "editable": false },
+        { "title": "Country", "editable": true, "type":"dropdown" },
         { "title": "Number of occupied rooms", "editable": true, "type": "Number" },
         { "title": "Number of nights per room", "editable": true, "type": "Number" },
         { "title": "Factor", "editable": true, "type": "Number" }
@@ -14337,10 +14602,16 @@ const Fuels = () => {
       ],
       "Home Office": [
         { "title": "Type of home office", "editable": false },
+        { "title": "Country", "editable": true,"type":"dropdown" },
+        { "title": "Units", "editable": false,"type":"dropdown" },
+        { "title": "Consumption kWh/hour", "editable": true, "type": "Number" },
+        { "title": "Factor", "editable": true, "type": "Number" },
         { "title": "Number of employees", "editable": true, "type": "Number" },
-        { "title": "Working regime (For full-time)", "editable": true, "type": "Number" },
-        { "title": "Working from home", "editable": true, "type": "Number" },
-        { "title": "Factor", "editable": true, "type": "Number" }
+        { "title": "Working time (For full-time:100%)", "editable": true, "type": "Number" },
+        { "title": "% Working from home(e.g. 50% from home)", "editable": true, "type": "Number" },
+        { "title": "No. of months", "editable": true, "type": "Number" },
+        { "title": "kg CO2e", "editable": true, "type": "Number" }
+        
       ],
       "Water": [
         { "title": "Type", "editable": false },
@@ -15061,8 +15332,8 @@ const Fuels = () => {
               hasIssue = selectedVariant?.some(
                   (obj) =>
                       ("Number of employees" in obj && obj["Number of employees"] !== "" && obj["Number of employees"] !== null) ||
-                      ("Working regime (For full-time)" in obj && obj["Working regime (For full-time)"] !== "" && obj["Working regime (For full-time)"] !== null) ||
-                      ("Working from home" in obj && obj["Working from home"] !== "" && obj["Working from home"] !== null)
+                      ("Working time (For full-time:100%)" in obj && obj["Working time (For full-time:100%)"] !== "" && obj["Working time (For full-time:100%)"] !== null) ||
+                      ("% Working from home(e.g. 50% from home)" in obj && obj["% Working from home(e.g. 50% from home)"] !== "" && obj["% Working from home(e.g. 50% from home)"] !== null)
                           ? obj["Factor"] === undefined || obj["Factor"] === "" || obj["Factor"] == 0
                           : false
               );
@@ -15889,7 +16160,18 @@ const Fuels = () => {
                                   <option value="" disabled>
                                     Select {column.title}
                                   </option>
-                                  <option value="Low">
+                                  {(module=="Accommodation" || module=="Home Office") && countryList.map(
+                                  (country,index)=>(
+                                    
+                                  <option key={index} value={country}>{country}</option>
+                                  )
+                                  )}
+                                  {module=="Child Labor" && riskList.map(
+                                  (risk,index)=>(
+                                  <option key={index} value={risk}>{risk}</option>
+                                  )
+                                  )}
+                                  {/* <option value="Low">
                                     Low
                                   </option>
                                   <option value="Moderate">
@@ -15900,7 +16182,7 @@ const Fuels = () => {
                                   </option>
                                   <option value="Uncertain">
                                     Uncertain
-                                  </option>
+                                  </option> */}
 
                                 </select>
                               ) : (

@@ -316,7 +316,14 @@ export default function Sidebar({ onRaiseIncident }) {
                       )}
                     </li>
                   ))}
-                  
+                  <li onClick={()=>{
+                    navigate('/materialityAssessment')
+                    setPage("materialityAssessment")
+                  }} className={`py-2 font-medium rounded-md cursor-pointer hover:bg-indigo-50 pl-2 ${page === "materialityAssessment"
+                    ? "text-[#29C472]"
+                    : "text-slate-600"}`}>
+                    Materiality Assessment
+                  </li>
                 </ul>
               )}
             </li>

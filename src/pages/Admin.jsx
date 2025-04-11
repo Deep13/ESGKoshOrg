@@ -9,6 +9,7 @@ import generateDocx from "../components/DocxStruct"
 import TrainingEduChart from "../components/BarApex";
 
 import ApexCharts from "apexcharts";
+import BarChartApex from "../components/BarChartApex";
 
 const Admin = () => {
   const [tableInfo, setTableInfo] = useState();
@@ -27,11 +28,13 @@ const Admin = () => {
   const [chartImages, setChartImages] = useState({});
 
   const [chartStatus,setChartStatus]=useState({
-    "Training":false
+    "Training":false,
+    "Employee":false
   })
 
 
   const [trainingData,setTrainingData]=useState({});
+  const [employeeData,setEmployeeData]=useState({});
   
 
   
@@ -996,47 +999,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     setTerminateModal(false);
   }
 
-  function sumMonthlyData(data, month) {
-    if (!data[month]) {
-        console.log("No data available for this month.");
-        return {};
-    }
 
-    const monthData = data[month];
-    const totals = {};
-
-    function addToTotal(key, value) {
-        if (typeof value === "number") {
-            totals[key] = parseFloat(((totals[key] || 0) + value).toFixed(4)); // Round off to 2 decimals
-        } else if (typeof value === "object") {
-            // Recursively sum nested objects
-            Object.entries(value).forEach(([subKey, subValue]) => {
-                addToTotal(key, subValue);
-            });
-        }
-    }
-
-    Object.values(monthData).forEach((branchData) => {
-        Object.entries(branchData).forEach(([key, value]) => {
-            addToTotal(key, value);
-        });
-    });
-
-    return totals;
-}
-
-
-  const handleCaptureChartImage = async (dataToUse) => {
-    const result = await ApexCharts.exec("TrainingChart", "dataURI");
-  
-    if (result?.imgURI && Object.keys(dataToUse).length > 0) {
-      console.log("Chart Image Captured:", result.imgURI);
-      setChartImages(prev => ({ ...prev, Training: result.imgURI }));
-      return result.imgURI; // Return it for immediate use
-    }
-  
-    return null;
-  };
 const formatTrainingAndEduData = (data,type) => {
     const roles = ["BOD", "Employees", "Others", "Workers", "Personalles"];
     const result = {
@@ -1072,9 +1035,67 @@ const formatTrainingAndEduData = (data,type) => {
     return result;
   };
 
+  function formatEmploymentData(rawData, type, month) {
+    const genders = ["Male", "Female", "LGBTQ"];
+    const genderColors = {
+      Male: "#109ad8",
+      Female: "#45bf34",
+      LGBTQ: "#f26c35"
+    };
+  
+    const genderDataByAge = {
+      Male: {},
+      Female: {},
+      LGBTQ: {}
+    };
+  
+    const ageSet = new Set();
+  
+    const monthsToProcess = type === "month" ? { [month]: rawData[month] } : rawData;
+  
+    for (const monthKey in monthsToProcess) {
+      const monthData = monthsToProcess[monthKey];
+      for (const branchKey in monthData) {
+        const branch = monthData[branchKey];
+        const employment = branch.Employment || {};
+        for (const ageKey in employment) {
+          ageSet.add(ageKey);
+          const ageData = employment[ageKey];
+          genders.forEach(gender => {
+            const value = ageData[gender] || 0;
+            genderDataByAge[gender][ageKey] = (genderDataByAge[gender][ageKey] || 0) + value;
+          });
+        }
+      }
+    }
+  
+    const sortedAgeLabels = Array.from(ageSet).sort();
+  
+    const datasets = genders.map(gender => {
+      const ageData = genderDataByAge[gender];
+      const dataArray = sortedAgeLabels.map(age => ageData[age] || 0);
+      const overall = dataArray.reduce((sum, val) => sum + val, 0);
+      return {
+        label: gender,
+        data: [overall, ...dataArray],
+        backgroundColor: genderColors[gender],
+        borderColor: genderColors[gender],
+        borderWidth: 1
+      };
+    });
+  
+    return {
+      labels: ["Overall", ...sortedAgeLabels],
+      datasets
+    };
+  }
+  
+  
 
   const handleDownload = async (monthYear, type) => {
     const [month, year] = monthYear.split("-");
+    setMonth(month);
+    setYear(year);
     const domain = userData?.username.split("@");
     const env = `Environment-Overview-${year}`;
     const social = `Social-Overview-${year}`;
@@ -1087,6 +1108,15 @@ const formatTrainingAndEduData = (data,type) => {
   
     const socialData = docSnapshot2.data() || {};
     const formattedTrainingData = formatTrainingAndEduData(socialData, type);
+    const formattedEmploymentData=formatEmploymentData(socialData,type,month);
+    const isEmptyEmploymentData = formattedEmploymentData.datasets.every(dataset =>
+        dataset.data.every(value => value === 0)
+      );
+      
+      if (isEmptyEmploymentData) {
+        setChartStatus(prev => ({ ...prev, Employee: true }));
+      }
+      
     const isEmptyTrainingData = Object.entries(formattedTrainingData).every(
         ([_, value]) => Object.keys(value).length === 0
       );
@@ -1094,81 +1124,67 @@ const formatTrainingAndEduData = (data,type) => {
       if (isEmptyTrainingData) {
         setChartStatus((prev) => ({ ...prev, Training: true }));
       }
+
+    console.log(formatEmploymentData(socialData,type,month))
     setTrainingData(formattedTrainingData);
+    setEmployeeData(formattedEmploymentData);
 
   
-    // ❗️Give React time to re-render the chart
-    // const chartImgURI = await new Promise((resolve) => {
-    //   setTimeout(async () => {
-    //     const result = await ApexCharts.exec("TrainingChart", "dataURI");
-    //     if (result?.imgURI) {
-    //       console.log("Chart Image Captured:", result.imgURI);
-    //       setChartImages(prev => ({ ...prev, Training: result.imgURI }));
-    //       resolve(result.imgURI);
-    //     } else {
-    //       console.warn("Failed to capture chart image.");
-    //       resolve(null);
-    //     }
-    //   }, 1000); // Adjust timeout if needed
-    // });
-  
-    // if (docSnapshot.exists() && docSnapshot.data()) {
-    //   const emissionData = sumMonthlyData(docSnapshot.data(), month);
-    //   const transformedData = Object.entries(emissionData).map(([category, emission]) => ({
-    //     category,
-    //     emission,
-    //   }));
-  
-    //   generateDocx(
-    //     transformedData,
-    //     master,
-    //     year,
-    //     userData,
-    //     type,
-    //     month,
-    //     { Training: chartImgURI }
-    //   );
-    // }
   };
 
-  const continueDownloadingData=async()=>{
+  const continueDownloadingData = async (id, mark) => {
     const chartImgURI = await new Promise((resolve) => {
       setTimeout(async () => {
-        const result = await ApexCharts.exec("TrainingChart", "dataURI");
+        const result = await ApexCharts.exec(id, "dataURI");
         if (result?.imgURI) {
-          console.log("Chart Image Captured:", result.imgURI);
-          setChartImages(prev => ({ ...prev, Training: result.imgURI }));
+          console.log(`Chart Image Captured for ${mark}:`, result.imgURI);
+          setChartImages(prev => ({ ...prev, [mark]: result.imgURI }));
           resolve(result.imgURI);
         } else {
-          console.warn("Failed to capture chart image.");
+          console.warn(`Failed to capture chart image for ${mark}.`);
           resolve(null);
         }
-      }, 1000); // Adjust timeout if needed
+      }, 1000);
     });
+  
+    // ✅ Correct usage of `mark` here too
+    setChartStatus(prev => ({ ...prev, [mark]: true }));
+  };
+  
 
-     setChartStatus(prev=>({...prev,"Training":true}))
+  useEffect(() => {
+    const allDone = Object.values(chartStatus).every(status => status === true);
+  
+    if (allDone && master && year !== "" && month !== "") {
+      console.log("All charts are ready, now generating doc");
+      generateDocx(master, year, userData, type, month, chartImages);
+      setChartImages({});
+  
+      // Reset chart status for next run
+      setChartStatus({
+        Training: false,
+        Employee: false,
+      });
     }
-
-    useEffect(() => {
-        const allDone = Object.values(chartStatus).every(status => status === true);
-      
-        if (allDone) {
-          console.log("All charts are ready, now generating doc");
-          generateDocx(master, year, userData, type, month, chartImages);
-          setChartImages({});
-
-          setChartStatus({
-            "Training":false
-          })
-        }
-      }, [chartStatus]);
+  }, [chartStatus, year, month]);
+  
 
   return (
     <div className="bg-slate-100 flex flex-col w-full h-screen p-2">
+        <div
+        className="absolute w-0 h-0 overflow-hidden opacity-0 pointer-events-none"
+        aria-hidden="true"
+        >
+        <TrainingEduChart
+            trainingData={trainingData}
+            continueDownload={() => continueDownloadingData("TrainingChart","Training")}
+        />
+        <BarChartApex data={employeeData} continueDownload={()=>continueDownloadingData("EmployeeChart","Employee")}/>
+        </div>
+
       <div className="mb-3 flex justify-between items-center">
         <div className="flex">
-            <TrainingEduChart trainingData={
-                trainingData} continueDownload={()=>{continueDownloadingData()}}/>
+        {/* <BarChartApex data={employeeData}/> */}
           {master?.currentReportingCycle?.status ? "Current" : "Last"} Reporting Cycle:
           <div className="font-semibold ml-3">
             {master?.currentReportingCycle

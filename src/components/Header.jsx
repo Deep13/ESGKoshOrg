@@ -52,7 +52,8 @@ const Header = () => {
         "Environment Overview":module,
         "Social Overview":module,
         "Governance Overview":module,
-        "fuels":getTitle(module)
+        "fuels":getTitle(module),
+        "materialityAssessment":"Materiality Assessment"
     }
 
     const tooltipData={

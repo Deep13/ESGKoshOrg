@@ -14,6 +14,7 @@ import Analytics from './pages/Analytics'
 import SocialOverview from './pages/SocialOverview'
 import EnvOverview from './pages/EnvOverview'
 import GovOverview from './pages/GovOverview'
+import MaterialityAssessment from './pages/MaterialityAssessment'
 
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
           <Route path='/social' element={<SocialOverview/>} />
           <Route path='/environment' element={<EnvOverview/>}/>
           <Route path='/governance' element={<GovOverview/>}/>
+          <Route path='/materialityAssessment' element={<MaterialityAssessment/>}/>
         </Route>
       </Routes>
     </>

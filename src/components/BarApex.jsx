@@ -30,7 +30,7 @@ const TrainingEduChart = ({
       continueDownload();        // ✅ run once only
     }
   };
-
+console.log(series)
   const options = {
     chart: {
       id: chartId,

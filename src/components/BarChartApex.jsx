@@ -1,10 +1,12 @@
-import React from "react";
 import Chart from "react-apexcharts";
+// import { useSidebar } from "../context/SidebarContext";
 
-const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, setYear = null, fill = false }) => {
+
+const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, setYear = null, fill = false, formatkey="" }) => {
   // Check if there's no data available
+  // const {sheets,module}=useSidebar()
   const hasData = data?.datasets?.length > 0 && data.datasets?.some(dataset => dataset?.data?.length > 0);
-
+  
   if (!hasData && setYear === null) {
     return (
       <div className="w-full h-[200px] flex items-center justify-center text-gray-500">
@@ -12,6 +14,10 @@ const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, se
       </div>
     );
   }
+
+ 
+
+// const moduleName=checkKey(module)
 
   // Transform data into ApexCharts format
   const series = data?.datasets?.map(dataset => ({
@@ -63,7 +69,7 @@ const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, se
       title: { text: "" }
     },
     yaxis: {
-      title: { text: "" },
+      title: {  text: formatkey === "Env" ? "kgCO₂e" : "", },
       labels: {
         formatter: (value) => Math.floor(value), // Ensure only integer values are displayed
       }
@@ -96,7 +102,10 @@ const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, se
     },
     tooltip: {
       y: {
-        formatter: (value) => Math.floor(value) // Tooltip values as integers
+        formatter: (value) => {
+          const base = Math.floor(value);
+          return formatkey === "Env" ? `${base} kgCO₂e` : base;
+        }
       }
     }
   };

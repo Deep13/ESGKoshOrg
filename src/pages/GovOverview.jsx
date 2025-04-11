@@ -509,7 +509,7 @@ const GovOverview = () => {
           }
         </div>
         <div className=" bg-white rounded-xl border flex-1 px-3 py-2 flex flex-1 flex-col">
-          <div className='flex text-lg font-semibold mb-4'>MARKET PRESENCE</div>
+          <div className='flex text-lg font-semibold mb-4'>PRESENCE</div>
           <MapComponent />
         </div>
       </div>

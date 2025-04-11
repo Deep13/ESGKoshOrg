@@ -183,7 +183,7 @@ const Fuels = () => {
     let level2Emissions = { Level2: {} }; // For Owned Vehicles (grouped by Level 2)
     let vehiclesEmissions = { Vehicles: {} }; // For Freighting goods, Business travel land and sea, Employee commuting
     let entityEmissions = { EntityType: { All: { "Male": 0, "Female": 0, "Others": 0 } } };
-    let employmentEmissions = { EmploymentType: { All: { "Male": 0, "Female": 0, "Others": 0 } } };
+    let employmentEmissions = { EmploymentType: { All: { "Male": 0, "Female": 0, "LGBTQ": 0 } } };
     let retentionData = { EmployeeType: { All: { "Male": 0, "Female": 0, "Others": 0 } } };
     let ohsData = { InjuryType: {} }; // For OH and S module
     let mktPresence={};
@@ -437,7 +437,7 @@ const Fuels = () => {
         
           // Group by Entity Type
           if (!employmentEmissions.EmploymentType[entityType]) {
-            employmentEmissions.EmploymentType[entityType] = { "Male": 0, "Female": 0, "Others": 0 };
+            employmentEmissions.EmploymentType[entityType] = { "Male": 0, "Female": 0, "LGBTQ": 0 };
           }
           employmentEmissions.EmploymentType[entityType][gender] += headCount;
         
@@ -2005,7 +2005,7 @@ const Fuels = () => {
           "Reference": 2938,
           "Reference 2": 814,
           "Activity": "Electricity",
-          "Country-Type": "--",
+          "Type": "--",
           "Unit": "kWh",
           "Amount": null,
           "GEF Factors": null,
@@ -2015,7 +2015,7 @@ const Fuels = () => {
           "Reference": 667,
           "Reference 2": 815,
           "Activity": "Heat and steam",
-          "Country-Type": "District heat and steam",
+          "Type": "District heat and steam",
           "Unit": "kWh",
           "Amount": null,
           "GEF Factors": null,
@@ -2025,7 +2025,7 @@ const Fuels = () => {
           "Reference": 3172,
           "Reference 2": null,
           "Activity": "District cooling",
-          "Country-Type": "--",
+          "Type": "--",
           "Unit": "Ton of refrigeration",
           "Amount": null,
           "GEF Factors": null,
@@ -2035,7 +2035,7 @@ const Fuels = () => {
           "Reference": 2938,
           "Reference 2": 814,
           "Activity": "Electricity - Backup",
-          "Country-Type": "--",
+          "Type": "--",
           "Unit": "kWh",
           "Amount": null,
           "GEF Factors": null,
@@ -9410,10 +9410,10 @@ const Fuels = () => {
           "Data": "Financial assistance received from governments",
           "Values": ""
         },
-        {
-          "Data": "Remuneration ratio of BOD vs Employee",
-          "Values": ""
-        }
+        // {
+        //   "Data": "Remuneration ratio of BOD vs Employee",
+        //   "Values": ""
+        // }
       ],
       "Market Presence": [
         {
@@ -14516,7 +14516,7 @@ const Fuels = () => {
       ],
       "Elec heat cooling": [
         { "title": "Activity", "editable": false },
-        { "title": "Country-Type", "editable": false },
+        { "title": "Type", "editable": false },
         { "title": "Unit", "editable": false },
         { "title": "Consumption of Electricity", "editable": true, "type": "Number" },
         { "title": "GEF Factors", "editable": true, "type": "Number" },
@@ -15683,33 +15683,39 @@ const Fuels = () => {
 
   const downloadTableAsExcel = () => {
     if (!selectedVariant.length) return;
-
+  
     // Get the table columns
     const columns = getColumns(module).map(col => col.title);
-
+  
     // Format the data to include only visible columns
     const formattedData = selectedVariant.map(ticket => {
       let formattedRow = {};
       columns.forEach(col => {
-        formattedRow[col] = ticket[col] || "--"; // Default empty values to "--"
+        let cellValue = ticket[col] || "--";
+        // Replace value if it is "Total revenue"
+        if (cellValue === "Total Revenue") {
+          cellValue = "Net worth";
+        }
+        formattedRow[col] = cellValue;
       });
       return formattedRow;
     });
-
+  
     // Create worksheet with formatted data
     const worksheet = XLSX.utils.json_to_sheet(formattedData, { header: columns });
-
+  
     // Apply styling (optional) - adjusting column widths
-    const colWidths = columns.map(() => ({ wch: 20 })); // Adjust column width to 20 characters
+    const colWidths = columns.map(() => ({ wch: 20 }));
     worksheet["!cols"] = colWidths;
-
+  
     // Create a workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Table Data");
-
+  
     // Trigger download
     XLSX.writeFile(workbook, `${module} Report for ${branch}.xlsx`);
   };
+  
 
 
   const handleUpload = (event) => {
@@ -15759,7 +15765,7 @@ const Fuels = () => {
     "Fuel": ["Type", "Fuel", "Unit"],
     "Bioenergy": ["Type", "Fuel", "Unit"],
     "Refrigerant and other": ["Type", "Fuel", "Unit"],
-    "Elec heat cooling": ["Activity", "Country-Type", "Unit"],
+    "Elec heat cooling": ["Activity", "Type", "Unit"],
     "Owned Vehicles": ["Scope", "Level 1", "Level 2", "Level 3", "Fuel", "Unit"],
     "Materials": ["Activity", "Waste type", "Unit"],
     "WTT- fuels": ["Type", "Fuel", "Unit"],
@@ -16098,7 +16104,7 @@ const Fuels = () => {
                               </div>
                             </div>
                             ) : (
-                              column.title == "Count" ? "Head Count" : column.title == "Country-Type" ? "Type" : column.title
+                              column.title == "Count" ? "Head Count" : column.title == "Type" ? "Type" : column.title
                             )}
                         </th>
                       ))}

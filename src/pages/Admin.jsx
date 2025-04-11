@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSidebar } from "../context/SidebarContext";
 import { firestore } from "../firebase";
 import { getDoc, doc, collection,getDocs,setDoc } from "firebase/firestore";
@@ -6,6 +6,9 @@ import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import modalIcon from "../assets/modalIcon.png"
 import generateDocx from "../components/DocxStruct"
+import TrainingEduChart from "../components/BarApex";
+
+import ApexCharts from "apexcharts";
 
 const Admin = () => {
   const [tableInfo, setTableInfo] = useState();
@@ -20,9 +23,18 @@ const Admin = () => {
   const [action, setAction] = useState(master?.currentReportingCycle?.status);
   const [noData,setNoData] = useState(false);
   const [type,setType]=useState("year");
-  const [dropdown,setDropdown]=useState(false);
+  const [dropdown,setDropdown]=useState(-1);
+  const [chartImages, setChartImages] = useState({});
+
+  const [chartStatus,setChartStatus]=useState({
+    "Training":false
+  })
+
+
+  const [trainingData,setTrainingData]=useState({});
   
 
+  
   const getData = async (domain) => {
     setLoading(true)
     try {
@@ -813,41 +825,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
             }
         });
     });
-    // Round off TotalEmissions to two decimal places for every branch
-    // Object.keys(branchWiseData).forEach(branch => {
-    //     branchWiseData[branch].Overview.TotalEmissions = parseFloat(branchWiseData[branch].Overview.TotalEmissions.toFixed(4));
-    //     branchWiseData[branch].Environment.Overview.TotalEmissions = parseFloat(branchWiseData[branch].Overview.TotalEmissions.toFixed(4));
-    //     delete branchWiseData[branch].modules;
-    //     const totalEmissions = branchWiseData[branch].Overview.TotalEmissions;
-    //     if (totalEmissions > 0) {
-    //         const scopeData = { ...branchWiseData[branch].Overview.Scope };
-    //         Object.keys(scopeData).forEach(scope => {
-    //             // Convert scope emissions to percentage of total emissions
-    //             branchWiseData[branch].Overview.Scope[scope] = parseFloat(((scopeData[scope] / totalEmissions) * 100).toFixed(4));
-    //             branchWiseData[branch].Environment.Overview.Scope[scope] = parseFloat(((scopeData[scope] / totalEmissions) * 100).toFixed(4));
-    //             branchWiseData[branch].Environment.Overview[scope] = scopeData[scope].toFixed(4);
-    //             if (scope == "Scope 1") {
-    //                 branchWiseData[branch].Environment["Scope 1"]["Scope 1"] = scopeData[scope].toFixed(4);
-    //             }
-    //             if (scope == "Scope 3") {
-    //                 branchWiseData[branch].Environment["Scope 3"]["Scope 3"] = scopeData[scope].toFixed(4);
-    //                 Object.keys(branchWiseData[branch].Environment["Scope 3"].Emission).map(val => {
-    //                     branchWiseData[branch].Environment["Scope 3"].Emission[val] = parseFloat(((branchWiseData[branch].Environment["Scope 3"].Emission[val] / scopeData[scope]) * 100).toFixed(4));
-    //                 }
-    //                 )
-    //             }
-    //             if (scope == "Scope 2") {
-    //                 branchWiseData[branch].Environment["Scope 2"]["Scope 2"] = scopeData[scope].toFixed(4);
-    //                 Object.keys(branchWiseData[branch].Environment["Scope 2"].Activities).map(val => {
-    //                     branchWiseData[branch].Environment["Scope 2"].Activities[val] = parseFloat(((branchWiseData[branch].Environment["Scope 2"].Activities[val] / scopeData[scope]) * 100).toFixed(4));
-    //                 }
-    //                 )
-    //             }
-
-    //         });
-    //         branchWiseData[branch].Social["Overview"]["Retention"] = parseFloat((branchWiseData[branch].Social["Overview"]["Attrition"] / branchWiseData[branch].Social["Overview"].Headcount).toFixed(4));
-    //     }
-    // });
+  
     return branchWiseData;
 }
 
@@ -1047,150 +1025,150 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     return totals;
 }
 
-const transformAndSumDataGov = (data, selectedMonth) => {
-    if (!data[selectedMonth]) {
-        console.log("Data for selected month not found.");
-        return [];
+
+  const handleCaptureChartImage = async (dataToUse) => {
+    const result = await ApexCharts.exec("TrainingChart", "dataURI");
+  
+    if (result?.imgURI && Object.keys(dataToUse).length > 0) {
+      console.log("Chart Image Captured:", result.imgURI);
+      setChartImages(prev => ({ ...prev, Training: result.imgURI }));
+      return result.imgURI; // Return it for immediate use
     }
-
-    const monthData = data[selectedMonth]; // Get the selected month data
-    const aggregatedData = {}; // Store summed values
-
-    // Loop through each location
-    Object.keys(monthData).forEach(location => {
-        const locationData = monthData[location];
-
-        // Loop through each object (e.g., "Eco. Performance", "Entity")
-        Object.keys(locationData).forEach(objectKey => {
-            const objectData = locationData[objectKey];
-
-            // Loop through each sub-key (e.g., "Direct economic value generated", "BOD")
-            Object.entries(objectData).forEach(([subKey, value]) => {
-                // Convert value to a number if possible, otherwise set to 0
-                const numericValue = parseFloat(value) || 0;
-
-                // Initialize object structure if not present
-                if (!aggregatedData[objectKey]) {
-                    aggregatedData[objectKey] = {};
-                }
-                if (!aggregatedData[objectKey][subKey]) {
-                    aggregatedData[objectKey][subKey] = 0;
-                }
-
-                // Sum up values
-                aggregatedData[objectKey][subKey] += numericValue;
-            });
-        });
-    });
-
-    // Convert aggregated data into the required array format
-    const result = [];
-    Object.entries(aggregatedData).forEach(([objectKey, subData]) => {
-        Object.entries(subData).forEach(([subKey, totalValue]) => {
-            result.push([objectKey, subKey, totalValue]);
-        });
-    });
-
-    return result;
-};
-const transformAndClubSocialData = (data, selectedMonth) => {
-    if (!data[selectedMonth]) {
-        return []; // Return empty array if no data for selected month
-    }
-
-    let transformedData = [];
-    const monthData = data[selectedMonth];
-
-    let totalRetention = 0;
-    let employmentSummary = {};
-
-    for (const location in monthData) {
-        const locationData = monthData[location];
-
-        // Aggregate Retention
-        if (locationData.Retention !== undefined) {
-            totalRetention += locationData.Retention;
-        }
-
-        // Aggregate Employment
-        if (locationData.Employment) {
-            for (const ageGroup in locationData.Employment) {
-                for (const category in locationData.Employment[ageGroup]) {
-                    let value = locationData.Employment[ageGroup][category];
-
-                    if (value !== null) {
-                        if (!employmentSummary[ageGroup]) {
-                            employmentSummary[ageGroup] = { Male: 0, Female: 0, LGBTQ: 0 };
-                        }
-                        employmentSummary[ageGroup][category] += value;
-                    }
-                }
+  
+    return null;
+  };
+const formatTrainingAndEduData = (data,type) => {
+    const roles = ["BOD", "Employees", "Others", "Workers", "Personalles"];
+    const result = {
+      BOD: {},
+      Employees: {},
+      Others: {},
+      Workers: {},
+      Personalles: {},
+    };
+  
+    for (const monthKey in data) {
+      if (type === "month" && monthKey !==month) continue;
+      const branches = data[monthKey];
+      for (const branchKey in branches) {
+        const branch = branches[branchKey];
+        const trainingEdu = branch["Training and Edu"];
+        if (trainingEdu) {
+          roles.forEach((role) => {
+            const roleData = trainingEdu[role];
+            if (roleData) {
+              for (const [trainingType, value] of Object.entries(roleData)) {
+                const numericValue = Number(value);
+                result[role][trainingType] =
+                  (result[role][trainingType] || 0) +
+                  (isNaN(numericValue) ? 0 : numericValue);
+              }
             }
+          });
         }
+      }
     }
-
-    // Push aggregated retention data
-    transformedData.push(["Retention", totalRetention]);
-
-    // Push aggregated employment data
-    for (const ageGroup in employmentSummary) {
-        for (const category in employmentSummary[ageGroup]) {
-            transformedData.push(["Employment", ageGroup, category, employmentSummary[ageGroup][category]]);
-        }
-    }
-
-    return transformedData;
-};
+  
+    return result;
+  };
 
 
-
-
-
-  const handleDownload = async(monthYear,type) => {
-    const month=monthYear.split("-")[0];
-    const year=monthYear.split("-")[1];
-    var domain = userData?.username.split("@");
-    const env=`Environment-Overview-${year}`;
-    // const social=`Social-Overview-${year}`;
-    // const gov=`Governance-Overview-${year}`;
-    const docRef = doc(firestore,
-         domain[1],
-         "AnalyticsData", 
-         "Reporting Data",
-         env
-       );
-    // const docRef2 = doc(firestore,
-    //     domain[1],
-    //     "AnalyticsData", 
-    //     "Reporting Data",
-    //     social
-    //   );
-    // const docRef3 = doc(firestore,
-    //     domain[1],
-    //     "AnalyticsData", 
-    //     "Reporting Data",
-    //     gov
-    //   );
+  const handleDownload = async (monthYear, type) => {
+    const [month, year] = monthYear.split("-");
+    const domain = userData?.username.split("@");
+    const env = `Environment-Overview-${year}`;
+    const social = `Social-Overview-${year}`;
+  
+    const docRef = doc(firestore, domain[1], "AnalyticsData", "Reporting Data", env);
+    const docRef2 = doc(firestore, domain[1], "AnalyticsData", "Reporting Data", social);
+  
     const docSnapshot = await getDoc(docRef);
-    // const docSnapshot2 = await getDoc(docRef2);
-    // const docSnapshot3 = await getDoc(docRef3);
-//    let socialData=transformAndClubSocialData(docSnapshot2.data(),month);
-//     let govData=transformAndSumDataGov(docSnapshot3.data(),month)
-    if(docSnapshot.exists() && docSnapshot.data()){
-        console.log(docSnapshot.data());
-        console.log("check",sumMonthlyData(docSnapshot.data(),month))
-        let emissionData=sumMonthlyData(docSnapshot.data(),month);
-        let transformedData=Object.entries(emissionData).map(([category, emission]) => ({ category, emission }))
-        console.log(transformedData)
-        generateDocx(transformedData,master,year,userData,type,month)
-    }
-  }
+    const docSnapshot2 = await getDoc(docRef2);
+  
+    const socialData = docSnapshot2.data() || {};
+    const formattedTrainingData = formatTrainingAndEduData(socialData, type);
+    const isEmptyTrainingData = Object.entries(formattedTrainingData).every(
+        ([_, value]) => Object.keys(value).length === 0
+      );
+      
+      if (isEmptyTrainingData) {
+        setChartStatus((prev) => ({ ...prev, Training: true }));
+      }
+    setTrainingData(formattedTrainingData);
 
-  console.log(action)
+  
+    // ❗️Give React time to re-render the chart
+    // const chartImgURI = await new Promise((resolve) => {
+    //   setTimeout(async () => {
+    //     const result = await ApexCharts.exec("TrainingChart", "dataURI");
+    //     if (result?.imgURI) {
+    //       console.log("Chart Image Captured:", result.imgURI);
+    //       setChartImages(prev => ({ ...prev, Training: result.imgURI }));
+    //       resolve(result.imgURI);
+    //     } else {
+    //       console.warn("Failed to capture chart image.");
+    //       resolve(null);
+    //     }
+    //   }, 1000); // Adjust timeout if needed
+    // });
+  
+    // if (docSnapshot.exists() && docSnapshot.data()) {
+    //   const emissionData = sumMonthlyData(docSnapshot.data(), month);
+    //   const transformedData = Object.entries(emissionData).map(([category, emission]) => ({
+    //     category,
+    //     emission,
+    //   }));
+  
+    //   generateDocx(
+    //     transformedData,
+    //     master,
+    //     year,
+    //     userData,
+    //     type,
+    //     month,
+    //     { Training: chartImgURI }
+    //   );
+    // }
+  };
+
+  const continueDownloadingData=async()=>{
+    const chartImgURI = await new Promise((resolve) => {
+      setTimeout(async () => {
+        const result = await ApexCharts.exec("TrainingChart", "dataURI");
+        if (result?.imgURI) {
+          console.log("Chart Image Captured:", result.imgURI);
+          setChartImages(prev => ({ ...prev, Training: result.imgURI }));
+          resolve(result.imgURI);
+        } else {
+          console.warn("Failed to capture chart image.");
+          resolve(null);
+        }
+      }, 1000); // Adjust timeout if needed
+    });
+
+     setChartStatus(prev=>({...prev,"Training":true}))
+    }
+
+    useEffect(() => {
+        const allDone = Object.values(chartStatus).every(status => status === true);
+      
+        if (allDone) {
+          console.log("All charts are ready, now generating doc");
+          generateDocx(master, year, userData, type, month, chartImages);
+          setChartImages({});
+
+          setChartStatus({
+            "Training":false
+          })
+        }
+      }, [chartStatus]);
+
   return (
     <div className="bg-slate-100 flex flex-col w-full h-screen p-2">
       <div className="mb-3 flex justify-between items-center">
         <div className="flex">
+            <TrainingEduChart trainingData={
+                trainingData} continueDownload={()=>{continueDownloadingData()}}/>
           {master?.currentReportingCycle?.status ? "Current" : "Last"} Reporting Cycle:
           <div className="font-semibold ml-3">
             {master?.currentReportingCycle
@@ -1275,13 +1253,23 @@ const transformAndClubSocialData = (data, selectedMonth) => {
         {dropdown==index && <div className="absolute mt-2 w-32 rounded-md shadow-lg bg-white z-10 border">
             <div className="py-1">
                 <button
-                    onClick={() => handleDownload(tableData.monthYear,"month")}
+                    onClick={() => {
+                        setType("month")
+                        setMonth(tableData.monthYear.split('-')[0])
+                        handleDownload(tableData.monthYear,"month") 
+                        
+                    }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                     Month
                 </button>
                 <button
-                    onClick={() => handleDownload(tableData.monthYear,"year")}
+                    onClick={() => {
+                        setType("year")
+                        setYear(tableData.monthYear.split('-')[1]) 
+                        handleDownload(tableData.monthYear,"year")
+                        
+                    }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                     Year

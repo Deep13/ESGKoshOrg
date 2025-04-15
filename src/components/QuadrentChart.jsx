@@ -34,21 +34,88 @@ const QuadrentChart = ({series}) => {
           title: { text: 'Importance to Stakeholders' }
         },
         annotations: {
-          xaxis: [
-            {
-              x: 2.5,
-              borderColor: "#ff9f40",
-              strokeDashArray: 4,
-            }
-          ],
-          yaxis: [
-            {
-              y: 2.5,
-              borderColor: "#ff9f40",
-              strokeDashArray: 4,
-            }
-          ]
-        }
+            xaxis: [
+              {
+                x: 2.5,
+                borderColor: "#ff9f40",
+                strokeDashArray: 4,
+              }
+            ],
+            yaxis: [
+              {
+                y: 2.5,
+                borderColor: "#ff9f40",
+                strokeDashArray: 4,
+              }
+            ],
+            points: [
+              {
+                x: 3.75,
+                y: 3.75,
+                marker: { size: 0 },
+                label: {
+                  text: "Quadrant 1",
+                  borderColor: "transparent",  // removes the grey border
+                  borderWidth: 0,
+                  style: {
+                    color: "#000",
+                    fontSize: "18px",
+                    background: "transparent",
+                    fontWeight: "bold",
+                  }
+                }
+              },
+              {
+                x: 1.25,
+                y: 3.75,
+                marker: { size: 0 },
+                label: {
+                  text: "Quadrant 2",
+                  borderColor: "transparent",
+                  borderWidth: 0,
+                  style: {
+                    color: "#000",
+                    fontSize: "18px",
+                    background: "transparent",
+                    fontWeight: "bold",
+                  }
+                }
+              },
+              {
+                x: 1.25,
+                y: 1.25,
+                marker: { size: 0 },
+                label: {
+                  text: "Quadrant 3",
+                  borderColor: "transparent",
+                  borderWidth: 0,
+                  style: {
+                    color: "#000",
+                    fontSize: "18px",
+                    background: "transparent",
+                    fontWeight: "bold",
+                  }
+                }
+              },
+              {
+                x: 3.75,
+                y: 1.25,
+                marker: { size: 0 },
+                label: {
+                  text: "Quadrant 4",
+                  borderColor: "transparent",
+                  borderWidth: 0,
+                  style: {
+                    color: "#000",
+                    fontSize: "18px",
+                    background: "transparent",
+                    fontWeight: "bold",
+                  }
+                }
+              }
+            ]
+          }
+          
       };
       
     //   const series = [

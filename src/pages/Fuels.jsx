@@ -19,6 +19,7 @@ const Fuels = () => {
   const [branch, setBranch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalText, setModalText] = useState("");
+  const [modalType,setModalType] = useState("error");
   const fetchVariantRef = useRef([]);
   const selectedIndexes = useRef([])
   const selectedIndexes2 = useRef([]);
@@ -14752,6 +14753,7 @@ const Fuels = () => {
             setShowModal(true);
             setModalText("Variant Saved Successfully")
             // alert("Variant Saved Successfully")
+            setModalType("success")
           })
             .catch(() => {
               setShowModal(true);
@@ -14765,6 +14767,7 @@ const Fuels = () => {
           }, { merge: true }).then(() => {
             setShowModal(true)
             setModalText("Variant Saved Successfully")
+            setModalType("success")
             fetchVariantData()
           })
             .catch((error) => {
@@ -14859,6 +14862,7 @@ const Fuels = () => {
         .then(() => {
           setShowModal(true)
           setModalText("Variant successfully deleted!");
+          setModalType("success")
           // console.log("test",fetchedVariant[variantOffice])
           console.log(selectedVariant)
           // setSelectedVariant()
@@ -14890,6 +14894,7 @@ const Fuels = () => {
         .then(() => {
           setShowModal(true)
           setModalText("Variant successfully deleted!");
+          setModalType("success")
           fetchVariantData()
 
         })
@@ -15341,6 +15346,11 @@ const Fuels = () => {
               break;
 
               case "Accommodation":
+                selectedVariant?.forEach((obj) => {
+                  if (!("Country" in obj)) {
+                      obj["Country"] = "India";
+                  }
+              });
                 hasIssue = selectedVariant?.some(
                     (obj) =>
                         ("Number of nights per room" in obj && obj["Number of nights per room"] !== "" && obj["Number of nights per room"] !== null) ||
@@ -15495,6 +15505,7 @@ const Fuels = () => {
           .then(() => {
             setShowModal(true);
             setModalText("Data saved Successfully")
+            setModalType("success")
 
           })
           .catch((error) => {
@@ -15657,6 +15668,7 @@ const Fuels = () => {
       .then(() => {
         setShowModal(true);
         setModalText("Data successfully saved as draft!")
+        setModalType("success")
       })
       .catch((error) => {
         setShowModal(true);
@@ -16365,13 +16377,16 @@ const Fuels = () => {
           <div className="bg-white rounded-lg shadow-lg p-6 w-96 flex flex-col items-center justify-center">
 
             <div className="mb-5 flex gap-5 jusify-center items-center">
-              <img src={modalIcon} alt="modal Icon" className="h-10" />
-              {/* <SiTicktick size={32} color={"#29C472"}/> */}
+              
+              {modalType=="error"?<img src={modalIcon} alt="modal Icon" className="h-10" />:<SiTicktick size={32} color={"#29C472"}/>}
               {modalText}
             </div>
 
 
-            <button onClick={() => { setShowModal(false) }} className="px-3 py-2 rounded-lg mx-auto bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
+            <button onClick={() => { 
+              setShowModal(false)
+              setModalType("error")
+             }} className="px-3 py-2 rounded-lg mx-auto bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
               Ok
             </button>
 

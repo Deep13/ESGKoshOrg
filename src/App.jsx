@@ -15,6 +15,7 @@ import SocialOverview from './pages/SocialOverview'
 import EnvOverview from './pages/EnvOverview'
 import GovOverview from './pages/GovOverview'
 import MaterialityAssessment from './pages/MaterialityAssessment'
+import ChartToDocxExporter from './Test'
 
 
 function App() {
@@ -58,6 +59,8 @@ function App() {
           <Route path='/environment' element={<EnvOverview/>}/>
           <Route path='/governance' element={<GovOverview/>}/>
           <Route path='/materialityAssessment' element={<MaterialityAssessment/>}/>
+          {/* <Route path="/support" element={<ChartToDocxExporter/>}/> */}
+          
         </Route>
       </Routes>
     </>

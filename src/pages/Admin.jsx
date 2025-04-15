@@ -1272,7 +1272,8 @@ const formatTrainingAndEduData = (data,type) => {
                     onClick={() => {
                         setType("month")
                         setMonth(tableData.monthYear.split('-')[0])
-                        handleDownload(tableData.monthYear,"month") 
+                        // handleDownload(tableData.monthYear,"month") 
+                        generateDocx(master, tableData.monthYear.split('-')[1], userData, "month", tableData.monthYear.split('-')[0]);
                         
                     }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -1284,6 +1285,7 @@ const formatTrainingAndEduData = (data,type) => {
                         setType("year")
                         setYear(tableData.monthYear.split('-')[1]) 
                         handleDownload(tableData.monthYear,"year")
+                        generateDocx(master, tableData.monthYear.split('-')[1], userData, "year", tableData.monthYear.split('-')[0]);
                         
                     }}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

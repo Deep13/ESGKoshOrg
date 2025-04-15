@@ -1,657 +1,657 @@
 import { saveAs } from "file-saver";
 import { Document, Packer, Paragraph, Table, TableRow, TableCell, BorderStyle, ImageRun } from "docx";
-import { collection,getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { getDoc, doc, setDoc } from "firebase/firestore";
 import { firestore } from "../firebase";
 import { Chart } from "chart.js/auto";
 
 const scopeData = {
-    "Fuel": "Scope 1",
-    "Bioenergy": "Scope 1",
-    "Refrigerant and other": "Scope 1",
-    "Elec heat cooling": "Scope 2",
-    "Owned Vehicles": "Scope 1",
-    "Materials": "Scope 3",
-    "WTT- fuels": "Scope 3",
-    "Waste Disposal": "Scope 3",
-    "Flight": "Scope 3",
-    "Business travel - land and sea": "Scope 3",
-    "Freighting goods": "Scope 3",
-    "Employees commuting": "Scope 3",
-    "Water": "Scope 3",
-    "Accommodation": "Scope 3",
-    "Food": "Scope 3",
-    "Home Office": "Scope 3"
+  "Fuel": "Scope 1",
+  "Bioenergy": "Scope 1",
+  "Refrigerant and other": "Scope 1",
+  "Elec heat cooling": "Scope 2",
+  "Owned Vehicles": "Scope 1",
+  "Materials": "Scope 3",
+  "WTT- fuels": "Scope 3",
+  "Waste Disposal": "Scope 3",
+  "Flight": "Scope 3",
+  "Business travel - land and sea": "Scope 3",
+  "Freighting goods": "Scope 3",
+  "Employees commuting": "Scope 3",
+  "Water": "Scope 3",
+  "Accommodation": "Scope 3",
+  "Food": "Scope 3",
+  "Home Office": "Scope 3"
 };
 
 // Function to create a horizontal line
 const horizontalLine = new Paragraph({
-    children: [],
-    border: {
-        bottom: { style: BorderStyle.SINGLE, size: 3, color: "000000" } // Black line
-    },
+  children: [],
+  border: {
+    bottom: { style: BorderStyle.SINGLE, size: 3, color: "000000" } // Black line
+  },
 });
 
 //club child Labor data
 const clubChildLaborData = (data) => {
-    const result = {
-        Low: 0,
-        Moderate: 0,
-        High: 0,
-        Uncertain: 0,
-    };
+  const result = {
+    Low: 0,
+    Moderate: 0,
+    High: 0,
+    Uncertain: 0,
+  };
 
-    Object.keys(data || {}).forEach(key => {
-        if (key === "year" || key === "type") return;
+  Object.keys(data || {}).forEach(key => {
+    if (key === "year" || key === "type") return;
 
-        const value = data[key];
-        if (typeof value !== "object") return;
+    const value = data[key];
+    if (typeof value !== "object") return;
 
-        // Yearly format — nested structure
-        if (Object.values(value)[0] && typeof Object.values(value)[0] === "object") {
-            Object.values(value).forEach(location => {
-                const types = location["Type"] || {};
-                Object.entries(types).forEach(([severity, count]) => {
-                    if (result.hasOwnProperty(severity)) {
-                        result[severity] += count;
-                    } else {
-                        result[severity] = count;
-                    }
-                });
-            });
+    // Yearly format — nested structure
+    if (Object.values(value)[0] && typeof Object.values(value)[0] === "object") {
+      Object.values(value).forEach(location => {
+        const types = location["Type"] || {};
+        Object.entries(types).forEach(([severity, count]) => {
+          if (result.hasOwnProperty(severity)) {
+            result[severity] += count;
+          } else {
+            result[severity] = count;
+          }
+        });
+      });
+    } else {
+      // Monthly format — flat structure
+      const types = value["Type"] || {};
+      Object.entries(types).forEach(([severity, count]) => {
+        if (result.hasOwnProperty(severity)) {
+          result[severity] += count;
         } else {
-            // Monthly format — flat structure
-            const types = value["Type"] || {};
-            Object.entries(types).forEach(([severity, count]) => {
-                if (result.hasOwnProperty(severity)) {
-                    result[severity] += count;
-                } else {
-                    result[severity] = count;
-                }
-            });
+          result[severity] = count;
         }
-    });
+      });
+    }
+  });
 
-    return result;
+  return result;
 };
 //club CHS data
 const clubCHSData = (data) => {
-    const result = {
-        "No. of non-compliance Incidents": 0,
-        "Customers Impacted": 0,
-    };
+  const result = {
+    "No. of non-compliance Incidents": 0,
+    "Customers Impacted": 0,
+  };
 
-    Object.keys(data || {}).forEach(key => {
-        if (key === "year" || key === "type") return;
+  Object.keys(data || {}).forEach(key => {
+    if (key === "year" || key === "type") return;
 
-        const value = data[key];
+    const value = data[key];
 
-        if (typeof value !== "object") return;
+    if (typeof value !== "object") return;
 
-        // Check if it's a nested location (yearly format)
-        if (Object.values(value)[0] && typeof Object.values(value)[0] === "object") {
-            // Yearly format
-            Object.values(value).forEach(location => {
-                Object.entries(location).forEach(([metric, count]) => {
-                    if (result.hasOwnProperty(metric)) {
-                        result[metric] += count;
-                    } else {
-                        result[metric] = count;
-                    }
-                });
-            });
+    // Check if it's a nested location (yearly format)
+    if (Object.values(value)[0] && typeof Object.values(value)[0] === "object") {
+      // Yearly format
+      Object.values(value).forEach(location => {
+        Object.entries(location).forEach(([metric, count]) => {
+          if (result.hasOwnProperty(metric)) {
+            result[metric] += count;
+          } else {
+            result[metric] = count;
+          }
+        });
+      });
+    } else {
+      // Monthly format (flat)
+      Object.entries(value).forEach(([metric, count]) => {
+        if (result.hasOwnProperty(metric)) {
+          result[metric] += count;
         } else {
-            // Monthly format (flat)
-            Object.entries(value).forEach(([metric, count]) => {
-                if (result.hasOwnProperty(metric)) {
-                    result[metric] += count;
-                } else {
-                    result[metric] = count;
-                }
-            });
+          result[metric] = count;
         }
-    });
+      });
+    }
+  });
 
-    return result;
+  return result;
 };
 //club market data
 const clubMarketPresence = (data) => {
-    const result = {
-        "Values": 0,
-        "Markets served by the entity nationally": 0,
-        "Markets served by the entity internationally": 0
-    };
+  const result = {
+    "Values": 0,
+    "Markets served by the entity nationally": 0,
+    "Markets served by the entity internationally": 0
+  };
 
-    Object.keys(data || {}).forEach(key => {
-        if (key === "year" || key === "type") return;
+  Object.keys(data || {}).forEach(key => {
+    if (key === "year" || key === "type") return;
 
-        const value = data[key];
+    const value = data[key];
 
-        if (typeof value !== "object") return;
+    if (typeof value !== "object") return;
 
-        // Yearly format — nested structure
-        if (Object.values(value)[0] && typeof Object.values(value)[0] === "object") {
-            Object.values(value).forEach(location => {
-                result["Values"] += parseFloat(location["Values"] || 0);
-                result["Markets served by the entity nationally"] += parseInt(location["Markets served by the entity nationally"] || 0);
-                result["Markets served by the entity internationally"] += parseInt(location["Markets served by the entity internationally"] || 0);
-            });
-        } else {
-            // Monthly format — flat structure
-            result["Values"] += parseFloat(value["Values"] || 0);
-            result["Markets served by the entity nationally"] += parseInt(value["Markets served by the entity nationally"] || 0);
-            result["Markets served by the entity internationally"] += parseInt(value["Markets served by the entity internationally"] || 0);
-        }
-    });
+    // Yearly format — nested structure
+    if (Object.values(value)[0] && typeof Object.values(value)[0] === "object") {
+      Object.values(value).forEach(location => {
+        result["Values"] += parseFloat(location["Values"] || 0);
+        result["Markets served by the entity nationally"] += parseInt(location["Markets served by the entity nationally"] || 0);
+        result["Markets served by the entity internationally"] += parseInt(location["Markets served by the entity internationally"] || 0);
+      });
+    } else {
+      // Monthly format — flat structure
+      result["Values"] += parseFloat(value["Values"] || 0);
+      result["Markets served by the entity nationally"] += parseInt(value["Markets served by the entity nationally"] || 0);
+      result["Markets served by the entity internationally"] += parseInt(value["Markets served by the entity internationally"] || 0);
+    }
+  });
 
-    return result;
+  return result;
 };
 //club social data
 const clubSocialBenefits = (data) => {
-    const result = {
-        "Expenditure": 0,
-        "No. of Beneficiaries": 0
-    };
+  const result = {
+    "Expenditure": 0,
+    "No. of Beneficiaries": 0
+  };
 
-    Object.keys(data || {}).forEach(key => {
-        if (key === "year" || key === "type") return;
+  Object.keys(data || {}).forEach(key => {
+    if (key === "year" || key === "type") return;
 
-        const value = data[key];
-        if (typeof value !== "object") return;
+    const value = data[key];
+    if (typeof value !== "object") return;
 
-        // Yearly format — nested structure
-        if (Object.values(value)[0] && typeof Object.values(value)[0] === "object") {
-            Object.values(value).forEach(location => {
-                result["Expenditure"] += parseInt(location["Expenditure"] || 0);
-                result["No. of Beneficiaries"] += parseInt(location["No. of Beneficiaries"] || 0);
-            });
-        } else {
-            // Monthly format — flat structure
-            result["Expenditure"] += parseInt(value["Expenditure"] || 0);
-            result["No. of Beneficiaries"] += parseInt(value["No. of Beneficiaries"] || 0);
-        }
-    });
+    // Yearly format — nested structure
+    if (Object.values(value)[0] && typeof Object.values(value)[0] === "object") {
+      Object.values(value).forEach(location => {
+        result["Expenditure"] += parseInt(location["Expenditure"] || 0);
+        result["No. of Beneficiaries"] += parseInt(location["No. of Beneficiaries"] || 0);
+      });
+    } else {
+      // Monthly format — flat structure
+      result["Expenditure"] += parseInt(value["Expenditure"] || 0);
+      result["No. of Beneficiaries"] += parseInt(value["No. of Beneficiaries"] || 0);
+    }
+  });
 
-    return result;
+  return result;
 };
 //club all type of environmentdata for table
 const clubEmissions = (data, moduleType) => {
-    let total = 0;
+  let total = 0;
 
-    Object.keys(data || {}).forEach(key => {
-        if (key === "year" || key === "type") return;
+  Object.keys(data || {}).forEach(key => {
+    if (key === "year" || key === "type") return;
 
-        const monthData = data[key];
-        if (typeof monthData !== "object") return;
+    const monthData = data[key];
+    if (typeof monthData !== "object") return;
 
-        Object.values(monthData).forEach(locationData => {
-            if (typeof locationData === "number") {
-                total += locationData;
-            } else if (typeof locationData === "object") {
-                Object.values(locationData).forEach(category => {
-                    if (typeof category === "number") {
-                        total += category;
-                    } else if (typeof category === "object") {
-                        Object.values(category).forEach(value => {
-                            if (typeof value === "number") {
-                                total += value;
-                            }
-                        });
-                    }
-                });
-            }
+    Object.values(monthData).forEach(locationData => {
+      if (typeof locationData === "number") {
+        total += locationData;
+      } else if (typeof locationData === "object") {
+        Object.values(locationData).forEach(category => {
+          if (typeof category === "number") {
+            total += category;
+          } else if (typeof category === "object") {
+            Object.values(category).forEach(value => {
+              if (typeof value === "number") {
+                total += value;
+              }
+            });
+          }
         });
+      }
     });
+  });
 
-    return {
-        total
-    };
+  return {
+    total
+  };
 };
 const clubTrainingEducation = (trainingData) => {
-    const subGroups = new Set(); // like BOD, Workers, etc.
-    const totals = {}; // { "POSH training": total, ... }
-  
-    for (const branch in trainingData) {
-      const branchTraining = trainingData[branch]?.["Training and Edu"];
-      if (!branchTraining) continue;
-  
-      for (const group in branchTraining) {
-        subGroups.add(group);
-        const trainingFields = branchTraining[group];
-  
-        for (const training in trainingFields) {
-          const count = trainingFields[training];
-          if (count !== null && !isNaN(count)) {
-            if (!totals[training]) {
-              totals[training] = 0;
-            }
-            totals[training] += count;
+  const subGroups = new Set(); // like BOD, Workers, etc.
+  const totals = {}; // { "POSH training": total, ... }
+
+  for (const branch in trainingData) {
+    const branchTraining = trainingData[branch]?.["Training and Edu"];
+    if (!branchTraining) continue;
+
+    for (const group in branchTraining) {
+      subGroups.add(group);
+      const trainingFields = branchTraining[group];
+
+      for (const training in trainingFields) {
+        const count = trainingFields[training];
+        if (count !== null && !isNaN(count)) {
+          if (!totals[training]) {
+            totals[training] = 0;
           }
+          totals[training] += count;
         }
       }
     }
-  
-    return {
-      groups: Array.from(subGroups),
-      totals
-    };
+  }
+
+  return {
+    groups: Array.from(subGroups),
+    totals
   };
-  
-  
+};
+
+
 
 //get All Needed values
 const getData = async (year, userData, type, month) => {
-    const dataResult = {};
-    try {
-      const domain = userData?.username.split("@");
-      const basePath = [domain[1], "AnalyticsData", "Reporting Data"];
-  
-      const collectionRef = collection(firestore, ...basePath);
-      const q = query(collectionRef, where("year", "==", year));
-      const querySnapshot = await getDocs(q);
-  
-      for (const docSnap of querySnapshot.docs) {
-        const docData = docSnap.data();
-        const module = docData?.type;
-        let processedData = null;
-  
-        const isEmissionModule = scopeData.hasOwnProperty(module);
-  
-        if (type === "year") {
-          let allMonthsData = {};
-  
-          for (let m = 1; m <= 12; m++) {
-            if (docData[m]) {
-              allMonthsData = {
-                ...allMonthsData,
-                ...docData[m],
-              };
-            }
+  const dataResult = {};
+  try {
+    const domain = userData?.username.split("@");
+    const basePath = [domain[1], "AnalyticsData", "Reporting Data"];
+
+    const collectionRef = collection(firestore, ...basePath);
+    const q = query(collectionRef, where("year", "==", year));
+    const querySnapshot = await getDocs(q);
+
+    for (const docSnap of querySnapshot.docs) {
+      const docData = docSnap.data();
+      const module = docData?.type;
+      let processedData = null;
+
+      const isEmissionModule = scopeData.hasOwnProperty(module);
+
+      if (type === "year") {
+        let allMonthsData = {};
+
+        for (let m = 1; m <= 12; m++) {
+          if (docData[m]) {
+            allMonthsData = {
+              ...allMonthsData,
+              ...docData[m],
+            };
           }
-  
-          if (isEmissionModule) {
-            processedData = clubEmissions(docData, module);
-          } else {
-            switch (module) {
-              case "Child Labor":
-                processedData = clubChildLaborData(allMonthsData);
-                break;
-              case "CHS":
-                processedData = clubCHSData(allMonthsData);
-                break;
-              case "Market Presence":
-                processedData = clubMarketPresence(allMonthsData);
-                break;
-              case "Social Benefits":
-                processedData = clubSocialBenefits(allMonthsData);
-                break;
-                case "Social-Overview": {
-                    let trainingEduData = {};
-                  
-                    for (let m = 1; m <= 12; m++) {
-                      const monthData = docData?.[m];
-                      if (!monthData) continue;
-                  
-                      for (const branch in monthData) {
-                        const branchData = monthData[branch];
-                        const monthTraining = branchData?.["Training and Edu"];
-                        if (!monthTraining) continue;
-                  
-                        // Initialize if branch not seen before
-                        if (!trainingEduData[branch]) {
-                          trainingEduData[branch] = { "Training and Edu": {} };
-                        }
-                  
-                        const existing = trainingEduData[branch]["Training and Edu"];
-                  
-                        for (const group in monthTraining) {
-                          if (!existing[group]) {
-                            existing[group] = {};
-                          }
-                  
-                          const trainingFields = monthTraining[group];
-                  
-                          for (const field in trainingFields) {
-                            const value = trainingFields[field];
-                            if (!existing[group][field]) {
-                              existing[group][field] = 0;
-                            }
-                            if (value !== null && !isNaN(value)) {
-                              existing[group][field] += value;
-                            }
-                          }
-                        }
-                      }
-                    }
-                  
-                    if (Object.keys(trainingEduData).length > 0) {
-                      const processedTraining = clubTrainingEducation(trainingEduData);
-                      if (processedTraining && Object.keys(processedTraining).length > 0) {
-                        dataResult["Training and Edu"] = processedTraining;
-                      }
-                    }
-                    continue;
-                  }
-                  
-            }
-          }
-  
+        }
+
+        if (isEmissionModule) {
+          processedData = clubEmissions(docData, module);
         } else {
-          // Monthly type === "month"
-          const monthData = docData?.[month];
-          if (!monthData || Object.keys(monthData).length === 0) continue;
-  
-          if (isEmissionModule) {
-            processedData = clubEmissions(docData, module);
-          } else {
-            switch (module) {
-              case "Child Labor":
-                processedData = clubChildLaborData(monthData);
-                break;
-              case "CHS":
-                processedData = clubCHSData(monthData);
-                break;
-              case "Market Presence":
-                processedData = clubMarketPresence(monthData);
-                break;
-              case "Social Benefits":
-                processedData = clubSocialBenefits(monthData);
-                break;
-              case "Social-Overview": {
-                let trainingEduData = {};
-  
+          switch (module) {
+            case "Child Labor":
+              processedData = clubChildLaborData(allMonthsData);
+              break;
+            case "CHS":
+              processedData = clubCHSData(allMonthsData);
+              break;
+            case "Market Presence":
+              processedData = clubMarketPresence(allMonthsData);
+              break;
+            case "Social Benefits":
+              processedData = clubSocialBenefits(allMonthsData);
+              break;
+            case "Social-Overview": {
+              let trainingEduData = {};
+
+              for (let m = 1; m <= 12; m++) {
+                const monthData = docData?.[m];
+                if (!monthData) continue;
+
                 for (const branch in monthData) {
                   const branchData = monthData[branch];
-                  if (branchData?.["Training and Edu"]) {
-                    trainingEduData[branch] = {
-                      "Training and Edu": branchData["Training and Edu"],
-                    };
+                  const monthTraining = branchData?.["Training and Edu"];
+                  if (!monthTraining) continue;
+
+                  // Initialize if branch not seen before
+                  if (!trainingEduData[branch]) {
+                    trainingEduData[branch] = { "Training and Edu": {} };
+                  }
+
+                  const existing = trainingEduData[branch]["Training and Edu"];
+
+                  for (const group in monthTraining) {
+                    if (!existing[group]) {
+                      existing[group] = {};
+                    }
+
+                    const trainingFields = monthTraining[group];
+
+                    for (const field in trainingFields) {
+                      const value = trainingFields[field];
+                      if (!existing[group][field]) {
+                        existing[group][field] = 0;
+                      }
+                      if (value !== null && !isNaN(value)) {
+                        existing[group][field] += value;
+                      }
+                    }
                   }
                 }
-  
-                if (Object.keys(trainingEduData).length > 0) {
-                  const processedTraining = clubTrainingEducation(trainingEduData);
-                  if (processedTraining && Object.keys(processedTraining).length > 0) {
-                    dataResult["Training and Edu"] = processedTraining;
-                  }
-                }
-  
-                continue;
               }
+
+              if (Object.keys(trainingEduData).length > 0) {
+                const processedTraining = clubTrainingEducation(trainingEduData);
+                if (processedTraining && Object.keys(processedTraining).length > 0) {
+                  dataResult["Training and Edu"] = processedTraining;
+                }
+              }
+              continue;
+            }
+
+          }
+        }
+
+      } else {
+        // Monthly type === "month"
+        const monthData = docData?.[month];
+        if (!monthData || Object.keys(monthData).length === 0) continue;
+
+        if (isEmissionModule) {
+          processedData = clubEmissions(docData, module);
+        } else {
+          switch (module) {
+            case "Child Labor":
+              processedData = clubChildLaborData(monthData);
+              break;
+            case "CHS":
+              processedData = clubCHSData(monthData);
+              break;
+            case "Market Presence":
+              processedData = clubMarketPresence(monthData);
+              break;
+            case "Social Benefits":
+              processedData = clubSocialBenefits(monthData);
+              break;
+            case "Social-Overview": {
+              let trainingEduData = {};
+
+              for (const branch in monthData) {
+                const branchData = monthData[branch];
+                if (branchData?.["Training and Edu"]) {
+                  trainingEduData[branch] = {
+                    "Training and Edu": branchData["Training and Edu"],
+                  };
+                }
+              }
+
+              if (Object.keys(trainingEduData).length > 0) {
+                const processedTraining = clubTrainingEducation(trainingEduData);
+                if (processedTraining && Object.keys(processedTraining).length > 0) {
+                  dataResult["Training and Edu"] = processedTraining;
+                }
+              }
+
+              continue;
             }
           }
         }
-  
-        if (processedData && Object.keys(processedData).length > 0) {
-          dataResult[module] = processedData;
-        }
       }
-  
-      return dataResult;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      return {};
+
+      if (processedData && Object.keys(processedData).length > 0) {
+        dataResult[module] = processedData;
+      }
     }
+
+    return dataResult;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return {};
+  }
+};
+
+
+
+
+
+const formatTrainingAndEduData = (data, type, month) => {
+  const roles = ["BOD", "Employees", "Others", "Workers", "Personalles"];
+  const result = {
+    BOD: {},
+    Employees: {},
+    Others: {},
+    Workers: {},
+    Personalles: {},
   };
-  
 
-
-
-
-const formatTrainingAndEduData = (data,type,month) => {
-    const roles = ["BOD", "Employees", "Others", "Workers", "Personalles"];
-    const result = {
-      BOD: {},
-      Employees: {},
-      Others: {},
-      Workers: {},
-      Personalles: {},
-    };
-  
-    for (const monthKey in data) {
-      if (type === "month" && monthKey !== String(Number(month))) return;
-      const branches = data[monthKey];
-      for (const branchKey in branches) {
-        const branch = branches[branchKey];
-        const trainingEdu = branch["Training and Edu"];
-        if (trainingEdu) {
-          roles.forEach((role) => {
-            const roleData = trainingEdu[role];
-            if (roleData) {
-              for (const [trainingType, value] of Object.entries(roleData)) {
-                const numericValue = Number(value);
-                result[role][trainingType] =
-                  (result[role][trainingType] || 0) +
-                  (isNaN(numericValue) ? 0 : numericValue);
-              }
+  for (const monthKey in data) {
+    if (type === "month" && monthKey !== String(Number(month))) return;
+    const branches = data[monthKey];
+    for (const branchKey in branches) {
+      const branch = branches[branchKey];
+      const trainingEdu = branch["Training and Edu"];
+      if (trainingEdu) {
+        roles.forEach((role) => {
+          const roleData = trainingEdu[role];
+          if (roleData) {
+            for (const [trainingType, value] of Object.entries(roleData)) {
+              const numericValue = Number(value);
+              result[role][trainingType] =
+                (result[role][trainingType] || 0) +
+                (isNaN(numericValue) ? 0 : numericValue);
             }
-          });
-        }
+          }
+        });
       }
     }
-  
-    return result;
-  };
+  }
+
+  return result;
+};
 
 function formatEmploymentData(rawData, type, month) {
-    const genders = ["Male", "Female", "LGBTQ"];
-    const genderColors = {
-      Male: "#109ad8",
-      Female: "#45bf34",
-      LGBTQ: "#f26c35",
-    };
-  
-    const genderDataByAge = {
-      Male: {},
-      Female: {},
-      LGBTQ: {},
-    };
-  
-    const ageSet = new Set();
-    const monthsToProcess = type === "month" ? { [month]: rawData[month] } : rawData;
-  
-    for (const monthKey in monthsToProcess) {
-      if (type === "month" && monthKey !== String(Number(month))) return;
-      const monthData = monthsToProcess[monthKey];
-      for (const branchKey in monthData) {
-        const branch = monthData[branchKey];
-        const employment = branch.Employment || {};
-        for (const ageKey in employment) {
-          ageSet.add(ageKey);
-          const ageData = employment[ageKey];
-          genders.forEach((gender) => {
-            const value = Number(ageData[gender]) || 0;
-            genderDataByAge[gender][ageKey] =
-              (genderDataByAge[gender][ageKey] || 0) + value;
-          });
-        }
-      }
-    }
-  
-    const sortedAgeLabels = Array.from(ageSet).sort((a, b) => {
-      // Attempt numeric sort if possible
-      const aNum = parseInt(a, 10);
-      const bNum = parseInt(b, 10);
-      return isNaN(aNum) || isNaN(bNum) ? a.localeCompare(b) : aNum - bNum;
-    });
-  
-    const chartLabels = ["Overall", ...sortedAgeLabels];
-  
-    const datasets = genders.map((gender) => {
-      const ageData = genderDataByAge[gender];
-      const dataArray = sortedAgeLabels.map((age) => ageData[age] || 0);
-      const overall = dataArray.reduce((sum, val) => sum + val, 0);
-  
-      return {
-        label: gender,
-        data: [overall, ...dataArray],
-        backgroundColor: genderColors[gender],
-        borderColor: genderColors[gender],
-        borderWidth: 1,
-      };
-    });
-  
-    return {
-      labels: chartLabels,
-      datasets: datasets,
-    };
-  }
-  
-  function formatForTreemap(dataObj, type, month) {
-    const emissions = {};
-  
-    const keysToInclude = [
-      "Fuel", "Accommodation", "Refrigerant and other", "Business travel - land and sea",
-      "Employees commuting", "Owned Vehicles", "Water", "Home Office", "WTT- fuels",
-      "Freighting goods", "Materials", "Food", "Bioenergy", "Waste Disposal",
-      "Elec heat cooling", "Flight"
-    ];
-  
-    const processMonthData = (monthData) => {
-      for (const region in monthData) {
-        const regionData = monthData[region];
-  
-        for (const key of keysToInclude) {
-          let value = regionData[key];
-          if (typeof value === "number") {
-            emissions[key] = (emissions[key] || 0) + value;
-          }
-        }
-      }
-    };
-  
-    if (type === "month") {
-      const selectedMonthData = dataObj[month];
-      if (selectedMonthData) {
-        processMonthData(selectedMonthData);
-      }
-    } else if (type === "year") {
-      for (const m in dataObj) {
-        const monthData = dataObj[m];
-        if (monthData) {
-          processMonthData(monthData);
-        }
-      }
-    }
-  
-    const result = Object.entries(emissions).map(([key, val]) => ({
-      x: key,
-      y: +(val / 1_000_000).toFixed(4) // Normalized to millions
-    }));
-  
-    return result;
-  }
-  
-  
-const formatNetWorthVsTurnoverData = (data,type,month) => {
-    const monthMap = {
-      "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
-      "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
-    };
-  
-    const monthKeys = Object.keys(monthMap);
-    const labels = monthKeys.map(k => monthMap[k]);
-    const netWorthData = [];
-    const turnoverData = [];
-  
-    monthKeys.forEach(monthNum => {
-      if (type === "month" && monthNum !== String(Number(month))) return;
-      const monthData = data[monthNum];
-      if (monthData) {
-        let totalNetWorth = 0;
-        let totalTurnover = 0;
-  
-        Object.values(monthData).forEach(entry => {
-          const eco = entry["Eco. Performance"] || {};
-          totalNetWorth += parseFloat(eco["Total Revenue"] || 0);
-          totalTurnover += parseFloat(eco["Total turnover"] || 0);
-        });
-  
-        netWorthData.push(totalNetWorth);
-        turnoverData.push(totalTurnover);
-      } else {
-        // Fill 0 if data doesn't exist for that month
-        netWorthData.push(0);
-        turnoverData.push(0);
-      }
-    });
-  
-    return {
-      labels,
-      datasets: [
-        {
-          label: "Net Worth",
-          data: netWorthData,
-          backgroundColor: "#109ad8",
-          borderColor: "#0a6a94",
-          borderWidth: 1,
-          fill: "origin"
-        },
-        {
-          label: "Total Turnover",
-          data: turnoverData,
-          backgroundColor: "#f26c35",
-          borderColor: "#c23e08",
-          borderWidth: 1,
-          fill: "origin"
-        }
-      ]
-    };
+  const genders = ["Male", "Female", "LGBTQ"];
+  const genderColors = {
+    Male: "#109ad8",
+    Female: "#45bf34",
+    LGBTQ: "#f26c35",
   };
 
-const formatDirectValueChartData = (data,type,month) => {
-    const monthMap = {
-        "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
-        "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
-    };
+  const genderDataByAge = {
+    Male: {},
+    Female: {},
+    LGBTQ: {},
+  };
 
-    const monthKeys = Object.keys(monthMap);
-    const labels = monthKeys.map(k => monthMap[k]);
-    const distributedData = [];
-    const generatedData = [];
+  const ageSet = new Set();
+  const monthsToProcess = type === "month" ? { [month]: rawData[month] } : rawData;
 
-    monthKeys.forEach(monthNum => {
-      if (type === "month" && monthNum !== String(Number(month))) return;
-        const monthData = data[monthNum];
-        if (monthData) {
-            let totalDistributed = 0;
-            let totalGenerated = 0;
+  for (const monthKey in monthsToProcess) {
+    if (type === "month" && monthKey !== String(Number(month))) return;
+    const monthData = monthsToProcess[monthKey];
+    for (const branchKey in monthData) {
+      const branch = monthData[branchKey];
+      const employment = branch.Employment || {};
+      for (const ageKey in employment) {
+        ageSet.add(ageKey);
+        const ageData = employment[ageKey];
+        genders.forEach((gender) => {
+          const value = Number(ageData[gender]) || 0;
+          genderDataByAge[gender][ageKey] =
+            (genderDataByAge[gender][ageKey] || 0) + value;
+        });
+      }
+    }
+  }
 
-            Object.values(monthData).forEach(entry => {
-                const eco = entry["Eco. Performance"] || {};
-                totalDistributed += parseFloat(eco["Direct economic value Distributed"] || 0);
-                totalGenerated += parseFloat(eco["Direct economic value generated"] || 0);
-            });
+  const sortedAgeLabels = Array.from(ageSet).sort((a, b) => {
+    // Attempt numeric sort if possible
+    const aNum = parseInt(a, 10);
+    const bNum = parseInt(b, 10);
+    return isNaN(aNum) || isNaN(bNum) ? a.localeCompare(b) : aNum - bNum;
+  });
 
-            distributedData.push(totalDistributed);
-            generatedData.push(totalGenerated);
-        } else {
-            distributedData.push(0);
-            generatedData.push(0);
-        }
-    });
+  const chartLabels = ["Overall", ...sortedAgeLabels];
+
+  const datasets = genders.map((gender) => {
+    const ageData = genderDataByAge[gender];
+    const dataArray = sortedAgeLabels.map((age) => ageData[age] || 0);
+    const overall = dataArray.reduce((sum, val) => sum + val, 0);
 
     return {
-        labels,
-        datasets: [
-            {
-                label: "Direct Economic Value Distributed",
-                data: distributedData,
-                backgroundColor: "#4caf50",
-                borderColor: "#357a38",
-                borderWidth: 1,
-                fill: "origin"
-            },
-            {
-                label: "Direct Economic Value Generated",
-                data: generatedData,
-                backgroundColor: "#ff9800",
-                borderColor: "#e65100",
-                borderWidth: 1,
-                fill: "origin"
-            }
-        ]
+      label: gender,
+      data: [overall, ...dataArray],
+      backgroundColor: genderColors[gender],
+      borderColor: genderColors[gender],
+      borderWidth: 1,
     };
+  });
+
+  return {
+    labels: chartLabels,
+    datasets: datasets,
+  };
+}
+
+function formatForTreemap(dataObj, type, month) {
+  const emissions = {};
+
+  const keysToInclude = [
+    "Fuel", "Accommodation", "Refrigerant and other", "Business travel - land and sea",
+    "Employees commuting", "Owned Vehicles", "Water", "Home Office", "WTT- fuels",
+    "Freighting goods", "Materials", "Food", "Bioenergy", "Waste Disposal",
+    "Elec heat cooling", "Flight"
+  ];
+
+  const processMonthData = (monthData) => {
+    for (const region in monthData) {
+      const regionData = monthData[region];
+
+      for (const key of keysToInclude) {
+        let value = regionData[key];
+        if (typeof value === "number") {
+          emissions[key] = (emissions[key] || 0) + value;
+        }
+      }
+    }
+  };
+
+  if (type === "month") {
+    const selectedMonthData = dataObj[month];
+    if (selectedMonthData) {
+      processMonthData(selectedMonthData);
+    }
+  } else if (type === "year") {
+    for (const m in dataObj) {
+      const monthData = dataObj[m];
+      if (monthData) {
+        processMonthData(monthData);
+      }
+    }
+  }
+
+  const result = Object.entries(emissions).map(([key, val]) => ({
+    x: key,
+    y: +(val / 1_000_000).toFixed(4) // Normalized to millions
+  }));
+
+  return result;
+}
+
+
+const formatNetWorthVsTurnoverData = (data, type, month) => {
+  const monthMap = {
+    "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
+    "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
+  };
+
+  const monthKeys = Object.keys(monthMap);
+  const labels = monthKeys.map(k => monthMap[k]);
+  const netWorthData = [];
+  const turnoverData = [];
+
+  monthKeys.forEach(monthNum => {
+    if (type === "month" && monthNum !== String(Number(month))) return;
+    const monthData = data[monthNum];
+    if (monthData) {
+      let totalNetWorth = 0;
+      let totalTurnover = 0;
+
+      Object.values(monthData).forEach(entry => {
+        const eco = entry["Eco. Performance"] || {};
+        totalNetWorth += parseFloat(eco["Total Revenue"] || 0);
+        totalTurnover += parseFloat(eco["Total turnover"] || 0);
+      });
+
+      netWorthData.push(totalNetWorth);
+      turnoverData.push(totalTurnover);
+    } else {
+      // Fill 0 if data doesn't exist for that month
+      netWorthData.push(0);
+      turnoverData.push(0);
+    }
+  });
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: "Net Worth",
+        data: netWorthData,
+        backgroundColor: "#109ad8",
+        borderColor: "#0a6a94",
+        borderWidth: 1,
+        fill: "origin"
+      },
+      {
+        label: "Total Turnover",
+        data: turnoverData,
+        backgroundColor: "#f26c35",
+        borderColor: "#c23e08",
+        borderWidth: 1,
+        fill: "origin"
+      }
+    ]
+  };
+};
+
+const formatDirectValueChartData = (data, type, month) => {
+  const monthMap = {
+    "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
+    "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
+  };
+
+  const monthKeys = Object.keys(monthMap);
+  const labels = monthKeys.map(k => monthMap[k]);
+  const distributedData = [];
+  const generatedData = [];
+
+  monthKeys.forEach(monthNum => {
+    if (type === "month" && monthNum !== String(Number(month))) return;
+    const monthData = data[monthNum];
+    if (monthData) {
+      let totalDistributed = 0;
+      let totalGenerated = 0;
+
+      Object.values(monthData).forEach(entry => {
+        const eco = entry["Eco. Performance"] || {};
+        totalDistributed += parseFloat(eco["Direct economic value Distributed"] || 0);
+        totalGenerated += parseFloat(eco["Direct economic value generated"] || 0);
+      });
+
+      distributedData.push(totalDistributed);
+      generatedData.push(totalGenerated);
+    } else {
+      distributedData.push(0);
+      generatedData.push(0);
+    }
+  });
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: "Direct Economic Value Distributed",
+        data: distributedData,
+        backgroundColor: "#4caf50",
+        borderColor: "#357a38",
+        borderWidth: 1,
+        fill: "origin"
+      },
+      {
+        label: "Direct Economic Value Generated",
+        data: generatedData,
+        backgroundColor: "#ff9800",
+        borderColor: "#e65100",
+        borderWidth: 1,
+        fill: "origin"
+      }
+    ]
+  };
 };
 
 const formatScopeDoughnutData = (data) => {
@@ -710,7 +710,7 @@ const formatScopeDoughnutData = (data) => {
 const generateScopeDoughnutChart = async (data) => {
   // Format the data using the provided formatScopeDoughnutData function
   const chartData = formatScopeDoughnutData(data, scopeData);
-  
+
   // Create a hidden canvas to draw the doughnut chart
   const canvas = document.createElement("canvas");
   canvas.width = 500;
@@ -741,7 +741,7 @@ const generateScopeDoughnutChart = async (data) => {
   // Capture the chart as a base64 image
   const dataUrl = canvas.toDataURL("image/png");
   const base64 = dataUrl.split(",")[1];
-  
+
   // Clean up by removing the canvas element from the DOM
   document.body.removeChild(canvas);
 
@@ -787,134 +787,134 @@ const transformEntityData = (govData) => {
 };
 
 
-const generateTrainingChart = async (data,labels) => {
-    const paragraphs = [];
+const generateTrainingChart = async (data, labels) => {
+  const paragraphs = [];
 
 
-    // for (let i = 0; i < chartConfigs.length; i++) {
-        
-    // }
-    const canvas = document.createElement("canvas");
-    canvas.width = 800;
-    canvas.height = 400;
-    document.body.appendChild(canvas);
-    canvas.style.display = "none"; // Keep canvas hidden
+  // for (let i = 0; i < chartConfigs.length; i++) {
 
-    const chart = new Chart(canvas.getContext("2d"), {
-        type: "bar",
-        data: {labels:labels,datasets:data},
-        options: {
-            responsive: true,
-            scales: {
-            x: {
-                stacked: true,
-            },
-            y: {
-                stacked: true
-            }
-            },
-            indexAxis:"y",
-            plugins: {
-                legend: {
-                    display: true,
-                },
-                title: {
-                    display: true,
-                    text: "Training",
-                },
-            },
+  // }
+  const canvas = document.createElement("canvas");
+  canvas.width = 800;
+  canvas.height = 400;
+  document.body.appendChild(canvas);
+  canvas.style.display = "none"; // Keep canvas hidden
 
+  const chart = new Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: { labels: labels, datasets: data },
+    options: {
+      responsive: true,
+      scales: {
+        x: {
+          stacked: true,
         },
-    });
+        y: {
+          stacked: true
+        }
+      },
+      indexAxis: "y",
+      plugins: {
+        legend: {
+          display: true,
+        },
+        title: {
+          display: true,
+          text: "Training",
+        },
+      },
 
-    await new Promise((resolve) => setTimeout(resolve, 500)); // wait for chart to render
+    },
+  });
 
-    const base64Image = chart.toBase64Image();
+  await new Promise((resolve) => setTimeout(resolve, 500)); // wait for chart to render
 
-    paragraphs.push(
-        new Paragraph({
-            children: [
-                new ImageRun({
-                    data: base64Image.split(",")[1],
-                    transformation: { width: 600, height: 300 },
-                    mimeType: "image/png",
-                }),
-            ],
+  const base64Image = chart.toBase64Image();
+
+  paragraphs.push(
+    new Paragraph({
+      children: [
+        new ImageRun({
+          data: base64Image.split(",")[1],
+          transformation: { width: 600, height: 300 },
+          mimeType: "image/png",
         }),
-        new Paragraph({}) // Spacer
-    );
+      ],
+    }),
+    new Paragraph({}) // Spacer
+  );
 
-    chart.destroy();
-    canvas.remove(); 
+  chart.destroy();
+  canvas.remove();
 
-    // const doc = new Document({
-    //     sections: [{ children: paragraphs }],
-    // });
+  // const doc = new Document({
+  //     sections: [{ children: paragraphs }],
+  // });
 
-    // const blob = await Packer.toBlob(doc);
-    // saveAs(blob, "Hidden_Charts_Report.docx");
-    return paragraphs
+  // const blob = await Packer.toBlob(doc);
+  // saveAs(blob, "Hidden_Charts_Report.docx");
+  return paragraphs
 };
 const generateEmploymentChart = async (data, labels) => {
-    const paragraphs = [];
+  const paragraphs = [];
 
-    const canvas = document.createElement("canvas");
-    canvas.width = 800;
-    canvas.height = 400;
-    document.body.appendChild(canvas);
-    canvas.style.display = "none"; // Keep canvas hidden
+  const canvas = document.createElement("canvas");
+  canvas.width = 800;
+  canvas.height = 400;
+  document.body.appendChild(canvas);
+  canvas.style.display = "none"; // Keep canvas hidden
 
-    const chart = new Chart(canvas.getContext("2d"), {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: data,
+  const chart = new Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: data,
+    },
+    options: {
+      responsive: true,
+      indexAxis: "x", // vertical bar chart (default)
+      scales: {
+        x: {
+          stacked: false,
         },
-        options: {
-            responsive: true,
-            indexAxis: "x", // vertical bar chart (default)
-            scales: {
-                x: {
-                    stacked: false,
-                },
-                y: {
-                    stacked: false,
-                },
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: "top",
-                },
-                title: {
-                    display: true,
-                    text: "Employment by Gender and Age",
-                },
-            },
+        y: {
+          stacked: false,
         },
-    });
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+        },
+        title: {
+          display: true,
+          text: "Employment by Gender and Age",
+        },
+      },
+    },
+  });
 
-    await new Promise((resolve) => setTimeout(resolve, 500)); // wait for chart to render
+  await new Promise((resolve) => setTimeout(resolve, 500)); // wait for chart to render
 
-    const base64Image = chart.toBase64Image();
+  const base64Image = chart.toBase64Image();
 
-    paragraphs.push(
-        new Paragraph({
-            children: [
-                new ImageRun({
-                    data: base64Image.split(",")[1],
-                    transformation: { width: 600, height: 300 },
-                    mimeType: "image/png",
-                }),
-            ],
+  paragraphs.push(
+    new Paragraph({
+      children: [
+        new ImageRun({
+          data: base64Image.split(",")[1],
+          transformation: { width: 600, height: 300 },
+          mimeType: "image/png",
         }),
-        new Paragraph({}) // Spacer
-    );
+      ],
+    }),
+    new Paragraph({}) // Spacer
+  );
 
-    chart.destroy();
-    canvas.remove();
+  chart.destroy();
+  canvas.remove();
 
-    return paragraphs;
+  return paragraphs;
 };
 const generateTreemapChart = async (data) => {
   const paragraphs = [];
@@ -1012,87 +1012,87 @@ const generateTreemapChart = async (data) => {
 
 
 const generateNetWorthVsTurnoverChart = async (datasets, labels) => {
-    const paragraphs = [];
+  const paragraphs = [];
 
-    const canvas = document.createElement("canvas");
-    canvas.width = 800;
-    canvas.height = 400;
-    document.body.appendChild(canvas);
-    canvas.style.display = "none"; // hide during rendering
+  const canvas = document.createElement("canvas");
+  canvas.width = 800;
+  canvas.height = 400;
+  document.body.appendChild(canvas);
+  canvas.style.display = "none"; // hide during rendering
 
-    const chart = new Chart(canvas.getContext("2d"), {
-        type: "line",
-        data: {
-            labels: labels,
-            datasets: datasets.map(dataset => ({
-                ...dataset,
-                tension: 0.4, // smooth curves
-                fill: "origin", // area fill
-                pointRadius: 3,
-                pointHoverRadius: 6
-            })),
+  const chart = new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: datasets.map(dataset => ({
+        ...dataset,
+        tension: 0.4, // smooth curves
+        fill: "origin", // area fill
+        pointRadius: 3,
+        pointHoverRadius: 6
+      })),
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: "top",
-                },
-                title: {
-                    display: true,
-                    text: "Net Worth vs Total Turnover",
-                    font: { size: 18 },
-                },
-                tooltip: {
-                    mode: "index",
-                    intersect: false,
-                },
-            },
-            interaction: {
-                mode: "nearest",
-                axis: "x",
-                intersect: false,
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: "Month",
-                    },
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: "Amount (INR)",
-                    },
-                    beginAtZero: true,
-                },
-            },
+        title: {
+          display: true,
+          text: "Net Worth vs Total Turnover",
+          font: { size: 18 },
         },
-    });
+        tooltip: {
+          mode: "index",
+          intersect: false,
+        },
+      },
+      interaction: {
+        mode: "nearest",
+        axis: "x",
+        intersect: false,
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Month",
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Amount (INR)",
+          },
+          beginAtZero: true,
+        },
+      },
+    },
+  });
 
-    await new Promise((resolve) => setTimeout(resolve, 500)); // allow rendering
+  await new Promise((resolve) => setTimeout(resolve, 500)); // allow rendering
 
-    const base64Image = chart.toBase64Image();
+  const base64Image = chart.toBase64Image();
 
-    paragraphs.push(
-        new Paragraph({
-            children: [
-                new ImageRun({
-                    data: base64Image.split(",")[1],
-                    transformation: { width: 600, height: 300 },
-                    mimeType: "image/png",
-                }),
-            ],
+  paragraphs.push(
+    new Paragraph({
+      children: [
+        new ImageRun({
+          data: base64Image.split(",")[1],
+          transformation: { width: 600, height: 300 },
+          mimeType: "image/png",
         }),
-        new Paragraph({}) // Spacer
-    );
+      ],
+    }),
+    new Paragraph({}) // Spacer
+  );
 
-    chart.destroy();
-    canvas.remove();
+  chart.destroy();
+  canvas.remove();
 
-    return paragraphs;
+  return paragraphs;
 };
 
 const generateEntityChart = async (entityData) => {
@@ -1157,7 +1157,7 @@ const generateEntityChart = async (entityData) => {
   ];
 };
 
-const fetchData = async (userData, year,month,type) => {
+const fetchData = async (userData, year, month, type) => {
   const domain = userData?.username.split("@");
   const env = `Environment-Overview-${year}`;
   const social = `Social-Overview-${year}`;
@@ -1174,24 +1174,24 @@ const fetchData = async (userData, year,month,type) => {
   const envData = docSnapshot.data() || {};
   const socialData = docSnapshot2.data() || {};
   const govData = docSnapshot3.data() || {};
-  
-  const formattedTrainingData = formatTrainingAndEduData(socialData,type,month);
-  const formattedTreeMapData = formatForTreemap(envData,type,month);
-  const formattedAreaData1 = formatNetWorthVsTurnoverData(govData,type,month);
-  const formattedAreaData2 = formatDirectValueChartData(govData,type,month);
-  const doughNutData = transformEntityData(govData,type,month);
+
+  const formattedTrainingData = formatTrainingAndEduData(socialData, type, month);
+  const formattedTreeMapData = formatForTreemap(envData, type, month);
+  const formattedAreaData1 = formatNetWorthVsTurnoverData(govData, type, month);
+  const formattedAreaData2 = formatDirectValueChartData(govData, type, month);
+  const doughNutData = transformEntityData(govData, type, month);
 
   const allTrainingTypes = Array.from(
     new Set(
       formattedTrainingData
         ? Object.values(formattedTrainingData)
-            .flatMap(category => Object.entries(category))
-            .filter(([_, value]) => value > 0)
-            .map(([trainingType]) => trainingType)
+          .flatMap(category => Object.entries(category))
+          .filter(([_, value]) => value > 0)
+          .map(([trainingType]) => trainingType)
         : []
     )
   );
-  
+
 
   const colors = [
     "#109ad8", "#45bf34", "#f26c35", "#4bc0c0",
@@ -1216,9 +1216,9 @@ const fetchData = async (userData, year,month,type) => {
     ? await generateEmploymentChart(datasets, labels)
     : [];
 
-  const treeParagraphs = formattedTreeMapData.length > 0
-    ? await generateTreemapChart(formattedTreeMapData)
-    : [];
+  // const treeParagraphs = formattedTreeMapData.length > 0
+  //   ? await generateTreemapChart(formattedTreeMapData)
+  //   : [];
 
   const area1Paragraphs = formattedAreaData1.datasets?.length > 0
     ? await generateNetWorthVsTurnoverChart(formattedAreaData1.datasets, formattedAreaData1.labels)
@@ -1236,7 +1236,7 @@ const fetchData = async (userData, year,month,type) => {
     entity: entityChartSection,
     training: trainingParagraphs,
     employment: employmentParagraphs,
-    tree: treeParagraphs,
+    // tree: treeParagraphs,
     area1: area1Paragraphs,
     area2: area2Paragraphs,
   };
@@ -1246,7 +1246,7 @@ const fetchData = async (userData, year,month,type) => {
 
 const generateDocx = async (master, year, userData, type = "year", month = 1) => {
   const DataObj = await getData(year, userData, type, Number(month));
-  const imgObj = await fetchData(userData, year,month,type);
+  const imgObj = await fetchData(userData, year, month, type);
   const scopeChart = await generateScopeDoughnutChart(DataObj);
 
   const docContent = [
@@ -1261,7 +1261,7 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
     new Paragraph(""),
     new Paragraph({ text: "Environmental Data (E)", heading: "Heading1", bold: true }),
 
-    
+
   ];
 
   docContent.push(
@@ -1301,7 +1301,7 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
         ),
     ],
   }));
-  
+
 
   // Social Section
   docContent.push(new Paragraph({ text: "Social Data (S)", heading: "Heading1", bold: true }));

@@ -497,7 +497,7 @@ function formatEmploymentData(rawData, type, month) {
   };
 }
 
-function formatForTreemap(dataObj, type, month) {
+function formatTop5EmissionsForBarChart(dataObj, type, month) {
   const emissions = {};
 
   const keysToInclude = [
@@ -512,7 +512,7 @@ function formatForTreemap(dataObj, type, month) {
       const regionData = monthData[region];
 
       for (const key of keysToInclude) {
-        let value = regionData[key];
+        const value = regionData[key];
         if (typeof value === "number") {
           emissions[key] = (emissions[key] || 0) + value;
         }
@@ -534,29 +534,37 @@ function formatForTreemap(dataObj, type, month) {
     }
   }
 
-  const result = Object.entries(emissions).map(([key, val]) => ({
-    x: key,
-    y: +(val / 1_000_000).toFixed(4) // Normalized to millions
-  }));
+  // Get top 5 emissions categories
+  const sorted = Object.entries(emissions)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
 
-  return result;
+  const labels = sorted.map(([key]) => key);
+  const values = sorted.map(([, val]) => +(val / 1_000_000).toFixed(4)); // Normalize to millions
+
+  return {
+    labels,
+    datasets: [
+      {
+        label: "Top 5 Emission Categories (in million tons)",
+        data: values,
+        backgroundColor: [ "#109ad8", "#45bf34", "#f26c35", "#4bc0c0","#9966ff"],
+        borderColor: [ "#109ad8", "#45bf34", "#f26c35", "#4bc0c0","#9966ff"],
+        borderWidth: 1
+      }
+    ]
+  };
 }
 
 
+
 const formatNetWorthVsTurnoverData = (data, type, month) => {
-  const monthMap = {
-    "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
-    "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
-  };
+  let netWorthData = 0;
+  let turnoverData = 0;
 
-  const monthKeys = Object.keys(monthMap);
-  const labels = monthKeys.map(k => monthMap[k]);
-  const netWorthData = [];
-  const turnoverData = [];
-
-  monthKeys.forEach(monthNum => {
-    if (type === "month" && monthNum !== String(Number(month))) return;
-    const monthData = data[monthNum];
+  if (type === "month" && month) {
+    // Only one month is needed for the comparison
+    const monthData = data[month];
     if (monthData) {
       let totalNetWorth = 0;
       let totalTurnover = 0;
@@ -567,52 +575,48 @@ const formatNetWorthVsTurnoverData = (data, type, month) => {
         totalTurnover += parseFloat(eco["Total turnover"] || 0);
       });
 
-      netWorthData.push(totalNetWorth);
-      turnoverData.push(totalTurnover);
-    } else {
-      // Fill 0 if data doesn't exist for that month
-      netWorthData.push(0);
-      turnoverData.push(0);
+      netWorthData = totalNetWorth;
+      turnoverData = totalTurnover;
     }
-  });
+  } else if (type === "year") {
+    // Aggregate data for the whole year
+    Object.values(data).forEach(monthData => {
+      if (monthData) {
+        let totalNetWorth = 0;
+        let totalTurnover = 0;
+
+        Object.values(monthData).forEach(entry => {
+          const eco = entry["Eco. Performance"] || {};
+          totalNetWorth += parseFloat(eco["Total Revenue"] || 0);
+          totalTurnover += parseFloat(eco["Total turnover"] || 0);
+        });
+
+        netWorthData += totalNetWorth;
+        turnoverData += totalTurnover;
+      }
+    });
+  }
 
   return {
-    labels,
+    labels: ["Net Worth", "Total Turnover"], // Only 2 bars
     datasets: [
       {
-        label: "Net Worth",
-        data: netWorthData,
-        backgroundColor: "#109ad8",
-        borderColor: "#0a6a94",
-        borderWidth: 1,
-        fill: "origin"
-      },
-      {
-        label: "Total Turnover",
-        data: turnoverData,
-        backgroundColor: "#f26c35",
-        borderColor: "#c23e08",
-        borderWidth: 1,
-        fill: "origin"
+        label: "Net Worth vs Total Turnover",
+        data: [netWorthData, turnoverData], // Data for each bar
+        backgroundColor: ["#109ad8", "#f26c35"], // Color for the bars
+        borderColor: ["#0a6a94", "#c23e08"],
+        borderWidth: 1
       }
     ]
   };
 };
-
 const formatDirectValueChartData = (data, type, month) => {
-  const monthMap = {
-    "1": "Jan", "2": "Feb", "3": "Mar", "4": "Apr", "5": "May", "6": "Jun",
-    "7": "Jul", "8": "Aug", "9": "Sep", "10": "Oct", "11": "Nov", "12": "Dec"
-  };
+  let distributedData = 0;
+  let generatedData = 0;
 
-  const monthKeys = Object.keys(monthMap);
-  const labels = monthKeys.map(k => monthMap[k]);
-  const distributedData = [];
-  const generatedData = [];
-
-  monthKeys.forEach(monthNum => {
-    if (type === "month" && monthNum !== String(Number(month))) return;
-    const monthData = data[monthNum];
+  if (type === "month" && month) {
+    // Only one month is needed for the comparison
+    const monthData = data[month];
     if (monthData) {
       let totalDistributed = 0;
       let totalGenerated = 0;
@@ -623,36 +627,43 @@ const formatDirectValueChartData = (data, type, month) => {
         totalGenerated += parseFloat(eco["Direct economic value generated"] || 0);
       });
 
-      distributedData.push(totalDistributed);
-      generatedData.push(totalGenerated);
-    } else {
-      distributedData.push(0);
-      generatedData.push(0);
+      distributedData = totalDistributed;
+      generatedData = totalGenerated;
     }
-  });
+  } else if (type === "year") {
+    // Aggregate data for the whole year
+    Object.values(data).forEach(monthData => {
+      if (monthData) {
+        let totalDistributed = 0;
+        let totalGenerated = 0;
+
+        Object.values(monthData).forEach(entry => {
+          const eco = entry["Eco. Performance"] || {};
+          totalDistributed += parseFloat(eco["Direct economic value Distributed"] || 0);
+          totalGenerated += parseFloat(eco["Direct economic value generated"] || 0);
+        });
+
+        distributedData += totalDistributed;
+        generatedData += totalGenerated;
+      }
+    });
+  }
 
   return {
-    labels,
+    labels: ["Direct Economic Value Distributed", "Direct Economic Value Generated"], // Only 2 bars
     datasets: [
       {
-        label: "Direct Economic Value Distributed",
-        data: distributedData,
-        backgroundColor: "#4caf50",
-        borderColor: "#357a38",
-        borderWidth: 1,
-        fill: "origin"
-      },
-      {
-        label: "Direct Economic Value Generated",
-        data: generatedData,
-        backgroundColor: "#ff9800",
-        borderColor: "#e65100",
-        borderWidth: 1,
-        fill: "origin"
+        label: "Direct Economic Value Comparison",
+        data: [distributedData, generatedData], // Data for each bar
+        backgroundColor: ["#4caf50", "#ff9800"], // Color for the bars
+        borderColor: ["#357a38", "#e65100"],
+        borderWidth: 1
       }
     ]
   };
 };
+
+
 
 const formatScopeDoughnutData = (data) => {
   // Check if data or scopeData are null or undefined
@@ -708,44 +719,67 @@ const formatScopeDoughnutData = (data) => {
   };
 };
 const generateScopeDoughnutChart = async (data) => {
-  // Format the data using the provided formatScopeDoughnutData function
-  const chartData = formatScopeDoughnutData(data, scopeData);
+  // Format the data using your formatter (make sure it's adjusted for bar chart formatting)
+  const chartData = formatScopeDoughnutData(data, scopeData); // Same structure should work
 
-  // Create a hidden canvas to draw the doughnut chart
+  // Create a hidden canvas to draw the bar chart
   const canvas = document.createElement("canvas");
-  canvas.width = 500;
-  canvas.height = 500;
+  canvas.width = 600;
+  canvas.height = 400;
   canvas.style.display = "none";
   document.body.appendChild(canvas);
 
-  // Generate the doughnut chart
+  // Assign random colors if not already in chartData
+  chartData.datasets.forEach((dataset) => {
+    dataset.backgroundColor = dataset.backgroundColor || dataset.data.map(() => 
+      `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`
+    );
+  });
+
+  // Generate the bar chart
   new Chart(canvas, {
-    type: "doughnut",
+    type: "bar",
     data: chartData,
     options: {
+      responsive: true,
       plugins: {
         legend: {
-          position: "bottom",
+          display: false,
         },
         title: {
           display: true,
-          text: chartData.datasets[0].label,
+          text: chartData.datasets[0].label || "Scope Emissions",
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Category",
+          },
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "Emissions (kg CO₂)",
+          },
         },
       },
     },
   });
 
-  // Wait briefly for rendering to complete
+  // Wait for chart rendering
   await new Promise((resolve) => setTimeout(resolve, 300));
 
-  // Capture the chart as a base64 image
+  // Capture the chart as base64 image
   const dataUrl = canvas.toDataURL("image/png");
   const base64 = dataUrl.split(",")[1];
 
-  // Clean up by removing the canvas element from the DOM
-  document.body.removeChild(canvas);
+  // Remove the canvas
+  canvas.remove();
 
-  // Return the image as a Paragraph (using the `docx` library or any other document generator)
+  // Return as a docx paragraph with image
   return [
     new Paragraph({
       children: [
@@ -753,13 +787,14 @@ const generateScopeDoughnutChart = async (data) => {
           data: Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)),
           transformation: {
             width: 500,
-            height: 400,
+            height: 350,
           },
         }),
       ],
     }),
   ];
 };
+
 
 
 
@@ -785,6 +820,7 @@ const transformEntityData = (govData) => {
 
   return entityTotals;
 };
+
 
 
 const generateTrainingChart = async (data, labels) => {
@@ -1021,15 +1057,14 @@ const generateNetWorthVsTurnoverChart = async (datasets, labels) => {
   canvas.style.display = "none"; // hide during rendering
 
   const chart = new Chart(canvas.getContext("2d"), {
-    type: "line",
+    type: "bar", // Bar chart
     data: {
       labels: labels,
       datasets: datasets.map(dataset => ({
         ...dataset,
         tension: 0.4, // smooth curves
-        fill: "origin", // area fill
-        pointRadius: 3,
-        pointHoverRadius: 6
+        fill: false, // Bar chart doesn't require fill
+        borderWidth: 1,
       })),
     },
     options: {
@@ -1041,7 +1076,6 @@ const generateNetWorthVsTurnoverChart = async (datasets, labels) => {
         },
         title: {
           display: true,
-          text: "Net Worth vs Total Turnover",
           font: { size: 18 },
         },
         tooltip: {
@@ -1058,13 +1092,95 @@ const generateNetWorthVsTurnoverChart = async (datasets, labels) => {
         x: {
           title: {
             display: true,
-            text: "Month",
+            text: "Category", // Label for x-axis
           },
         },
         y: {
           title: {
             display: true,
-            text: "Amount (INR)",
+            text: "Amount (INR)", // Label for y-axis
+          },
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+
+  await new Promise((resolve) => setTimeout(resolve, 500)); // allow rendering
+
+  const base64Image = chart.toBase64Image();
+
+  paragraphs.push(
+    new Paragraph({
+      children: [
+        new ImageRun({
+          data: base64Image.split(",")[1],
+          transformation: { width: 600, height: 300 },
+          mimeType: "image/png",
+        }),
+      ],
+    }),
+    new Paragraph({}) // Spacer
+  );
+
+  chart.destroy();
+  canvas.remove();
+
+  return paragraphs;
+};
+
+const generateBarChartImage = async ({ labels, datasets, xLabel = "Emissions", yLabel = "Value" }) => {
+  const paragraphs = [];
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 800;
+  canvas.height = 400;
+  document.body.appendChild(canvas);
+  canvas.style.display = "none"; // Hide during rendering
+
+  const chart = new Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: {
+      labels,
+      datasets: datasets.map(dataset => ({
+        ...dataset,
+        tension: 0.4,
+        fill: false,
+        borderWidth: 1,
+      })),
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+        },
+        title: {
+          display: true,
+          font: { size: 18 },
+        },
+        tooltip: {
+          mode: "index",
+          intersect: false,
+        },
+      },
+      interaction: {
+        mode: "nearest",
+        axis: "x",
+        intersect: false,
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: xLabel,
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: yLabel,
           },
           beginAtZero: true,
         },
@@ -1099,43 +1215,59 @@ const generateEntityChart = async (entityData) => {
   const labels = Object.keys(entityData);
   const values = Object.values(entityData);
 
+  // Assign distinct colors to each bar
+  const backgroundColors = labels.map((_, index) =>
+    `hsl(${(index * 360) / labels.length}, 70%, 60%)`
+  );
+
   // Create hidden canvas
   const canvas = document.createElement("canvas");
   canvas.width = 500;
-  canvas.height = 500;
+  canvas.height = 400;
   canvas.style.display = "none";
   document.body.appendChild(canvas);
 
-  // Generate the Chart
+  // Generate the Bar Chart
   new Chart(canvas, {
-    type: "doughnut",
+    type: "bar",
     data: {
       labels,
       datasets: [
         {
           label: "Entity Roles",
           data: values,
-          backgroundColor: [
-            "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0",
-            "#9966FF", "#FF9F40", "#8dd3c7", "#ffffb3"
-          ],
+          backgroundColor: backgroundColors,
         },
       ],
     },
     options: {
+      responsive: false,
       plugins: {
-        legend: {
-          position: "bottom",
-        },
+        legend: { display: false },
         title: {
           display: true,
           text: "Entity Role Distribution",
         },
       },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: "Count",
+          },
+        },
+        x: {
+          title: {
+            display: true,
+            text: "Role",
+          },
+        },
+      },
     },
   });
 
-  // Wait briefly for rendering
+  // Wait for rendering
   await new Promise((resolve) => setTimeout(resolve, 300));
 
   const dataUrl = canvas.toDataURL("image/png");
@@ -1157,6 +1289,7 @@ const generateEntityChart = async (entityData) => {
   ];
 };
 
+
 const fetchData = async (userData, year, month, type) => {
   const domain = userData?.username.split("@");
   const env = `Environment-Overview-${year}`;
@@ -1176,11 +1309,18 @@ const fetchData = async (userData, year, month, type) => {
   const govData = docSnapshot3.data() || {};
 
   const formattedTrainingData = formatTrainingAndEduData(socialData, type, month);
-  const formattedTreeMapData = formatForTreemap(envData, type, month);
+  const formattedTreeMapData = formatTop5EmissionsForBarChart(envData, type, month);
   const formattedAreaData1 = formatNetWorthVsTurnoverData(govData, type, month);
   const formattedAreaData2 = formatDirectValueChartData(govData, type, month);
   const doughNutData = transformEntityData(govData, type, month);
 
+  const treePara = await generateBarChartImage({
+    labels: formattedTreeMapData.labels,
+    datasets: formattedTreeMapData.datasets,
+    xLabel: "Emission Type",
+    yLabel: "Emissions (Million Tons)"
+  });
+  
   const allTrainingTypes = Array.from(
     new Set(
       formattedTrainingData
@@ -1228,7 +1368,7 @@ const fetchData = async (userData, year, month, type) => {
     ? await generateNetWorthVsTurnoverChart(formattedAreaData2.datasets, formattedAreaData2.labels)
     : [];
 
-  const entityChartSection = doughNutData?.length > 0
+  const entityChartSection = Object.keys(doughNutData).length > 0 > 0
     ? await generateEntityChart(doughNutData)
     : [];
 
@@ -1236,7 +1376,7 @@ const fetchData = async (userData, year, month, type) => {
     entity: entityChartSection,
     training: trainingParagraphs,
     employment: employmentParagraphs,
-    // tree: treeParagraphs,
+    tree: treePara,
     area1: area1Paragraphs,
     area2: area2Paragraphs,
   };
@@ -1257,65 +1397,67 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
     new Paragraph(`Country: ${master?.country}`),
     new Paragraph(`Framework: ${master?.reportingType?.join(", ")}`),
 
+    new Paragraph(""),
     horizontalLine,
     new Paragraph(""),
+
     new Paragraph({ text: "Environmental Data (E)", heading: "Heading1", bold: true }),
-
-
+    new Paragraph(""),
   ];
 
   docContent.push(
     new Paragraph({ text: "Emissions by Scope", heading: "Heading2", bold: true }),
-    ...scopeChart // Insert the chart here as an image
+    ...scopeChart,
+    new Paragraph("")
   );
 
-  // Emission Graphs
   if (imgObj.tree?.length > 0) {
     docContent.push(
       new Paragraph({ text: "Emission by Category", heading: "Heading2", bold: true }),
-      ...imgObj.tree
+      ...imgObj.tree,
+      new Paragraph("")
     );
   }
 
-  docContent.push(new Table({
-    width: { size: 100, type: "pct" },
-    columnWidths: [2000, 5000, 3000],
-    rows: [
-      new TableRow({
-        children: [
-          new TableCell({ children: [new Paragraph("Scopes")] }),
-          new TableCell({ children: [new Paragraph("Category")] }),
-          new TableCell({ children: [new Paragraph("Emission (kg CO₂)")] }),
-        ],
-      }),
-      ...Object.entries(DataObj)
-        .filter(([category]) => scopeData.hasOwnProperty(category))
-        .map(([category, val]) =>
-          new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph(scopeData[category] || "Unknown Scope")] }),
-              new TableCell({ children: [new Paragraph(category)] }),
-              new TableCell({ children: [new Paragraph(val.total.toFixed(4))] }),
-            ],
-          })
-        ),
-    ],
-  }));
+  docContent.push(
+    new Table({
+      width: { size: 100, type: "pct" },
+      columnWidths: [2000, 5000, 3000],
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({ children: [new Paragraph("Scopes")] }),
+            new TableCell({ children: [new Paragraph("Category")] }),
+            new TableCell({ children: [new Paragraph("Emission (kg CO₂)")] }),
+          ],
+        }),
+        ...Object.entries(DataObj)
+          .filter(([category]) => scopeData.hasOwnProperty(category))
+          .map(([category, val]) =>
+            new TableRow({
+              children: [
+                new TableCell({ children: [new Paragraph(scopeData[category] || "Unknown Scope")] }),
+                new TableCell({ children: [new Paragraph(category)] }),
+                new TableCell({ children: [new Paragraph(val.total.toFixed(4))] }),
+              ],
+            })
+          ),
+      ],
+    }),
+    new Paragraph("")
+  );
 
-
-  // Social Section
   docContent.push(new Paragraph({ text: "Social Data (S)", heading: "Heading1", bold: true }));
   docContent.push(new Paragraph(""));
 
-  // Employment
   if (imgObj.employment?.length > 0) {
     docContent.push(
       new Paragraph({ text: "Employment", heading: "Heading2", bold: true }),
-      ...imgObj.employment
+      ...imgObj.employment,
+      new Paragraph("")
     );
   }
 
-  // Training and Education
   if (DataObj["Training and Edu"] && imgObj.training?.length > 0) {
     const trainingData = DataObj["Training and Edu"];
     const totalTrainings = Object.values(trainingData.totals).reduce((sum, val) => sum + val, 0);
@@ -1329,12 +1471,12 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
       new Paragraph(
         `The company places a strong emphasis on training for all members of the organization, including the Board of Directors, employees, and workers. It strives to conduct as many training sessions as possible within each reporting period. A total of ${totalTrainings} training sessions were conducted during the reporting period, focusing on topics such as ${topicsSentence}.`
       ),
+      new Paragraph(""),
       ...imgObj.training,
       new Paragraph("")
     );
   }
 
-  // Child Labor
   if (DataObj["Child Labor"]) {
     const child = DataObj["Child Labor"];
     const childText = Object.entries(child)
@@ -1353,7 +1495,6 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
     }
   }
 
-  // CHS (Customer Health & Safety)
   if (DataObj["CHS"]) {
     const chs = DataObj["CHS"];
     docContent.push(
@@ -1365,7 +1506,6 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
     );
   }
 
-  // Social Benefits
   if (DataObj["Social Benefits"]) {
     const social = DataObj["Social Benefits"];
     docContent.push(
@@ -1378,26 +1518,31 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
     );
   }
 
-  // Governance Section
   docContent.push(new Paragraph({ text: "Governance Data (G)", heading: "Heading1" }), new Paragraph(""));
 
   if (imgObj.area1?.length > 0) {
-    docContent.push(new Paragraph({ text: "Economic Performance", heading: "Heading2", bold: true }));
-    docContent.push(...imgObj.area1);
+    docContent.push(
+      new Paragraph({ text: "Economic Performance", heading: "Heading2", bold: true }),
+      ...imgObj.area1,
+      new Paragraph("")
+    );
   }
 
   if (imgObj.area2?.length > 0) {
-    docContent.push(...imgObj.area2);
+    docContent.push(
+      ...imgObj.area2,
+      new Paragraph("")
+    );
   }
 
   if (imgObj.entity?.length > 0) {
     docContent.push(
       new Paragraph({ text: "Entity", heading: "Heading2", bold: true }),
-      ...imgObj.entity
+      ...imgObj.entity,
+      new Paragraph("")
     );
   }
 
-  // Market Presence
   if (DataObj["Market Presence"]) {
     const mp = DataObj["Market Presence"];
     docContent.push(
@@ -1417,6 +1562,7 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
     saveAs(blob, "ESG_Report.docx");
   });
 };
+
 
 
 

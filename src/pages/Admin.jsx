@@ -1268,31 +1268,52 @@ const formatTrainingAndEduData = (data,type) => {
         {/* Dropdown Menu */}
         {dropdown==index && <div className="absolute mt-2 w-32 rounded-md shadow-lg bg-white z-10 border">
             <div className="py-1">
-                <button
-                    onClick={() => {
-                        setType("month")
-                        setMonth(tableData.monthYear.split('-')[0])
-                        // handleDownload(tableData.monthYear,"month") 
-                        generateDocx(master, tableData.monthYear.split('-')[1], userData, "month", tableData.monthYear.split('-')[0]);
-                        
-                    }}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                    Month
-                </button>
-                <button
-                    onClick={() => {
-                        setType("year")
-                        setYear(tableData.monthYear.split('-')[1]) 
-                        handleDownload(tableData.monthYear,"year")
-                        generateDocx(master, tableData.monthYear.split('-')[1], userData, "year", tableData.monthYear.split('-')[0]);
-                        
-                    }}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                    Year
-                </button>
-            </div>
+  <button
+    onClick={async () => {
+      setLoading(true);
+      try {
+        setType("month");
+        setMonth(tableData.monthYear.split('-')[0]);
+        await generateDocx(
+          master,
+          tableData.monthYear.split('-')[1],
+          userData,
+          "month",
+          tableData.monthYear.split('-')[0]
+        );
+      } finally {
+        setLoading(false);
+      }
+    }}
+    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+  >
+    Month
+  </button>
+
+  <button
+    onClick={async () => {
+      setLoading(true);
+      try {
+        setType("year");
+        setYear(tableData.monthYear.split('-')[1]);
+        handleDownload(tableData.monthYear, "year");
+        await generateDocx(
+          master,
+          tableData.monthYear.split('-')[1],
+          userData,
+          "year",
+          tableData.monthYear.split('-')[0]
+        );
+      } finally {
+        setLoading(false);
+      }
+    }}
+    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+  >
+    Year
+  </button>
+</div>
+
         </div>}
     </div>
 </td>

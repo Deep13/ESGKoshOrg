@@ -18,7 +18,7 @@ const MaterialityAssessment = () => {
     // Filter data by selected year if not "All"
     const filteredData = selectedYear === "All"
       ? rawData
-      : rawData.filter(entry => entry.year === selectedYear);
+      : rawData.filter(entry => entry.year === Number(selectedYear));
 
     // Collect unique chartFields
     const chartFieldsSet = new Set();

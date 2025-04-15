@@ -235,7 +235,7 @@ const Fuels = () => {
       case "Elec heat cooling":
         selectedVariant.forEach(item => {
           const activity = checkValue(item.Activity);
-          const amount = parseFloat(item["Amount"]) || 0;
+          const amount = parseFloat(item["Consumption of Electricity"]) || 0;
           const factor1 = parseFloat(item["GEF Factors"]) || 0;
           const factor2 = parseFloat(item["T&D Factors"]) || 0;
           const emission = amount * (factor1 + factor2);
@@ -6736,7 +6736,6 @@ const Fuels = () => {
           "Number of employees": "",
           "Working regime (For full-time:100%)": "",
           "% Working from home(e.g. 50% from home)": "",
-          "kg CO2e":"",
           "Consumption kWh/hour":"",
           "Country":"",
           "Units":"kWh",
@@ -6748,7 +6747,6 @@ const Fuels = () => {
           "Number of employees": "",
           "Working regime (For full-time:100%)": "",
           "% Working from home(e.g. 50% from home)": "",
-          "kg CO2e":"",
           "Consumption kWh/hour":"",
           "Country":"",
           "Units":"kWh",
@@ -6760,7 +6758,6 @@ const Fuels = () => {
           "Number of employees": "",
           "Working regime (For full-time:100%)": "",
           "% Working from home(e.g. 50% from home)": "",
-          "kg CO2e":"",
           "Consumption kWh/hour":"",
           "Country":"",
           "Units":"kWh",
@@ -14611,7 +14608,6 @@ const Fuels = () => {
         { "title": "Working time (For full-time:100%)", "editable": true, "type": "Number" },
         { "title": "% Working from home(e.g. 50% from home)", "editable": true, "type": "Number" },
         { "title": "No. of months", "editable": true, "type": "Number" },
-        { "title": "kg CO2e", "editable": true, "type": "Number" }
         
       ],
       "Water": [

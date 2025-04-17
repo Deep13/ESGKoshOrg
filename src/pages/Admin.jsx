@@ -24,8 +24,9 @@ const Admin = () => {
   const [action, setAction] = useState(master?.currentReportingCycle?.status);
   const [noData,setNoData] = useState(false);
   const [type,setType]=useState("year");
-  const [dropdown,setDropdown]=useState(-1);
+  const [dropdown,setDropdown]=useState(false);
   const [chartImages, setChartImages] = useState({});
+  const [yearList,setYearList]=useState([]);
 
   const [chartStatus,setChartStatus]=useState({
     "Training":false,
@@ -35,6 +36,22 @@ const Admin = () => {
 
   const [trainingData,setTrainingData]=useState({});
   const [employeeData,setEmployeeData]=useState({});
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   
 
   
@@ -48,6 +65,14 @@ const Admin = () => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         console.log("Document Data:", data);
+        const yearSet = new Set();
+
+        Object.values(data).forEach(entry => {
+          yearSet.add(Number(entry.year)); // convert to number if needed
+        });
+
+        const yearListA = Array.from(yearSet).sort((a, b) => a - b); // sorted list
+        setYearList(yearListA);
 
         // Convert the data into an array of objects with the required structure
         const formattedData = Object.values(data).map((entry) => ({
@@ -1192,7 +1217,38 @@ const formatTrainingAndEduData = (data,type) => {
               : "-"}
           </div>
         </div>
-        <div className="flex gap-3">
+        <div ref={dropdownRef} className="flex gap-3">
+        <button
+           onClick={() => setDropdown(prev => !prev)}
+           className={`px-7 py-2 bg-gradient-to-r from-[#3d9f86] to-[#29C472] border rounded-xl text-white`}
+         >
+           Download Yearwise
+         </button>
+         {dropdown && (
+        <div className="absolute mt-11 ml-5 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+          <div className="py-1">
+            {yearList.map((year) => (
+              <button
+                key={year}
+                onClick={async () => {
+                  setLoading(true);
+                  try {
+                    await generateDocx(master, year, userData, "year", "0");
+                  } catch (error) {
+                    console.error("Error generating DOCX:", error);
+                  } finally {
+                    setLoading(false);
+                    setDropdown(false);
+                  }
+                }}
+                className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
           {action?
           (
            <button
@@ -1260,13 +1316,28 @@ const formatTrainingAndEduData = (data,type) => {
                 action === "Initiate" ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={action === "Initiate"}
-            onClick={()=>{setDropdown(index)}}
+            onClick={async () => {
+              setLoading(true);
+              try {
+                // setType("month");
+                // setMonth(tableData.monthYear.split('-')[0]);
+                await generateDocx(
+                  master,
+                  tableData.monthYear.split('-')[1],
+                  userData,
+                  "month",
+                  tableData.monthYear.split('-')[0]
+                );
+              } finally {
+                setLoading(false);
+              }
+            }}
         >
             Download 
         </button>
 
         {/* Dropdown Menu */}
-        {dropdown==index && <div className="absolute mt-2 w-32 rounded-md shadow-lg bg-white z-10 border">
+        {/* {dropdown==index && <div className="absolute mt-2 w-32 rounded-md shadow-lg bg-white z-10 border">
             <div className="py-1">
   <button
     onClick={async () => {
@@ -1314,7 +1385,7 @@ const formatTrainingAndEduData = (data,type) => {
   </button>
 </div>
 
-        </div>}
+        </div>} */}
     </div>
 </td>
 

@@ -9,6 +9,14 @@ const QuadrentChart = ({ series }) => {
       height: 350,
       zoom: { enabled: true }
     },
+    tooltip: {
+      x: {
+        formatter: (val) => val.toFixed(2)
+      },
+      y: {
+        formatter: (val) => val.toFixed(2)
+      }
+    },    
     title: {
       text: '',
     },

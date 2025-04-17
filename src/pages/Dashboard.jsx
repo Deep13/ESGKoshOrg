@@ -166,7 +166,7 @@ console.log(master)
   </div>
 }
 
-        <div className="font-semibold mb-3">My Cards</div>
+        <div className="font-semibold mb-3">Organisation: {master?.organisationName}</div>
         <div className={`flex flex-wrap gap-3 ${expanded ? 'justify-cenetr' : 'justify-between'}`}>
           {/* Card 1 */}
           <div

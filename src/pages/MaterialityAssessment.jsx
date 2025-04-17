@@ -52,7 +52,11 @@ const MaterialityAssessment = () => {
 
       return {
         name: field,
-        data: [[Math.round(internalAvg * 10) / 10, Math.round(externalAvg * 10) / 10]]
+        data: [[
+          parseFloat((internalAvg).toFixed(2)),
+          parseFloat((externalAvg).toFixed(2))
+        ]]
+        
       };
     });
 

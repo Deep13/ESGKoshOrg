@@ -74,6 +74,38 @@ const clubChildLaborData = (data) => {
 
   return result;
 };
+const clubChildLaborData2 = (data, type, month = null) => {
+  const result = {
+    Low: 0,
+    Moderate: 0,
+    High: 0,
+    Uncertain: 0,
+  };
+
+  const isValidMonthKey = key => !isNaN(Number(key));
+  const keysToProcess = Object.keys(data).filter(key => {
+    if (!isValidMonthKey(key)) return false;
+    return type === "month" ? key === String(month) : true;
+  });
+
+  keysToProcess.forEach(key => {
+    const branchData = data[key];
+
+    for (const branch in branchData) {
+      const location = branchData[branch];
+      const types = location["Type"] || {};
+
+      for (const [severity, count] of Object.entries(types)) {
+        if (!isNaN(count)) {
+          result[severity] = (result[severity] || 0) + count;
+        }
+      }
+    }
+  });
+
+  return result;
+};
+
 //club CHS data
 const clubCHSData = (data) => {
   const result = {
@@ -114,6 +146,33 @@ const clubCHSData = (data) => {
 
   return result;
 };
+const clubCHSData2 = (data, type, month = null) => {
+  const result = {
+    "No. of non-compliance Incidents": 0,
+    "Customers Impacted": 0,
+  };
+
+  const isValidMonthKey = key => !isNaN(Number(key));
+  const keysToProcess = Object.keys(data).filter(key => {
+    if (!isValidMonthKey(key)) return false;
+    return type === "month" ? key === String(month) : true;
+  });
+
+  keysToProcess.forEach(key => {
+    const branchData = data[key];
+
+    for (const branch in branchData) {
+      const metrics = branchData[branch] || {};
+
+      for (const metric of Object.keys(result)) {
+        result[metric] += parseInt(metrics[metric] || 0);
+      }
+    }
+  });
+
+  return result;
+};
+
 //club market data
 const clubMarketPresence = (data) => {
   const result = {
@@ -146,6 +205,34 @@ const clubMarketPresence = (data) => {
 
   return result;
 };
+const clubMarketPresence2 = (data, type, month = null) => {
+  const result = {
+    "Values": 0,
+    "Markets served by the entity nationally": 0,
+    "Markets served by the entity internationally": 0
+  };
+
+  const isValidMonthKey = key => !isNaN(Number(key));
+  const keysToProcess = Object.keys(data).filter(key => {
+    if (!isValidMonthKey(key)) return false;
+    return type === "month" ? key === String(month) : true;
+  });
+
+  keysToProcess.forEach(key => {
+    const branchData = data[key];
+
+    for (const branch in branchData) {
+      const metrics = branchData[branch] || {};
+
+      result["Values"] += parseFloat(metrics["Values"] || 0);
+      result["Markets served by the entity nationally"] += parseInt(metrics["Markets served by the entity nationally"] || 0);
+      result["Markets served by the entity internationally"] += parseInt(metrics["Markets served by the entity internationally"] || 0);
+    }
+  });
+
+  return result;
+};
+
 //club social data
 const clubSocialBenefits = (data) => {
   const result = {
@@ -174,6 +261,32 @@ const clubSocialBenefits = (data) => {
 
   return result;
 };
+
+const clubSocialBenefits2 = (data, type, month = null) => {
+  const result = {
+    "Expenditure": 0,
+    "No. of Beneficiaries": 0
+  };
+
+  const isValidMonthKey = key => !isNaN(Number(key));
+  const keysToProcess = Object.keys(data).filter(key => {
+    if (!isValidMonthKey(key)) return false;
+    return type === "month" ? key === String(month) : true;
+  });
+
+  keysToProcess.forEach(key => {
+    const branchData = data[key];
+
+    for (const branch in branchData) {
+      const metrics = branchData[branch] || {};
+      result["Expenditure"] += parseInt(metrics["Expenditure"] || 0);
+      result["No. of Beneficiaries"] += parseInt(metrics["No. of Beneficiaries"] || 0);
+    }
+  });
+
+  return result;
+};
+
 //club all type of environmentdata for table
 const clubEmissions = (data, moduleType) => {
   let total = 0;
@@ -236,6 +349,86 @@ const clubTrainingEducation = (trainingData) => {
     totals
   };
 };
+
+const clubEmissions2 = (data, type, month = null) => {
+  const result = {};
+
+  const isValidMonthKey = key => !isNaN(Number(key));
+  const keysToProcess = Object.keys(data).filter(key => {
+    if (!isValidMonthKey(key)) return false;
+    return type === "month" ? key === String(month) : true;
+  });
+
+  keysToProcess.forEach(key => {
+    const monthData = data[key];
+    for (const location in monthData) {
+      const locationData = monthData[location];
+
+      for (const category in locationData) {
+        const categoryData = locationData[category];
+
+        if (!result[category]) {
+          result[category] = { total: 0 };
+        }
+
+        sumNested(categoryData, result[category]);
+      }
+    }
+  });
+
+  function sumNested(obj, target) {
+    if (typeof obj === "number") {
+      target.total += obj;
+    } else if (typeof obj === "object" && obj !== null) {
+      Object.values(obj).forEach(value => sumNested(value, target));
+    }
+  }
+
+  return result;
+};
+
+const clubTrainingEducation2 = (trainingData, type, month = null) => {
+  const subGroups = new Set(); // e.g., BOD, Workers, etc.
+  const totals = {}; // { "POSH training": total, ... }
+
+  const isValidMonthKey = key => !isNaN(Number(key));
+
+  const keysToProcess = Object.keys(trainingData).filter(key => {
+    if (!isValidMonthKey(key)) return false;
+    return type === "month" ? key === String(month) : true;
+  });
+
+  for (const monthKey of keysToProcess) {
+    const branches = trainingData[monthKey];
+
+    for (const branchName in branches) {
+      const groupData = branches[branchName]?.["Training and Edu"];
+      if (!groupData || typeof groupData !== "object") continue;
+
+      for (const groupName in groupData) {
+        subGroups.add(groupName);
+        const trainingCounts = groupData[groupName];
+
+        for (const trainingName in trainingCounts) {
+          const count = trainingCounts[trainingName];
+          if (count !== null && !isNaN(count)) {
+            if (!totals[trainingName]) {
+              totals[trainingName] = 0;
+            }
+            totals[trainingName] += count;
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    groups: Array.from(subGroups),
+    totals
+  };
+};
+
+
 
 
 
@@ -409,7 +602,7 @@ const formatTrainingAndEduData = (data, type, month) => {
   };
 
   for (const monthKey in data) {
-    if (type === "month" && monthKey !== String(Number(month))) return;
+    if (type === "month" && monthKey !== String(Number(month))) continue;
     const branches = data[monthKey];
     for (const branchKey in branches) {
       const branch = branches[branchKey];
@@ -451,7 +644,7 @@ function formatEmploymentData(rawData, type, month) {
   const monthsToProcess = type === "month" ? { [month]: rawData[month] } : rawData;
 
   for (const monthKey in monthsToProcess) {
-    if (type === "month" && monthKey !== String(Number(month))) return;
+    if (type === "month" && monthKey !== String(Number(month))) continue;
     const monthData = monthsToProcess[monthKey];
     for (const branchKey in monthData) {
       const branch = monthData[branchKey];
@@ -1308,6 +1501,19 @@ const fetchData = async (userData, year, month, type) => {
   const socialData = docSnapshot2.data() || {};
   const govData = docSnapshot3.data() || {};
 
+  // ================== ✅ DATA OBJ ==================
+
+  const dataObj = {
+    Emissions: clubEmissions2(envData, type, month),
+    "Child Labor": clubChildLaborData2(socialData, type, month),
+    CHS: clubCHSData2(socialData, type, month),
+    "Market Presence": clubMarketPresence2(govData, type, month),
+    "Social Benefits": clubSocialBenefits2(socialData, type, month),
+    "Training and Edu": clubTrainingEducation2(socialData, type, month),
+  };
+
+  // ================== ✅ IMG OBJ ==================
+
   const formattedTrainingData = formatTrainingAndEduData(socialData, type, month);
   const formattedTreeMapData = formatTop5EmissionsForBarChart(envData, type, month);
   const formattedAreaData1 = formatNetWorthVsTurnoverData(govData, type, month);
@@ -1320,7 +1526,7 @@ const fetchData = async (userData, year, month, type) => {
     xLabel: "Emission Type",
     yLabel: "Emissions (Million Tons)"
   });
-  
+
   const allTrainingTypes = Array.from(
     new Set(
       formattedTrainingData
@@ -1331,7 +1537,6 @@ const fetchData = async (userData, year, month, type) => {
         : []
     )
   );
-
 
   const colors = [
     "#109ad8", "#45bf34", "#f26c35", "#4bc0c0",
@@ -1351,14 +1556,10 @@ const fetchData = async (userData, year, month, type) => {
     ? await generateTrainingChart(series, allTrainingTypes)
     : [];
 
-  const { labels, datasets } = formatEmploymentData(socialData, "year");
+  const { labels, datasets } = formatEmploymentData(socialData, type, month);
   const employmentParagraphs = datasets.length > 0
     ? await generateEmploymentChart(datasets, labels)
     : [];
-
-  // const treeParagraphs = formattedTreeMapData.length > 0
-  //   ? await generateTreemapChart(formattedTreeMapData)
-  //   : [];
 
   const area1Paragraphs = formattedAreaData1.datasets?.length > 0
     ? await generateNetWorthVsTurnoverChart(formattedAreaData1.datasets, formattedAreaData1.labels)
@@ -1368,11 +1569,11 @@ const fetchData = async (userData, year, month, type) => {
     ? await generateNetWorthVsTurnoverChart(formattedAreaData2.datasets, formattedAreaData2.labels)
     : [];
 
-  const entityChartSection = Object.keys(doughNutData).length > 0 > 0
+  const entityChartSection = Object.keys(doughNutData).length > 0
     ? await generateEntityChart(doughNutData)
     : [];
 
-  return {
+  const imgObj = {
     entity: entityChartSection,
     training: trainingParagraphs,
     employment: employmentParagraphs,
@@ -1380,20 +1581,49 @@ const fetchData = async (userData, year, month, type) => {
     area1: area1Paragraphs,
     area2: area2Paragraphs,
   };
+
+  return { dataObj, imgObj };
 };
+
+function restructureData(rawData) {
+  const result = {};
+
+  // Handle emissions - move each item inside Emissions to root level
+  if (rawData.Emissions) {
+      for (const [key, value] of Object.entries(rawData.Emissions)) {
+          result[key] = value;
+      }
+  }
+
+  // Handle other top-level categories (CHS, Child Labor, Market Presence, Social Benefits, Training and Edu)
+  const specialKeys = ["CHS", "Child Labor", "Market Presence", "Social Benefits", "Training and Edu"];
+  for (const key of specialKeys) {
+      if (rawData[key]) {
+          result[key] = rawData[key];
+      }
+  }
+
+  return result;
+}
+
+
 
 
 
 const generateDocx = async (master, year, userData, type = "year", month = 1) => {
-  const DataObj = await getData(year, userData, type, Number(month));
-  const imgObj = await fetchData(userData, year, month, type);
+  // const DataObj = await getData(year, userData, type, Number(month));
+  const {imgObj,dataObj} = await fetchData(userData, year, month, type);
+  // console.log("Data obj",DataObj);
+  // console.log("dataObj",restructureData(dataObj));
+  // console.log("img",imgObj);
+  const DataObj=restructureData(dataObj);
   const scopeChart = await generateScopeDoughnutChart(DataObj);
 
   const docContent = [
     new Paragraph({ text: "ESG Report", heading: "Title" }),
     new Paragraph({ text: "Organization Details", heading: "Heading1" }),
     new Paragraph(`Name of the Organization: ${master.organisationName}`),
-    new Paragraph(`Year: ${year}`),
+    new Paragraph(type === "month" ? `Cycle: ${month}-${year}` : `Year: ${year}`),
     new Paragraph(`Country: ${master?.country}`),
     new Paragraph(`Framework: ${master?.reportingType?.join(", ")}`),
 

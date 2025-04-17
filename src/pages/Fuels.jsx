@@ -27,6 +27,10 @@ const Fuels = () => {
   const [tempSelectedVariant, setTempSelectedVariant] = useState([]);
   const [tempIndexMap, setTempIndexMap] = useState(new Map());
   const [office, setOffice] = useState(null);
+
+  const [confirmationModal,setConfirmationModal]=useState(true);
+  const [confirmationText,setConfirmationText]=useState("Hi");
+  // const [modalType,setModalType]=useState(null);
   // Data configurations based on the fuel type (fuel, bioenergy)
   const { module, master, userData, sheets, setMaster } = useSidebar();
 
@@ -15914,12 +15918,17 @@ const Fuels = () => {
           }
           {(tab == 'recorded' && master?.currentReportingCycle?.status) ?
             <div className="flex gap-5">
-              <div onClick={() => saveDraft()} className="border-2 rounded-xl px-3 py-2 cursor-pointer">
+              <div onClick={() => {
+                setModalType("saveDraft");
+                setConfirmationText("This will be saved as a draft, and you can edit it later. Do you want to continue?");
+                setConfirmationModal(true);
+              }} className="border-2 rounded-xl px-3 py-2 cursor-pointer">
                 Save as Draft
               </div>
               <div onClick={() => {
-                saveRecord()
-                
+                setModalType("saveRecord");
+                setConfirmationText("Once you save, you won't be able to edit this data. Are you sure you want to proceed?");
+                setConfirmationModal(true);               
               }} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
                 Save
               </div>
@@ -16385,6 +16394,45 @@ const Fuels = () => {
              }} className="px-3 py-2 rounded-lg mx-auto bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
               Ok
             </button>
+
+          </div>
+        </div>
+      )}
+
+      {confirmationModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-96 flex flex-col items-center justify-center">
+
+            <div className="mb-5 flex gap-5 jusify-center items-center">
+              
+              {/* {modalType=="error"?<img src={modalIcon} alt="modal Icon" className="h-10" />:<SiTicktick size={32} color={"#29C472"}/>} */}
+              {confirmationText}
+            </div>
+
+
+            <div className="flex gap-5 items-center justify-center">
+            <button
+              onClick={() => {
+                setConfirmationModal(false);
+                if (modalType === "saveRecord") {
+                  saveRecord();
+                } else if (modalType === "saveDraft") {
+                  saveDraft();
+                }
+                setModalType("error"); // optional: only if you still want to set this
+              }}
+              className="px-3 py-2 rounded-lg mx-auto bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white"
+            >
+              Proceed
+            </button>
+
+              <button onClick={() => { 
+                setConfirmationModal(false)
+                setModalType("error")
+              }} className="px-3 py-2 rounded-lg mx-auto bg-gradient-to-r from-[#3d9f86] to-[#29C472] text-white">
+                Go back
+              </button>
+            </div>
 
           </div>
         </div>

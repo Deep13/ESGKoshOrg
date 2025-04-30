@@ -32,7 +32,7 @@ const BranchWise = () => {
         .then((doc)=>{
             if (doc.exists) {
                 var docData=doc.data();
-                console.log(doc.data())
+                // console.log(doc.data())
                 const tableData = [];
                 branches?.forEach(branch => {
                     Object.keys(sheets).forEach(moduleName => {
@@ -127,7 +127,7 @@ const BranchWise = () => {
                 .map(item => item.subModule);
     
             const uniqueModuleSubModules = ["All", ...new Set(moduleSubModules)].map(subModule => ({ subModule }));
-            console.log(uniqueModuleSubModules)
+            // console.log(uniqueModuleSubModules)
             setSubModuleList(uniqueModuleSubModules);
         }
     };

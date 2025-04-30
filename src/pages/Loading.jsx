@@ -25,7 +25,7 @@ const Loading = () => {
                 getDoc(doc(firestore,domain[1],"Master Data"))
                 .then(async (docSnapshot)=>{               
                   if(docSnapshot.data()){
-                    console.log(docSnapshot.data());
+                    // console.log(docSnapshot.data());
                     setMaster(docSnapshot.data());
                     
                     navigate('/dashboard')
@@ -33,7 +33,7 @@ const Loading = () => {
                       .then((querySnapshot)=>{
                        if( querySnapshot.size>0 ){
                         querySnapshot.forEach((doc)=>{
-                          console.log("data",doc.data())
+                          // console.log("data",doc.data())
                           setUserData(doc.data());
                         })              
                       }

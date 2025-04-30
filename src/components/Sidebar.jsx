@@ -71,7 +71,7 @@ export default function Sidebar({ onRaiseIncident }) {
       "Governance":["Entity","Eco. Performance","Market Presence"],
       
   }
-  console.log("Sheet data",sheets)
+  // console.log("Sheet data",sheets)
 
   // const dataList={
   //   "Enviorment":[
@@ -117,7 +117,7 @@ export default function Sidebar({ onRaiseIncident }) {
         setAnalyticsDropdown(false);
         
         // navigate("/login");
-        console.log("Signed out successfully")
+        // console.log("Signed out successfully")
     }).catch((error) => {
     // An error happened.
     console.log(error)
@@ -291,14 +291,14 @@ export default function Sidebar({ onRaiseIncident }) {
   }`} onClick={()=>{
                                 setModule(`${key} Overview`)
                                 setPage(`${key} Overview`)
-                                console.log(`${key} Overview`)
+                                // console.log(`${key} Overview`)
                                 navigate(`/${key.toLowerCase()}`)}} 
                                 >Overview</li>
                           {values.map((item) => (
                             <li
                               key={item}
                               onClick={() => {
-                                console.log(item)
+                                // console.log(item)
                                 setModule(item);
                                 setPage("fuels");
                                 navigate('/analytics')

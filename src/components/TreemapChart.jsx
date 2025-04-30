@@ -2,7 +2,7 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 
 const TreemapChart = ({ data = [] }) => {
-  console.log("treeData", data);
+  // console.log("treeData", data);
 
   const chartData = {
     options: {

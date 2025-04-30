@@ -58,13 +58,13 @@ const Admin = () => {
   const getData = async (domain) => {
     setLoading(true)
     try {
-      console.log(domain);
+      // console.log(domain);
       const docRef = doc(firestore, domain[1], "Master Data", "Reporting Cycle", "All Cycle");
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
         const data = docSnap.data();
-        console.log("Document Data:", data);
+        // console.log("Document Data:", data);
         const yearSet = new Set();
 
         Object.values(data).forEach(entry => {
@@ -105,7 +105,7 @@ const Admin = () => {
         return (value === undefined || value === "--") ? "Unknown" : value;
     };
 
-    console.log("slecting",selectedVariant)
+    // console.log("slecting",selectedVariant)
 
     switch (moduleName) {
         case "Fuel":
@@ -125,7 +125,7 @@ const Admin = () => {
                 bifurcatedEmissions.Type[type] += emission;
             });
 
-            console.log("bug",selectedVariant,bifurcatedEmissions)
+            // console.log("bug",selectedVariant,bifurcatedEmissions)
 
             return bifurcatedEmissions;
 
@@ -278,7 +278,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     var moduleCategories=sheets;
     var data=await fetchData();
 
-    console.log("fetched test",data)
+    // console.log("fetched test",data)
 
     const scopeData = {
         "Fuel": "Scope 1",
@@ -440,12 +440,12 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
                     category: moduleCategory, // Add the module category (Environment, Social, Governance)
                     scope: scopeData[moduleName] || ""
                 };
-                console.log("ab",moduleCategory)
+                // console.log("ab",moduleCategory)
                 // If the module belongs to the "Environment" category, calculate and add its emissions
                 if (moduleCategory === "Environment") {
-                    console.log("Inhere");
+                    // console.log("Inhere");
                     const emissions = calculateEmissions(branchData,moduleName);
-                    console.log("em",emissions)
+                    // console.log("em",emissions)
                     branchWiseData[branch].Overview.TotalEmissions += emissions;
                     const scope = scopeData[moduleName];
                     if (scope) {
@@ -860,7 +860,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
   const fetchData = async () => {
     // Get Firestore instance
     // const db = getFirestore();
-    console.log("userData",userData)
+    // console.log("userData",userData)
     var domain = userData?.domain;
     // Define the path to the collection
     var closedData=master?.currentReportingCycle;
@@ -877,7 +877,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
         [doc.id]: doc.data() // Map documents to an array of objects with document ID as key
       }));
 
-      console.log("test1",fetchedData); // Update state with fetched data
+      // console.log("test1",fetchedData); // Update state with fetched data
       return fetchedData
     } catch (error) {
       console.error("Error fetching data: ", error); // Handle any errors during the fetch
@@ -896,10 +896,10 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     }
   }, [userData, master, sheets]);
 
-  console.log("Table Info", tableInfo);
+  // console.log("Table Info", tableInfo);
 
   const handleInitiate = async() => {
-    console.log("Initiating cycle with:", { year, month });
+    // console.log("Initiating cycle with:", { year, month });
     const selectedYear = parseInt(year, 10);
     const selectedMonth = parseInt(month, 10);
 
@@ -950,7 +950,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
         //show pop Up
         setNoticeModal(true);
         setNoticeModalText("Please enter both month and year.")
-       console.log("Please enter both month and year.");
+      //  console.log("Please enter both month and year.");
        return
     }
     
@@ -962,7 +962,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
     
     const calcData= await groupSubmittedModulesByBranch()
     // const monthYear=master?.currentReportingCycle
-    console.log(calcData)
+    // console.log(calcData)
     // const docRef = doc(
     //   firestore,
     //   userData?.domain,  // Assuming userData.domain contains the Firestore collection path
@@ -997,7 +997,7 @@ const getModuleCategory = (moduleName, moduleCategories)=> {
                                                 //show popUp
                                                 setNoticeModal(true)
                                                 setNoticeModalText("Cycle has been successfully terminated.")
-                                                console.log("Success")
+                                                // console.log("Success")
                                                 // MessageBox.success(`Reporting Cycle for ${data.currentReportingCycle.month}/${data.currentReportingCycle.year} is closed.`);
  
                                             })
@@ -1150,7 +1150,7 @@ const formatTrainingAndEduData = (data,type) => {
         setChartStatus((prev) => ({ ...prev, Training: true }));
       }
 
-    console.log(formatEmploymentData(socialData,type,month))
+    // console.log(formatEmploymentData(socialData,type,month))
     setTrainingData(formattedTrainingData);
     setEmployeeData(formattedEmploymentData);
 
@@ -1162,7 +1162,7 @@ const formatTrainingAndEduData = (data,type) => {
       setTimeout(async () => {
         const result = await ApexCharts.exec(id, "dataURI");
         if (result?.imgURI) {
-          console.log(`Chart Image Captured for ${mark}:`, result.imgURI);
+          // console.log(`Chart Image Captured for ${mark}:`, result.imgURI);
           setChartImages(prev => ({ ...prev, [mark]: result.imgURI }));
           resolve(result.imgURI);
         } else {
@@ -1181,7 +1181,7 @@ const formatTrainingAndEduData = (data,type) => {
     const allDone = Object.values(chartStatus).every(status => status === true);
   
     if (allDone && master && year !== "" && month !== "") {
-      console.log("All charts are ready, now generating doc");
+      // console.log("All charts are ready, now generating doc");
       generateDocx(master, year, userData, type, month, chartImages);
       setChartImages({});
   

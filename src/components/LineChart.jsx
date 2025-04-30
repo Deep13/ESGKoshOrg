@@ -30,7 +30,7 @@ const LineChart = ({ data = { labels: [], datasets: [] }, setYear = null, fillVa
       animations: { enabled: true },
       events: {
         click: (event, chartContext, config) => {
-          console.log("Chart Clicked", { event, config });
+          // console.log("Chart Clicked", { event, config });
         },
         markerClick: (event, chartContext, { seriesIndex, dataPointIndex }) => {
           if (dataPointIndex !== undefined) {

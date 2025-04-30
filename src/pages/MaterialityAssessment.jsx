@@ -90,7 +90,7 @@ const MaterialityAssessment = () => {
 
   useEffect(() => {
     getMaterialityData().then(data => {
-      console.log("Materiality Assessment Data:", data);
+      // console.log("Materiality Assessment Data:", data);
       if (data && data.length > 0) {
         setBackendData(data);
         processMaterialityScatterByStakeholder(data)

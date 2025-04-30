@@ -81,7 +81,7 @@ const dataForDughtNut = (receivedData) => {
     ],
   };
 
-  console.log(data);
+  // console.log(data);
 
   return data
 }
@@ -131,7 +131,7 @@ const GovOverview = () => {
       })
     }
     setFilteredOverview(obj)
-    console.log("check", obj)
+    // console.log("check", obj)
 
   }
 
@@ -201,7 +201,7 @@ const GovOverview = () => {
 
           })
           setlowestlevelData(branches)
-          console.log("branches", branches)
+          // console.log("branches", branches)
           const parsedData = Object.keys(branches).map(entry => {
             const [year, month, country, state, district, block] = entry.split("-");
             return {
@@ -214,9 +214,9 @@ const GovOverview = () => {
             };
           });
           setfilterlist(parsedData)
-          console.log("parsedData", parsedData)
+          // console.log("parsedData", parsedData)
 
-          console.log("Analytics", data);
+          // console.log("Analytics", data);
 
           // setLoading(false)
         } else {
@@ -310,7 +310,7 @@ const GovOverview = () => {
 
 
     if (filteredOverview && filteredOverview["Eco. Performance"]) {
-      console.log("labelist", labelList);
+      // console.log("labelist", labelList);
       const ecoData = filteredOverview["Eco. Performance"];
 
 
@@ -367,7 +367,7 @@ const GovOverview = () => {
     }
   }, [lowestlevelData])
 
-  console.log(JSON.stringify(chartData))
+  // console.log(JSON.stringify(chartData))
 
   // Extract unique filter options
   const years = useMemo(() => ["All", ...new Set(filterlist.map(entry => entry.year))], [filterlist]);
@@ -404,7 +404,7 @@ const GovOverview = () => {
   }, [filterlist, selectedYear, selectedMonth, selectedCountry, selectedState, selectedDistrict]);
   //code by Deepak end////
 
-  console.log("chart2", areaChart2)
+  // console.log("chart2", areaChart2)
   return (
     <div className='flex flex-col gap-2'>
       <div className="px-4 py-3 rounded-xl flex gap-4 items-center">

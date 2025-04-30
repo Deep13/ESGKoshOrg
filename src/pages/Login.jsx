@@ -21,7 +21,7 @@ const Login = () => {
       .then((userCredential) => {
         const user = userCredential.user;
         navigate("/");
-        console.log(user);
+        // console.log(user);
       })
       .catch((error) => {
         setShowModal(true)

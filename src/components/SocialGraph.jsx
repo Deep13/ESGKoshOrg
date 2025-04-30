@@ -44,8 +44,8 @@ const SocialGraph = ({ data = { labels: [], datasets: [] }, stacked = false, set
     })),
   };
 
-  console.log("Original Data:", data);
-  console.log("Transformed Data:", cleanedData);
+  // console.log("Original Data:", data);
+  // console.log("Transformed Data:", cleanedData);
 
   return (
     <div className="w-full h-[200px]">

@@ -65,10 +65,10 @@ const Layout = () => {
       orgID: userData.username.split('@')[1],
     };
 
-    console.log(newIncident)
+    // console.log(newIncident)
     try {
       const docRef = await addDoc(collection(firestore, "Incidents"), newIncident);
-      console.log("Document written with ID: ", docRef.id);
+      // console.log("Document written with ID: ", docRef.id);
       setShowPopup(false); // Close the popup after submission
       setFormData({ title: "", description: "", phone: "", email: "" }); // Reset form
       setPriority("Low"); // Reset priority

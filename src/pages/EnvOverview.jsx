@@ -97,7 +97,7 @@ const EnvOverview = () => {
       delete data["Waste Method"];
       delete data["land"];
       delete data["sea"];
-      console.log(JSON.stringify(data));
+      // console.log(JSON.stringify(data));
       const total = Object.values(data).reduce((sum, value) => sum + value, 0);
 
       // Convert to required format with percentage calculation
@@ -217,7 +217,7 @@ const EnvOverview = () => {
     var scopeWiseData = sumScopeValues(obj, scopeData);
     setscopeData(scopeWiseData)
     setFilteredOverview(obj)
-    console.log(obj)
+    // console.log(obj)
     var tempObj = { ...obj }
 
     if (tempObj && tempObj["Waste Method"]) {
@@ -301,7 +301,7 @@ const EnvOverview = () => {
 
           })
           setlowestlevelData(branches)
-          console.log("branches", branches)
+          // console.log("branches", branches)
           const parsedData = Object.keys(branches).map(entry => {
             const [year, month, country, state, district, block] = entry.split("-");
             return {
@@ -314,9 +314,9 @@ const EnvOverview = () => {
             };
           });
           setfilterlist(parsedData)
-          console.log("parsedData", parsedData)
+          // console.log("parsedData", parsedData)
 
-          console.log("Analytics", data);
+          // console.log("Analytics", data);
 
           // setLoading(false)
         } else {
@@ -409,12 +409,12 @@ const EnvOverview = () => {
 
 
 
-  console.log("does it work?", filteredOverview)
+  // console.log("does it work?", filteredOverview)
   // const [treeData,setTreeData]=useState(data);
   // setTreeData(data);
-  console.log("test2", filteredOverview)
+  // console.log("test2", filteredOverview)
 
-  console.log("pie", wasteData)
+  // console.log("pie", wasteData)
   return (
     <div className='flex flex-col px-3 py-2 gap-2 overflow-x-hidden'>
 

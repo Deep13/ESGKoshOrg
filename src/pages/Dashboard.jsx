@@ -153,7 +153,7 @@ const Dashboard = () => {
     }
   }, [userData, master, sheets])
 
-console.log(master)
+// console.log(master)
 
   return (
     <div className="p-5 w-full h-screen bg-slate-100">

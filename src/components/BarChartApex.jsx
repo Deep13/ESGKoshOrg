@@ -6,7 +6,7 @@ import Chart from "react-apexcharts";
 const BarChartApex = ({ data = { labels: [], datasets: [] }, stacked = false, setYear = null, fill = false, formatkey="" ,  continueDownload = () => {}}) => {
   // Check if there's no data available
   // const {sheets,module}=useSidebar()
-  console.log(data,"Employee")
+  // console.log(data,"Employee")
   const hasData = data?.datasets?.length > 0 && data.datasets?.some(dataset => dataset?.data?.length > 0);
   const hasRunRef = useRef(false);
   if (!hasData && setYear === null) {

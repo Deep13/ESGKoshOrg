@@ -441,10 +441,10 @@ const SocialOverview = () => {
 
   // },[overviewObj,selectedYear])
 
-  useEffect(() => {
-    console.log("c", calculateRetentionTotal({ selectYear: selectedYear, selectMonth: selectedMonth, selectedCountry, selectedDistrict }))
+  // useEffect(() => {
+  //   console.log("c", calculateRetentionTotal({ selectYear: selectedYear, selectMonth: selectedMonth, selectedCountry, selectedDistrict }))
 
-  }, [overviewObj, selectedYear, selectedMonth])
+  // }, [overviewObj, selectedYear, selectedMonth])
   const calculateRetentionTotal = (filters) => {
     const { selectYear, selectMonth, selectDistrict } = filters;
     let result = {};
@@ -481,7 +481,7 @@ const SocialOverview = () => {
 
 
   // console.log("prev",prevRet);
-  console.log("curr")
+  // console.log("curr")
 
   const transformData = (data) => {
     // Map for converting numerical month numbers to month names

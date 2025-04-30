@@ -25,7 +25,7 @@ const Support = () => {
     if (userData.role === "Admin") {
       queryConstraints.push(where("orgID", "==", userData.domain));
     } else {
-      console.log("inside",userData.email)
+      // console.log("inside",userData.email)
       queryConstraints.push(where("email", "==", userData?.email));
     }
 

@@ -28,8 +28,8 @@ const Fuels = () => {
   const [tempIndexMap, setTempIndexMap] = useState(new Map());
   const [office, setOffice] = useState(null);
 
-  const [confirmationModal,setConfirmationModal]=useState(true);
-  const [confirmationText,setConfirmationText]=useState("Hi");
+  const [confirmationModal,setConfirmationModal]=useState(false);
+  const [confirmationText,setConfirmationText]=useState("");
   // const [modalType,setModalType]=useState(null);
   // Data configurations based on the fuel type (fuel, bioenergy)
   const { module, master, userData, sheets, setMaster } = useSidebar();
@@ -57,7 +57,7 @@ const Fuels = () => {
     if (ele) ele.value = "Select branch";
 
     let ele2 = document.getElementById("officeSelect")
-    console.log("officeSeelct", ele2)
+    // console.log("officeSeelct", ele2)
     if (ele2) ele2.value = "";
     setSelectedVariant(null);
     setVariantOffice("");
@@ -79,7 +79,7 @@ const Fuels = () => {
     selectedIndexes.current = [];
   }, [branch])
 
-  console.log("variant office", variantOffice)
+  // console.log("variant office", variantOffice)
   const fuelData = {
     Fuel: [
       { title: "Fuels", editable: false, key: "fuels" },
@@ -162,13 +162,13 @@ const Fuels = () => {
 
   const checkKey = (moduleValue) => {
     // let arr=Object.keys(sheets)
-    console.log(sheets['Environment']);
-    for (let key in sheets) {
-      console.log(key)
-    }
+    // console.log(sheets['Environment']);
+    // for (let key in sheets) {
+    //   console.log(key)
+    // }
     for (let key in sheets) {
       if (sheets[key].includes(moduleValue)) {
-        console.log("hi hi hi", key)
+        // console.log("hi hi hi", key)
         return key;  // Return the module name (key)
       }
 
@@ -299,7 +299,7 @@ const Fuels = () => {
           disposalMethodEmissions.Activity["All"][disposalMethod] += emission;
         });
 
-        console.log(disposalMethodEmissions);
+        // console.log(disposalMethodEmissions);
         return { totalEmissions: disposalMethodEmissions, fullEmissions };
 
       case "Owned Vehicles":
@@ -422,7 +422,7 @@ const Fuels = () => {
           retentionData.EmployeeType["All"][gender] += headCount;
         });
 
-        console.log(retentionData);
+        // console.log(retentionData);
         return { totalEmissions: retentionData, fullEmissions };
       }
 
@@ -556,7 +556,7 @@ const Fuels = () => {
           });
         });
 
-        console.log("a", JSON.stringify(fullEmissions))
+        // console.log("a", JSON.stringify(fullEmissions))
 
         return { totalEmissions: bifurcatedEmissions, fullEmissions };
       }
@@ -600,7 +600,7 @@ const Fuels = () => {
 
 
     if (checkKey(module) != "Environment") {
-      console.log("Case 1")
+      // console.log("Case 1")
 
       totalEmissions = selectedVariant.reduce((acc, obj) => {
         Object.keys(obj).forEach(key => {
@@ -14705,11 +14705,11 @@ const Fuels = () => {
       .then((doc) => {
         if (doc.exists) {
           var docData = doc.data();
-          console.log(docData)
+          // console.log(docData)
           var oData = getVariantData(module);
           var conData = findGHGConversion(oData, doc.data().factor);
           setVariantData(conData);
-          console.log(conData)
+          // console.log(conData)
         }
       }
 
@@ -14717,7 +14717,7 @@ const Fuels = () => {
   }
 
   const onSaveVariant = async () => {
-    console.log(selectedIndexes.current)
+    // console.log(selectedIndexes.current)
     var branch = office;
     if (!branch) {
       setShowModal(true);
@@ -14799,13 +14799,13 @@ const Fuels = () => {
     console.log("test", docSnapshot.data())
 
     if (docSnapshot.exists && docSnapshot.data()) {
-      console.log("variant data", docSnapshot.data())
+      // console.log("variant data", docSnapshot.data())
       setFetchedVariant(docSnapshot.data());
     }
   }
 
   const deleteVariant = async () => {
-    console.log(selectedIndexes2.current)
+    // console.log(selectedIndexes2.current)
     var branch = variantOffice;
     if (!branch) {
       setShowModal(true)
@@ -14839,7 +14839,7 @@ const Fuels = () => {
     });
     if (selectData && selectData.length > 0) {
       //do u want to delete these records from this variant
-      console.log("Seledct Data", selectData);
+      // console.log("Seledct Data", selectData);
       // let anotherArray = fetchedVariant[variantOffice];
       // const filteredArray = anotherArray.filter(
       //   (item) =>
@@ -14864,7 +14864,7 @@ const Fuels = () => {
           setModalText("Variant successfully deleted!");
           setModalType("success")
           // console.log("test",fetchedVariant[variantOffice])
-          console.log(selectedVariant)
+          // console.log(selectedVariant)
           // setSelectedVariant()
           setFetchedVariant((prevData) => ({
             ...prevData,
@@ -14904,7 +14904,7 @@ const Fuels = () => {
         });
     }
     // console.log("test2",fetchedVariant[variantOffice])
-    console.log(selectData)
+    // console.log(selectData)
 
   }
   // Getting the fuel type from the Sidebar context
@@ -14921,7 +14921,7 @@ const Fuels = () => {
   // Convert unique officeType values to the desired format
   var formattedOfficeTypes = uniqueOfficeTypes.map(type => ({ officeType: type }))
 
-  console.log(formattedOfficeTypes)
+  // console.log(formattedOfficeTypes)
 
   useEffect(() => {
     if (userData) {
@@ -14947,7 +14947,7 @@ const Fuels = () => {
         filterValues[val] = [...new Set(selectedVariant.map(item => item[val]))]
       })
 
-      console.log("filter Values", filterValues)
+      // console.log("filter Values", filterValues)
       setFilterList(filterValues)
       if (tempSelectedVariant.length == 0) setTempSelectedVariant(selectedVariant)
     }
@@ -14961,13 +14961,13 @@ const Fuels = () => {
       .then((doc) => {
         if (doc.exists) {
           var docData = doc.data();
-          console.log("docdata", docData)
+          // console.log("docdata", docData)
           var oData = getVariantData(module);
-          console.log("o", oData);
+          // console.log("o", oData);
           var conData = findGHGConversion(oData, doc.data().factor);
           setSelectedVariant(conData);
           setTempSelectedVariant(conData);
-          console.log("conData", conData)
+          // console.log("conData", conData)
         }
       }
 
@@ -14975,18 +14975,18 @@ const Fuels = () => {
 
   }
   const branchChange = async (value) => {
-    console.log("Module", module)
-    console.log("tabledata", fetchedVariant)
+    // console.log("Module", module)
+    // console.log("tabledata", fetchedVariant)
     const parsedValue = JSON.parse(value);
     const branch = parsedValue?.branch;
-    console.log("parsed Value", parsedValue.branch)
+    // console.log("parsed Value", parsedValue.branch)
     const officeType = parsedValue?.officeType;
     var domain = userData?.username.split("@");
     var monthYear = master?.currentReportingCycle;
 
 
     // setBranch(parsedValue.branch); // Update the branch state
-    console.log("check", officeType);
+    // console.log("check", officeType);
 
     // Update the selected variant based on the office type
     if (fetchedVariant && fetchedVariant[officeType]) {
@@ -15008,7 +15008,7 @@ const Fuels = () => {
         // Data exists, show it in the table
         const tableData = docSnapshot.data();
         if (tableData[branch] && tableData[branch].data) {
-          console.log("Data exists for the branch:", tableData[branch].data);
+          // console.log("Data exists for the branch:", tableData[branch].data);
           setSelectedVariant(tableData[branch].data)
           setTempSelectedVariant(tableData[branch].data)
           setDataStatus(tableData[branch]?.status);
@@ -15017,18 +15017,18 @@ const Fuels = () => {
         else {
           setDataStatus("Not Submitted");
           if (fetchedVariant && fetchedVariant[officeType]) {
-            console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
+            // console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
             setSelectedVariant(fetchedVariant[officeType])
             setTempSelectedVariant(fetchedVariant[officeType])
-            console.log("selected Variant", selectedVariant)
+            // console.log("selected Variant", selectedVariant)
             setLoading(false)
 
             // Handle logic if branch exists in reporting variant
             // setTableData([]); // Show an empty table
           } else {
             setDataStatus("Not Submitted");
-            console.log("Branch does not exist in reporting variant, creating table...");
-            console.log("selected Variant", selectedVariant)
+            // console.log("Branch does not exist in reporting variant, creating table...");
+            // console.log("selected Variant", selectedVariant)
             // console.log("data from func",getVariantData(module))
             // setSelectedVariant(getVariantData(module))
             // setTempSelectedVariant(getVariantData(module))
@@ -15052,17 +15052,17 @@ const Fuels = () => {
         // Data does not exist, check the reporting variant
         setDataStatus("Not Submitted");
         if (fetchedVariant && fetchedVariant[officeType]) {
-          console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
+          // console.log("Branch exists in reporting variant:", fetchedVariant[officeType]);
           setSelectedVariant(fetchedVariant[officeType])
           setTempSelectedVariant(fetchedVariant[officeType])
-          console.log("selected Variant", selectedVariant)
+          // console.log("selected Variant", selectedVariant)
           setLoading(false)
 
           // Handle logic if branch exists in reporting variant
           // setTableData([]); // Show an empty table
         } else {
-          console.log("Branch does not exist in reporting variant, creating table...");
-          console.log("selected Variant", selectedVariant)
+          // console.log("Branch does not exist in reporting variant, creating table...");
+          // console.log("selected Variant", selectedVariant)
           // console.log("data from func",getVariantData(module))
           setLoading(false)
           createTable()
@@ -15435,7 +15435,7 @@ const Fuels = () => {
     await getDoc(doc(firestore, domain[1], "Master Data"))
       .then(async (docSnapshot) => {
         if (docSnapshot.data()) {
-          console.log(docSnapshot.data());
+          // console.log(docSnapshot.data());
           setMaster(docSnapshot.data());
           monthYear = docSnapshot.data().currentReportingCycle;
         }
@@ -15460,8 +15460,8 @@ const Fuels = () => {
     }
 
     ignoreFields();
-    console.log("fix", totalEmissions)
-    console.log("test23", selectedVariant, monthYear.month, monthYear.year, module, domain[1], userData)
+    // console.log("fix", totalEmissions)
+    // console.log("test23", selectedVariant, monthYear.month, monthYear.year, module, domain[1], userData)
     let sanitizedVariant = sanitizeObject(selectedVariant);
     // if(module=="Elec heat cooling"){
     //   sanitizedVariant = selectedVariant
@@ -15481,7 +15481,7 @@ const Fuels = () => {
     //   }));
     // }
 
-    console.log("Sanitized Data:", sanitizedVariant);
+    // console.log("Sanitized Data:", sanitizedVariant);
 
     setDoc(doc(firestore, domain[1], "TransactionData", monthYear.month + "-" + monthYear.year, module), {
       [branch]: {
@@ -15610,8 +15610,8 @@ const Fuels = () => {
 
   }
   const saveDraft = async () => {
-    console.log("selected", selectedVariant);
-    console.log("temp", tempSelectedVariant);
+    // console.log("selected", selectedVariant);
+    // console.log("temp", tempSelectedVariant);
     if (!branch) {
       setShowModal(true);
       setModalText("Kindly Select Branch")
@@ -15629,7 +15629,7 @@ const Fuels = () => {
     await getDoc(doc(firestore, domain[1], "Master Data"))
       .then(async (docSnapshot) => {
         if (docSnapshot.data()) {
-          console.log(docSnapshot.data());
+          // console.log(docSnapshot.data());
           setMaster(docSnapshot.data());
           monthYear = docSnapshot.data().currentReportingCycle;
         }
@@ -15753,7 +15753,7 @@ const Fuels = () => {
           const isExactMatch = JSON.stringify(headerDataRow) === JSON.stringify(headerColumn);
           if (isExactMatch) {
             // Set the data to your table
-            console.log("func is running", data)
+            // console.log("func is running", data)
             setSelectedVariant([...data]);
             setTempSelectedVariant([...data]);
           }
@@ -15856,7 +15856,7 @@ const Fuels = () => {
       )
     );
   };
-  console.log("Branches", typeof (branch), branch)
+  // console.log("Branches", typeof (branch), branch)
   return (
     <div className="px-5">
       <div className="flex justify-between items-center mb-3">
@@ -15927,7 +15927,7 @@ const Fuels = () => {
               </div>
               <div onClick={() => {
                 setModalType("saveRecord");
-                setConfirmationText("Once you save, you won't be able to edit this data. Are you sure you want to proceed?");
+                setConfirmationText("Once saved, this data cannot be modified. Do you wish to proceed?");
                 setConfirmationModal(true);               
               }} className="border rounded-lg px-10 text-white bg-gradient-to-r from-[#3d9f86] to-[#29C472] py-2 cursor-pointer">
                 Save
@@ -15992,7 +15992,7 @@ const Fuels = () => {
                       id="branchSelect"
                       onChange={(e) => {
                         const selectedBranch = JSON.parse(e.target.value);
-                        console.log("Selected Branch:", selectedBranch);
+                        // console.log("Selected Branch:", selectedBranch);
                         setBranch(selectedBranch.branch);
                         branchChange(e.target.value);
                       }}
@@ -16163,7 +16163,7 @@ const Fuels = () => {
                                   value={tab === "recorded" ? ticket[column.title] : ""}
                                   onChange={(e) => {
                                     const updatedValue = e.target.value;
-                                    console.log(tempIndexMap.get(index));
+                                    // console.log(tempIndexMap.get(index));
 
                                     // Update selectedVariant safely
                                     const updatedVariant = [...selectedVariant];
@@ -16220,7 +16220,7 @@ const Fuels = () => {
                                   onWheel={(e) => e.target.blur()}
                                   onChange={(e) => {
                                     const updatedValue = e.target.value;
-                                    console.log(tempIndexMap.get(index));
+                                    // console.log(tempIndexMap.get(index));
 
                                     // Update selectedVariant safely
                                     const updatedVariant = [...selectedVariant];

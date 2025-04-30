@@ -24,7 +24,7 @@ function App() {
   useEffect(()=>{
     auth.onAuthStateChanged(async (user) => {
       if (user) {
-        console.log("Document data:", user);
+        // console.log("Document data:", user);
         localStorage.setItem("userDetails",JSON.stringify(user));
         navigate('/');
         

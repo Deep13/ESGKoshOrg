@@ -859,12 +859,16 @@ const formatDirectValueChartData = (data, type, month) => {
 
 
 const formatScopeDoughnutData = (data) => {
-  // Check if data or scopeData are null or undefined
   if (!data || !scopeData) {
     console.error("Data or scopeData is null or undefined");
-    return { // Return empty structure if either data or scopeData is undefined or null
+    return {
       labels: ["Scope 1", "Scope 2", "Scope 3"],
-      datasets: [{ label: "Emissions by Scope (in Millions)", data: [0, 0, 0], backgroundColor: ["#f44336", "#2196f3", "#4caf50"], borderColor: ["#b71c1c", "#0d47a1", "#1b5e20"], borderWidth: 1 }]
+      datasets: [{
+        label: "Emissions by Scope (%)",
+        data: [0, 0, 0],
+        backgroundColor: ["#109bd9", "#4ac03a", "#f26d34"],
+        borderWidth: 1
+      }]
     };
   }
 
@@ -874,119 +878,104 @@ const formatScopeDoughnutData = (data) => {
     "Scope 3": 0
   };
 
-  // Log both data and scopeData to confirm their structure
-  console.log("Data:", data);
-  console.log("ScopeData:", scopeData);
-
-  // Safely loop through scopeData and calculate emissions
   Object.entries(scopeData).forEach(([key, scope]) => {
     const total = data?.[key]?.total;
-
-    // Log the total value for each key
-    console.log(`Key: ${key}, Scope: ${scope}, Total: ${total}`);
-
-    // Only add to scopeSums if total is a number
     if (typeof total === "number") {
       scopeSums[scope] += total;
     }
   });
 
-  // Log scopeSums after calculation
-  console.log("Scope Sums:", scopeSums);
+  const totalEmissions = Object.values(scopeSums).reduce((a, b) => a + b, 0) || 1;
+
+  const percentages = [
+    +(scopeSums["Scope 1"] / totalEmissions * 100).toFixed(4),
+    +(scopeSums["Scope 2"] / totalEmissions * 100).toFixed(4),
+    +(scopeSums["Scope 3"] / totalEmissions * 100).toFixed(4)
+  ];
 
   return {
     labels: ["Scope 1", "Scope 2", "Scope 3"],
     datasets: [
       {
-        label: "Emissions by Scope (in Millions)",
-        data: [
-          +(scopeSums["Scope 1"] / 1_000_000).toFixed(2),
-          +(scopeSums["Scope 2"] / 1_000_000).toFixed(2),
-          +(scopeSums["Scope 3"] / 1_000_000).toFixed(2)
-        ],
-        backgroundColor: ["#f44336", "#2196f3", "#4caf50"],
-        borderColor: ["#b71c1c", "#0d47a1", "#1b5e20"],
+        label: "Emissions by Scope (%)",
+        data: percentages,
+        backgroundColor: ["#109bd9", "#4ac03a", "#f26d34"],
         borderWidth: 1
       }
     ]
   };
 };
+
 const generateScopeDoughnutChart = async (data) => {
-  // Format the data using your formatter (make sure it's adjusted for bar chart formatting)
-  const chartData = formatScopeDoughnutData(data, scopeData); // Same structure should work
+  const formatted = formatScopeDoughnutData(data, scopeData);
+  const scopes = formatted.labels;
+  const values = formatted.datasets[0].data.map(v => +v.toFixed(4));
+  const colors = ["#109bd9", "#4ac03a", "#f26d34"];
 
-  // Create a hidden canvas to draw the bar chart
-  const canvas = document.createElement("canvas");
-  canvas.width = 600;
-  canvas.height = 400;
-  canvas.style.display = "none";
-  document.body.appendChild(canvas);
+  const imageRuns = [];
 
-  // Assign random colors if not already in chartData
-  chartData.datasets.forEach((dataset) => {
-    dataset.backgroundColor = dataset.backgroundColor || dataset.data.map(() => 
-      `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`
+  for (let i = 0; i < scopes.length; i++) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 180;
+    canvas.height = 180;
+    canvas.style.display = "none";
+    document.body.appendChild(canvas);
+
+    await new Promise((resolve) => {
+      new Chart(canvas, {
+        type: "doughnut",
+        data: {
+          labels: [scopes[i], "Remaining"],
+          datasets: [{
+            data: [values[i], 100 - values[i]], // Assumes % of 100
+            backgroundColor: [colors[i], "#e0e0e0"],
+            borderWidth: 0,
+          }]
+        },
+        options: {
+          responsive: false,
+          cutout: "75%",
+          animation: {
+            onComplete: () => resolve(),
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+            title: {
+              display: true,
+              text: `${scopes[i]}: ${values[i]}%`,
+              font: { size: 12 },
+            },
+          }
+        }
+      });
+    });
+
+    const dataUrl = canvas.toDataURL("image/png");
+    const base64 = dataUrl.split(",")[1];
+    canvas.remove();
+
+    imageRuns.push(
+      new ImageRun({
+        data: Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)),
+        transformation: {
+          width: 130,
+          height: 130,
+        },
+      })
     );
-  });
+  }
 
-  // Generate the bar chart
-  new Chart(canvas, {
-    type: "bar",
-    data: chartData,
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        title: {
-          display: true,
-          text: chartData.datasets[0].label || "Scope Emissions",
-        },
-      },
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "Category",
-          },
-        },
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: "Emissions (kg CO₂)",
-          },
-        },
-      },
-    },
-  });
-
-  // Wait for chart rendering
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  // Capture the chart as base64 image
-  const dataUrl = canvas.toDataURL("image/png");
-  const base64 = dataUrl.split(",")[1];
-
-  // Remove the canvas
-  canvas.remove();
-
-  // Return as a docx paragraph with image
+  // Return them in a single line inside one Paragraph
   return [
     new Paragraph({
-      children: [
-        new ImageRun({
-          data: Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)),
-          transformation: {
-            width: 500,
-            height: 350,
-          },
-        }),
-      ],
+      children: imageRuns,
     }),
   ];
 };
+
+
+
 
 
 
@@ -1706,6 +1695,15 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
       new Paragraph("")
     );
   }
+  else{
+    docContent.push(
+      new Paragraph({ text: "Training and Education", heading: "Heading2", bold: true }),
+      new Paragraph(
+        `No training sessions were conducted in the selected cycle.`
+      ),
+      new Paragraph("")
+    )
+  }
 
   if (DataObj["Child Labor"]) {
     const child = DataObj["Child Labor"];
@@ -1723,6 +1721,15 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
         new Paragraph("")
       );
     }
+    else{
+      docContent.push(
+        new Paragraph({ text: "Child Labor", heading: "Heading2", bold: true }),
+        new Paragraph(
+          `There were no cases of child labour identified in the selected cycle`
+        ),
+        new Paragraph("")
+      );
+    }
   }
 
   if (DataObj["CHS"]) {
@@ -1735,6 +1742,16 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
       new Paragraph("")
     );
   }
+  else{
+    docContent.push(
+      new Paragraph({ text: "Customer Health and Safety", heading: "Heading2", bold: true }),
+      new Paragraph(
+        `No reports were made in the selected reporting cycle`
+      ),
+      new Paragraph("")
+    );
+
+  }
 
   if (DataObj["Social Benefits"]) {
     const social = DataObj["Social Benefits"];
@@ -1743,6 +1760,16 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
       new Paragraph("The company provides various social benefits, reinforcing its commitment to employee welfare and community development."),
       new Paragraph(
         `With an investment of ₹${social["Expenditure"]}, the initiative has successfully impacted ${social["No. of Beneficiaries"]} individuals, fostering tangible improvements and driving meaningful progress in the area.`
+      ),
+      new Paragraph("")
+    );
+  }
+  else{
+    docContent.push(
+      new Paragraph({ text: "Social Benefits", heading: "Heading2", bold: true }),
+      new Paragraph("The company provides various social benefits, reinforcing its commitment to employee welfare and community development."),
+      new Paragraph(
+        `No investments were made in the selected reporting cycle.`
       ),
       new Paragraph("")
     );
@@ -1783,6 +1810,15 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
       new Paragraph("")
     );
   }
+  else{
+    docContent.push(
+      new Paragraph({ text: "Market Presence", heading: "Heading2", bold: true }),
+      new Paragraph(
+        `Markets served by the entity: ${0} nationally, ${0} internationally.`
+      ),
+      new Paragraph("")
+    );
+  }
 
   const doc = new Document({
     sections: [{ children: docContent }],
@@ -1799,3 +1835,6 @@ const generateDocx = async (master, year, userData, type = "year", month = 1) =>
 
 
 export default generateDocx;
+
+
+

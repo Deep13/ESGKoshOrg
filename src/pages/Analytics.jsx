@@ -23,7 +23,7 @@ const Analytics = () => {
   // let monthFilterList=[]
   let yearWiseData;
   let monthData;
-  console.log(module);
+  // console.log(module);
 
   useEffect(() => {
     setYear(null) 
@@ -197,7 +197,7 @@ const Analytics = () => {
       }
     });
 
-    console.log({ transformedData: sortedTransformedData, years, entityTypes: sortedEntityTypes });
+    // console.log({ transformedData: sortedTransformedData, years, entityTypes: sortedEntityTypes });
 
     return { labels: years, dataObj: sortedTransformedData, entityTypes: sortedEntityTypes };
   }
@@ -301,7 +301,7 @@ const Analytics = () => {
         sortedTransformedData[type] = transformedData[type];
       }
     });
-    console.log({ transformedData: sortedTransformedData, years, entityTypes: sortedEntityTypes });
+    // console.log({ transformedData: sortedTransformedData, years, entityTypes: sortedEntityTypes });
 
     return { dataObj: sortedTransformedData, labels: years, entityTypes: sortedEntityTypes }
   }
@@ -365,7 +365,7 @@ const Analytics = () => {
       new Date(selectedYear, month - 1).toLocaleString('en-US', { month: 'long' })
     );
 
-    console.log({ transformedData: sortedTransformedData, months: monthNames, activityTypes: sortedActivityTypes });
+    // console.log({ transformedData: sortedTransformedData, months: monthNames, activityTypes: sortedActivityTypes });
 
     return { dataObj: sortedTransformedData, labels: monthNames, activityTypes: sortedActivityTypes };
   };
@@ -419,7 +419,7 @@ const Analytics = () => {
       }
     });
 
-    console.log({ transformedData: sortedTransformedData, years, entityTypes: sortedEntityTypes });
+    // console.log({ transformedData: sortedTransformedData, years, entityTypes: sortedEntityTypes });
 
     return { labels: years, dataObj: sortedTransformedData, entityTypes: sortedEntityTypes };
 
@@ -482,7 +482,7 @@ const Analytics = () => {
       new Date(selectedYear, month - 1).toLocaleString('en-US', { month: 'long' })
     );
 
-    console.log({ transformedData: sortedTransformedData, months: monthNames, entityTypes: sortedEntityTypes });
+    // console.log({ transformedData: sortedTransformedData, months: monthNames, entityTypes: sortedEntityTypes });
 
     return { labels: monthNames, dataObj: sortedTransformedData, entityTypes: sortedEntityTypes };
   }
@@ -498,7 +498,7 @@ const Analytics = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (!userData || !master) {
-        console.log(userData, master);
+        // console.log(userData, master);
         return;
       }
 
@@ -519,9 +519,9 @@ const Analytics = () => {
 
         if (!querySnapshot.empty) {
           // Iterate through the documents and log them
-          querySnapshot.forEach((docSnap) => {
-            console.log("Fetched Data here ding ding:", docSnap.data());
-          });
+          // querySnapshot.forEach((docSnap) => {
+          //   console.log("Fetched Data here ding ding:", docSnap.data());
+          // });
 
           // You can also store this data if you need
           const data = querySnapshot.docs.map(doc => doc.data());
@@ -597,7 +597,7 @@ const Analytics = () => {
       chartData.datasets[1].data.push(totalRevenue);
     });
 
-    console.log(chartData);
+    // console.log(chartData);
     return chartData;
   };
 
@@ -652,7 +652,7 @@ const Analytics = () => {
       chartData.datasets[1].data.push(totalRevenue);
     });
 
-    console.log(chartData);
+    // console.log(chartData);
     return chartData;
   };
 
@@ -707,7 +707,7 @@ const Analytics = () => {
       chartData.datasets[1].data.push(totalRevenue);
     });
 
-    console.log(chartData);
+    // console.log(chartData);
     return chartData;
   };
 
@@ -859,8 +859,8 @@ const Analytics = () => {
       7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct", 11: "Nov", 12: "Dec"
     };
 
-    console.log("Selected Year:", selectedYear);
-    console.log("Backend Data Array:", backendDataArray);
+    // console.log("Selected Year:", selectedYear);
+    // console.log("Backend Data Array:", backendDataArray);
 
     const segmentMap = new Map();
 
@@ -903,7 +903,7 @@ const Analytics = () => {
     // Convert segment map to datasets array
     bubbleData.datasets = Array.from(segmentMap.values());
 
-    console.log("Final Transformed Data:", JSON.stringify(bubbleData, null, 2));
+    // console.log("Final Transformed Data:", JSON.stringify(bubbleData, null, 2));
 
     return bubbleData;
   };
@@ -927,7 +927,7 @@ const Analytics = () => {
       ]
     };
 
-    console.log("this is what i got", data)
+    // console.log("this is what i got", data)
 
     // Filter data by year
     const filteredData = data?.filter(entry => entry.year == year);
@@ -965,7 +965,7 @@ const Analytics = () => {
       ]
     };
 
-    console.log("this is what i got", data)
+    // console.log("this is what i got", data)
 
     // Filter data by year
     const filteredData = data?.filter(entry => entry.year == year);
@@ -1832,7 +1832,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
     setMonthFilterList(null)
 
     if (!fetchedData) {
-      console.log("No fetched Data skipping update");
+      // console.log("No fetched Data skipping update");
       setShowModal(true);
       // setLoading(false)
       return;
@@ -1842,9 +1842,9 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
         var { labels, dataObj, entityTypes } = entityTransform(fetchedData);
         setFilterList(entityTypes);
 
-        if (dataObj) {
-          console.log(dataObj[entityType]);
-        }
+        // if (dataObj) {
+        //   console.log(dataObj[entityType]);
+        // }
 
         // Year-wise data structure
         yearWiseData = {
@@ -1876,7 +1876,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
 
         // Month-wise data handling
         if (year) {
-          console.log("Processing month-wise data...");
+          // console.log("Processing month-wise data...");
           let data = monthEntityTransform(fetchedData, year);
           setFilterList(data.entityTypes)
           let colorMap={"Male":"#109ad8", "Others":"#f26c35", "Female":"#e4acc4"};
@@ -1898,9 +1898,9 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
         var { labels, dataObj, entityTypes } = retentionTransform(fetchedData, "EmploymentType");
         setFilterList(entityTypes);
 
-        if (dataObj) {
-          console.log(dataObj[entityType]);
-        }
+        // if (dataObj) {
+        //   console.log(dataObj[entityType]);
+        // }
 
         // Year-wise data structure
         yearWiseData = {
@@ -1932,7 +1932,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
 
         // Month-wise data handling
         if (year) {
-          console.log("Processing month-wise data...");
+          // console.log("Processing month-wise data...");
           let data = retentionTransformByMonth(fetchedData, "EmploymentType", year);
           monthData = {
             labels: data.labels,
@@ -1951,9 +1951,9 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
         var { labels, dataObj, entityTypes } = retentionTransform(fetchedData, "EmployeeType");
         setFilterList(entityTypes);
 
-        if (dataObj) {
-          console.log(dataObj[entityType]);
-        }
+        // if (dataObj) {
+        //   console.log(dataObj[entityType]);
+        // }
 
         // Year-wise data structure
         yearWiseData = {
@@ -1985,7 +1985,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
 
         // Month-wise data handling
         if (year) {
-          console.log("Processing month-wise data...");
+          // console.log("Processing month-wise data...");
           let data = retentionTransformByMonth(fetchedData, "EmployeeType", year);
           monthData = {
             labels: data.labels,
@@ -2002,24 +2002,24 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
         break;
       case "Eco. Performance":
         yearWiseData = ecoPerformanceTransform(fetchedData)
-        console.log("che", fetchedData)
+        // console.log("che", fetchedData)
         var chartData = processDataForGraph(fetchedData);
-        console.log(JSON.stringify(chartData), null, 2);
+        // console.log(JSON.stringify(chartData), null, 2);
         monthData = chartData;
         break;
 
       case "Market Presence":
         yearWiseData = mktPresenceTransform(fetchedData)
-        console.log("che", fetchedData)
+        // console.log("che", fetchedData)
         var chartData = processDataForMktPresence(fetchedData);
-        console.log(JSON.stringify(chartData), null, 2);
+        // console.log(JSON.stringify(chartData), null, 2);
         monthData = chartData;
         break;
 
       case "Training and Edu":
         yearWiseData = TrainingDataForGraphByYear(fetchedData)
         if (year) monthData = TrainingDataForGraphByMonth(fetchedData, year)
-        console.log("ey", yearWiseData)
+        // console.log("ey", yearWiseData)
         break
 
       case "Social Benefits":
@@ -2036,7 +2036,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
       case "WTT- fuels":
       case "Water":
         yearWiseData = transformEnvDataForGraphByYear(fetchedData)
-        console.log("C", yearWiseData)
+        // console.log("C", yearWiseData)
         if (year) monthData = transformEnvDataForGraphByMonth(fetchedData, year)
         break;
       
@@ -2048,12 +2048,12 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
       case "Materials":
       case "Elec heat cooling":
         yearWiseData = transformActivityDataForGraphByYear(fetchedData)
-        console.log("C", yearWiseData)
+        // console.log("C", yearWiseData)
         if (year) monthData = transformActivityDataForGraphByMonth(fetchedData, year)
         break;
       case "Owned Vehicles":
         yearWiseData = transformLevelDataForGraphByYear(fetchedData)
-        console.log("C", yearWiseData)
+        // console.log("C", yearWiseData)
         if (year) monthData = transformLevelDataForGraphByMonth(fetchedData, year)
         break;
 
@@ -2061,7 +2061,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
       case "Employees commuting":
       case "Business travel - land and sea":
         yearWiseData = transformVehicleDataForGraphByYear(fetchedData)
-        console.log("C", yearWiseData)
+        // console.log("C", yearWiseData)
         if (year) monthData = transformVehicleDataForGraphByMonth(fetchedData, year)
         break;
 
@@ -2071,7 +2071,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
       case "Flight":
       case "Home Office":
         yearWiseData = transformUnfilteredDataForGraphByYear(fetchedData)
-        console.log("C", yearWiseData)
+        // console.log("C", yearWiseData)
         if (year) monthData = transformUnfilteredDataForGraphByMonth(fetchedData, year)
         break;
       
@@ -2085,9 +2085,9 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
         var { labels, dataObj, entityTypes } = wasteTransform(fetchedData);
         setFilterList(entityTypes);
 
-        if (dataObj) {
-          console.log(dataObj[entityType]);
-        }
+        // if (dataObj) {
+        //   console.log(dataObj[entityType]);
+        // }
 
         // Year-wise data structure
         yearWiseData = {
@@ -2125,7 +2125,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
             "Landfilled":"#e4acc4",
             "Combusted":"#8b24d7"
           }
-          console.log("Processing month-wise data...");
+          // console.log("Processing month-wise data...");
           let data = wasteTransformByMonth(fetchedData, year);
           monthData = {
             labels: data.labels,
@@ -2139,7 +2139,7 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
           }
 
 
-          console.log("A", wasteTransform(fetchedData));
+          // console.log("A", wasteTransform(fetchedData));
 
           break;
 
@@ -2170,10 +2170,10 @@ function TrainingDataForGraphByMonth(backendData, selectedYear) {
     updateData()
   }, [year])
 
-  console.log("test ", fetchedData)
+  // console.log("test ", fetchedData)
 
-  console.log("year", yearData);
-  console.log("month", monthWiseData)
+  // console.log("year", yearData);
+  // console.log("month", monthWiseData)
 
   return (
     <div className="flex flex-col justify-center items-center p-5 gap-5">

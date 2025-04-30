@@ -5,7 +5,7 @@ const DoughnutChart = ({ data = { labels: [], datasets: [] } }) => {
   const series = data.datasets?.length > 0 ? data.datasets?.[0].data : [];
   const labels = data.labels || [];
 
-  console.log(data);
+  // console.log(data);
   const options = {
     chart: {
       type: "donut",

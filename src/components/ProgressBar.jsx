@@ -12,7 +12,7 @@ const ProgressBar = ({ total }) => {
   const navigate = useNavigate();
   const {setPage,master} = useSidebar();
 
-  console.log(typeof(total),"%")
+  // console.log(typeof(total),"%")
   return (
     <div className="bg-white h-[15rem] w-full rounded-lg p-5 flex flex-col justify-between">
       <div className="flex justify-between items-center mb-4">

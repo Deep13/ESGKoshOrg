@@ -600,8 +600,8 @@ const EnvOverview = () => {
                   CONSUMPTION<br/> value
                 </div> */}
               </div>
-              <div className="">
-                <img src={tower} alt="tower" />
+              <div className="h-48 ">
+                <img src={tower} alt="tower" className="h-full" />
               </div>
             </div>
           </div>
